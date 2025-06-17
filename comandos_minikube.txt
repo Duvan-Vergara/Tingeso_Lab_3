@@ -1,0 +1,56 @@
+Estas 3 lienas son para iniciar la primera vez o si esta detenido (PC)
+minikube start --driver=hyperv
+minikube status
+minikube ip
+--------------------------------------------------------------------
+para Notebook:
+kubectl config use-context docker-desktop
+kubectl cluster-info
+kubectl get nodes
+kubectl get pods --all-namespaces
+--------------------------------------------------------------
+Aqui es igual en ambos
+
+Luego de ejecutar los script en orden:
+build_all_jar
+clean_docker (solo si se quieren eliminar todos los volúmenes y todo de docker)
+build_and_push_all
+deploy_all
+
+
+--------------------------------------------------------------------
+Para verificar el estados de los recursos :
+
+kubectl get pods
+kubectl get pods -o wide
+kubectl get deployments
+kubectl get services
+kubectl get configmap
+kubectl get secret
+kubectl get pvc
+
+kubectl get jobs
+kubectl get pods
+--------------------------------------------------------------------
+En PC:
+Para acceder a la aplicacion:
+http://172.26.48.240:30080
+
+eureka:
+http://172.26.48.240:30861
+--------------------------------------------------------------------
+En Notebook al usar kubernetes de docker desktop se usa:
+Para acceder a la aplicacion:
+http://localhost:30080
+
+eureka:
+http://localhost:30861
+--------------------------------------------------------------------
+Limpieza(opcional):
+kubectl delete -f deployment\ --recursive
+
+para detener lo de minikube:
+minikube stop
+
+y para limpieza completa(eliminación total de vm y todo):
+minikube delete

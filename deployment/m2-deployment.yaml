@@ -1,0 +1,65 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: m2-deployment
+  labels:
+    app: m2-deployment
+spec:
+  selector:
+    matchLabels:
+      app: m2-deployment
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: m2-deployment
+    spec:
+      containers:
+        - name: m2
+          image: duvanvergara/m2:latest
+          ports:
+            - containerPort: 8080
+          env:
+            - name: SERVER_PORT
+              value: "8080"
+            - name: MYSQL_HOST
+              valueFrom:
+                configMapKeyRef:
+                  name: mysql-config-map
+                  key: DB_HOST_M2
+            - name: MYSQL_PORT
+              valueFrom:
+                configMapKeyRef:
+                  name: mysql-config-map
+                  key: DB_PORT_M2
+            - name: MYSQL_DB
+              valueFrom:
+                configMapKeyRef:
+                  name: mysql-config-map
+                  key: DB_DBNAME_M2
+            - name: DB_USER
+              valueFrom:
+                secretKeyRef:
+                  name: mysql-user-credentials
+                  key: username
+            - name: DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: mysql-user-credentials
+                  key: password
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: m2-service
+  labels:
+    app: m2-service
+spec:
+  selector:
+    app: m2-deployment
+  ports:
+    - nodePort: 30002
+      protocol: TCP
+      port: 8080
+      targetPort: 8080
+  type: NodePort

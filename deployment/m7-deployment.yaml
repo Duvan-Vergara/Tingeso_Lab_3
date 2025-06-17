@@ -1,0 +1,40 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: m7-deployment
+  labels:
+    app: m7-deployment
+spec:
+  selector:
+    matchLabels:
+      app: m7-deployment
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: m7-deployment
+    spec:
+      containers:
+        - name: m7
+          image: duvanvergara/m7:latest
+          ports:
+            - containerPort: 8080
+          env:
+            - name: SERVER_PORT
+              value: "8080"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: m7-service
+  labels:
+    app: m7-service
+spec:
+  selector:
+    app: m7-deployment
+  ports:
+    - nodePort: 30007
+      protocol: TCP
+      port: 8080
+      targetPort: 8080
+  type: NodePort
