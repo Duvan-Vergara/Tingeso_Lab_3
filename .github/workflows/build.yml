@@ -1,4 +1,4 @@
-name: Build
+name: SonarQube Analysis
 
 on:
   push:
@@ -6,14 +6,26 @@ on:
       - main
 
 jobs:
-  build:
-    name: Build and analyze
+  analyze:
+    name: Analizar todos los microservicios
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        service:
+          - m1
+          - m2
+          - m3
+          - m4
+          - m5
+          - m6
+          - m7
+          - eureka-service
+          - config-service
+          - gateway-service
 
     steps:
-      - uses: actions/checkout@v4
-        with:
-          fetch-depth: 0  # Shallow clones should be disabled for better relevancy of analysis
+      - name: Checkout code
+        uses: actions/checkout@v4
 
       - name: Set up JDK 17
         uses: actions/setup-java@v4
@@ -35,13 +47,14 @@ jobs:
           key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
           restore-keys: ${{ runner.os }}-m2
 
-      - name: Build and analyze
-        working-directory: .
+      - name: Analyze ${{ matrix.service }}
+        working-directory: backend/${{ matrix.service }}
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
           SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
-        run: mvn -B verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar \
-          -Dsonar.projectKey=Tingeso_Lab_3 \
-          -Dsonar.projectName='Tingeso_Lab_3' \
-          -Dsonar.host.url=${{ env.SONAR_HOST_URL }} \
-          -Dsonar.login=${{ env.SONAR_TOKEN }}
+        run: |
+          mvn verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar \
+            -Dsonar.projectKey=tingeso_${{ matrix.service }} \
+            -Dsonar.projectName="${{ matrix.service }}" \
+            -Dsonar.host.url=${{ env.SONAR_HOST_URL }} \
+            -Dsonar.login=${{ env.SONAR_TOKEN }}
