@@ -1,20 +1,27 @@
 :root {
   --background-color: #1e1e2f;
   /* Fondo oscuro */
+
   --primary-color: #8b0000;
   /* Rojo oscuro */
+
   --secondary-color: #4b0082;
   /* Púrpura */
+
   --text-color: #ffffff;
   /* Blanco */
+
   --accent-color: #ff4500;
   /* Naranja brillante */
+
   --hover-color: #ff6347;
   /* Rojo tomate */
+
   --border-color: #2e2e3e;
   /* Gris oscuro */
+
   --optional-color: #353561;
-  /* Color opcional para el tema oscuro */
+
   --text-optional-color: #c1d96b;
 }
 

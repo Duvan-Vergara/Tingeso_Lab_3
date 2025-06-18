@@ -99,13 +99,15 @@ const AddEditReserve = () => {
     }
 
     const reserve = {
-      reserveday: formatDateToDDMMYYYY(reserveday),
+      reserveday: reserveday,
       begin: beginTime,
       finish: finish,
       reserves_users: selectedUsers,
       tariff_id: tariff_id,
       final_price: final_price,
     };
+
+    console.log("Datos de reserva a enviar(Para guardar o editar):", reserve);
 
     if (id) {
       // Actualizar reserva existente
@@ -143,7 +145,7 @@ const AddEditReserve = () => {
 
     // Construir el objeto de reserva con los datos disponibles
     const reserve = {
-      reserveday: formatDateToDDMMYYYY(reserveday),
+      reserveday: reserveday,
       begin: beginTime,
       finish: finish,
       reserves_users: selectedUsers,
@@ -211,6 +213,7 @@ const AddEditReserve = () => {
           required
           disabled={selectedUsers.length == 0}
           helperText={selectedUsers.length === 0 ? "Agrega al menos un usuario al grupo" : ""}
+          FormHelperTextProps={{ style: { color: "var(--text-optional-color)" } }}
         >
           {selectedUsers.map((user) => (
             <MenuItem key={user.id} value={user.name}>
@@ -289,7 +292,7 @@ const AddEditReserve = () => {
         >
           {tariffs.map((tariff) => (
             <MenuItem key={tariff.id} value={tariff.id}>
-              {`${tariff.laps} vueltas / ${tariff.maxMinutes} minutos`}
+              {`${tariff.laps} vueltas / ${tariff.max_minutes} minutos`}
             </MenuItem>
           ))}
         </CustomTextField>

@@ -26,7 +26,7 @@ import java.util.stream.Collectors;
 
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
-import org.apache.poi.ss.usermodel.WorkbookFactory;
+
 import com.itextpdf.text.Document;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
@@ -47,7 +47,7 @@ public class ReserveService {
 
     private final DesctPersonaFrect desctPersonaFrect;
 
-    JavaMailSender javaMailSender;
+    private final JavaMailSender javaMailSender;
 
     private final ComplementReserve complementReserve;
 
@@ -123,24 +123,23 @@ public class ReserveService {
         //aca obtengo el precio base la tarifa, llamando a microservicio 1
         FechaDTO fechaDTO = new FechaDTO(reserve.getReserveday(), reserve.getTariff_id());
         double basePrice = tariffClient.getBasePrice(fechaDTO);
-        double bestDiscount = descPersonaClient.obtenerDescuento(new PersonaDTO(reserve.getReserves_users().size())).getBody();
+        double groupDiscount = descPersonaClient.obtenerDescuento(new PersonaDTO(reserve.getReserves_users().size())).getBody();
 
         // Calcular el descuento por grupo
         for (UserEntity user : reserve.getReserves_users()) {
             List<ReserveEntity> userReserves = reserveRepository.getReservesByDateMonthAndRut(user.getRut(), month);
 
             double userFrectDiscount = desctPersonaFrect.obtenerDescuento(new VecesDTO(userReserves.size())).getBody();
-            if (bestDiscount < userFrectDiscount) {
-                bestDiscount = userFrectDiscount;
-            }
-            // Descuento por cumpleaños
-            if (complementReserve.isBirthday(user, reserve.getReserveday()) && birthdayLimit > 0) {
-                bestDiscount = Math.max(bestDiscount, 0.50);
-                birthdayLimit--;
-            }
+            double birthdayDiscount = (complementReserve.isBirthday(user, reserve.getReserveday()) && birthdayLimit > 0) ? 0.50 : 0.0;
+            if (birthdayDiscount > 0) birthdayLimit--;
+
+            double bestDiscount = Math.max(groupDiscount, userFrectDiscount);
+            bestDiscount = Math.max(bestDiscount, birthdayDiscount);
+
             // Aplicar el descuento al precio base por usuario
             totalPrice += basePrice * (1 - bestDiscount);
         }
+
         return totalPrice;
     }
 
@@ -176,9 +175,8 @@ public class ReserveService {
         // Encabezados detalle de pago
         Row paymentHeaderRow = sheet.createRow(3);
         String[] paymentHeaders = {
-                "Nombre de Cliente", "Tarifa Base", "Descuento por Grupo (%)",
-                "Descuento por Frecuencia (%)", "Descuento por Cumpleaños (%)", "Descuento Aplicado (%)",
-                "Monto Final", "IVA", "Monto Total"
+                "Nombre de Cliente", "Tarifa Base", "Descuento(%)", 
+                "Descuento Aplicado (%)", "Monto Final", "IVA", "Monto Total"
         };
         for (int i = 0; i < paymentHeaders.length; i++) {
             paymentHeaderRow.createCell(i).setCellValue(paymentHeaders[i]);
@@ -189,14 +187,15 @@ public class ReserveService {
         double totalAmount = 0;
         double iva = 0;
         int birthdayLimit = complementReserve.calculateBirthdayLimit(reserve.getReserves_users().size());
+        double groupDiscount = descPersonaClient.obtenerDescuento(new PersonaDTO(reserve.getReserves_users().size())).getBody();
 
         for (UserEntity user : reserve.getReserves_users()) {
             Row row = sheet.createRow(rowNum++);
-            // Descuentos desde microservicios
-            double groupDiscount = descPersonaClient.obtenerDescuento(new PersonaDTO(reserve.getReserves_users().size())).getBody();
+
             List<ReserveEntity> userReserves = reserveRepository.getReservesByDateMonthAndRut(user.getRut(), reserve.getReserveday().getMonthValue());
             double frequentDiscount = desctPersonaFrect.obtenerDescuento(new VecesDTO(userReserves.size())).getBody();
             double birthdayDiscount = (complementReserve.isBirthday(user, reserve.getReserveday()) && birthdayLimit > 0) ? 0.50 : 0.0;
+
             if (birthdayDiscount > 0) birthdayLimit--;
 
             // Selección del mejor descuento
@@ -204,18 +203,17 @@ public class ReserveService {
             bestDiscount = Math.max(bestDiscount, birthdayDiscount);
 
             double finalAmount = basePrice * (1 - bestDiscount);
+            System.out.println("Final Amount: " + finalAmount);
             double ivaAmount = finalAmount * 0.19;
             double totalWithIva = finalAmount + ivaAmount;
 
             row.createCell(0).setCellValue(user.getName());
             row.createCell(1).setCellValue(basePrice);
             row.createCell(2).setCellValue(groupDiscount * 100);
-            row.createCell(3).setCellValue(frequentDiscount * 100);
-            row.createCell(4).setCellValue(birthdayDiscount * 100);
-            row.createCell(5).setCellValue(bestDiscount * 100);
-            row.createCell(6).setCellValue(finalAmount);
-            row.createCell(7).setCellValue(ivaAmount);
-            row.createCell(8).setCellValue(totalWithIva);
+            row.createCell(3).setCellValue(bestDiscount * 100);
+            row.createCell(4).setCellValue(finalAmount);
+            row.createCell(5).setCellValue(ivaAmount);
+            row.createCell(6).setCellValue(totalWithIva);
 
             totalAmount += finalAmount;
             iva += ivaAmount;
@@ -223,10 +221,10 @@ public class ReserveService {
 
         // Totales
         Row totalReserveRow = sheet.createRow(rowNum);
-        for (int i = 0; i < 6; i++) totalReserveRow.createCell(i);
-        totalReserveRow.createCell(6).setCellValue("Totales:");
-        totalReserveRow.createCell(7).setCellValue(iva);
-        totalReserveRow.createCell(8).setCellValue(totalAmount + iva);
+        for (int i = 0; i < 4; i++) totalReserveRow.createCell(i);
+        totalReserveRow.createCell(4).setCellValue("Totales:");
+        totalReserveRow.createCell(5).setCellValue(iva);
+        totalReserveRow.createCell(6).setCellValue(totalAmount + iva);
 
         ByteArrayOutputStream bos = new ByteArrayOutputStream();
         workbook.write(bos);
