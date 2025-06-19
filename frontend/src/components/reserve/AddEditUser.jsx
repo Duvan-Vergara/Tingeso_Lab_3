@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Link, useParams, useNavigate } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import userService from "../../services/user.service";
 import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
@@ -7,6 +7,8 @@ import FormControl from "@mui/material/FormControl";
 import SaveIcon from "@mui/icons-material/Save";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import CustomTextField from "../CustomTextField";
+import { useSnackbar } from "../GlobalSnackbar";
+import { useUndo } from "../useUndo";
 
 const AddEditUser = () => {
   const [rut, setRut] = useState("");
@@ -16,6 +18,8 @@ const AddEditUser = () => {
   const [birthDate, setBirthDate] = useState("");
   const { id } = useParams();
   const navigate = useNavigate();
+  const { showSnackbar } = useSnackbar();
+  const { setPendingData, startUndoTimer } = useUndo(showSnackbar);
 
   const saveUser = (e) => {
     e.preventDefault();
@@ -27,35 +31,46 @@ const AddEditUser = () => {
     }
 
     const user = { rut, name, lastName, email, birthDate };
-    if (id) {
-      //Actualizar Datos Usuario
-      userService
-        .saveUser({ ...user, id })
-        .then((response) => {
-          console.log("Usuario ha sido actualizado.", response.data);
-          navigate("/user/list");
-        })
-        .catch((error) => {
-          console.log(
-            "Ha ocurrido un error al intentar actualizar datos del usuario.",
-            error
-          );
-        });
-    } else {
-      //Crear nuevo Usuario
-      userService
-        .saveUser(user)
-        .then((response) => {
-          console.log("Usuario ha sido añadido.", response.data);
-          navigate("/user/list");
-        })
-        .catch((error) => {
-          console.log(
-            "Ha ocurrido un error al intentar crear nuevo usuario.",
-            error
-          );
-        });
-    }
+    setPendingData(user);
+
+    startUndoTimer(() => {
+      if (id) {
+        userService
+          .saveUser({ ...user, id })
+          .then((response) => {
+            console.log("Usuario ha sido actualizado.", response.data);
+            navigate("/user/list");
+          })
+          .catch((error) => {
+            console.log(
+              "Ha ocurrido un error al intentar actualizar datos del usuario.",
+              error
+            );
+          });
+      } else {
+        userService
+          .saveUser(user)
+          .then((response) => {
+            console.log("Usuario ha sido añadido.", response.data);
+            navigate("/user/list");
+          })
+          .catch((error) => {
+            console.log(
+              "Ha ocurrido un error al intentar crear nuevo usuario.", error);
+          });
+      }
+    },
+      (data) => {
+        setRut(data.rut);
+        setName(data.name);
+        setLastName(data.lastName);
+        setEmail(data.email);
+        setBirthDate(data.birthDate);
+      },
+      id
+        ? "Usuario actualizado correctamente. Puedes deshacer en 5 segundos."
+        : "Usuario creado correctamente. Puedes deshacer en 5 segundos."
+    );
   };
 
   useEffect(() => {

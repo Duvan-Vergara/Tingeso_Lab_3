@@ -25,12 +25,6 @@ const AddEditReserve = () => {
   const { id } = useParams();
   const navigate = useNavigate();
 
-  function formatDateToDDMMYYYY(dateStr) {
-    if (!dateStr) return "";
-    const [yyyy, mm, dd] = dateStr.split("-");
-    return `${dd}-${mm}-${yyyy}`;
-  }
-
   // Formatea de "dd-MM-yyyy" a "yyyy-MM-dd" para el input date
   function formatDateToYYYYMMDD(dateStr) {
     if (!dateStr) return "";

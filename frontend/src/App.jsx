@@ -1,5 +1,6 @@
 import './App.css'
 import { BrowserRouter as Router, Route, Routes, Navigate } from 'react-router-dom'
+import { SnackbarProvider } from './components/GlobalSnackbar';
 import Navbar from "./components/Navbar"
 import Home from './components/Home';
 
@@ -32,46 +33,48 @@ import NotFound from './components/NotFound';
 
 function App() {
   return (
-    <Router>
-      <div className="container">
-        <Navbar></Navbar>
-        <Routes>
-          <Route path="/" element={<Home />} />
-          <Route path="/home" element={<Home />} />
-          
-          <Route path="/user/list" element={<UserList />} />
-          <Route path="/user/add" element={<AddEditUser />} />
-          <Route path="/user/edit/:id" element={<AddEditUser />} />
-          
-          <Route path="/reserve/list" element={<ReserveList />} />
-          <Route path="/reserve/add" element={<AddEditReserve />} />
-          <Route path="/reserve/edit/:id" element={<AddEditReserve />} />
-          
-          <Route path="/desctnumber/list" element={<DesctNumberList />} />
-          <Route path="/desctnumber/add" element={<AddEditDesctNumber />} />
-          <Route path="/desctnumber/edit" element={<AddEditDesctNumber />} />
+    <SnackbarProvider>
+      <Router>
+        <div className="container">
+          <Navbar></Navbar>
+          <Routes>
+            <Route path="/" element={<Home />} />
+            <Route path="/home" element={<Home />} />
 
-          <Route path="/desctfrec/list" element={<DesctFrecList />} />
-          <Route path="/desctfrec/add" element={<AddEditDesctFrec />} />
-          <Route path="/desctfrec/edit" element={<AddEditDesctFrec />} />
+            <Route path="/user/list" element={<UserList />} />
+            <Route path="/user/add" element={<AddEditUser />} />
+            <Route path="/user/edit/:id" element={<AddEditUser />} />
 
-          <Route path="/specialdays/list" element={<SpecialDayList />} />
-          <Route path="/specialdays/add" element={<AddEditSpecialDay />} />
-          <Route path="/specialdays/edit/:id" element={<AddEditSpecialDay />} />
-          
-          <Route path="/tariff/list" element={<TariffList />} />
-          <Route path="/tariff/add" element={<AddEditTariff />} />
-          <Route path="/tariff/edit/:id" element={<AddEditTariff />} />
-          <Route path="/tariff/special/list" element={<TariffSpecialList />} />
-          <Route path="/tariff/special/edit" element={<AddEditTariffSpecial />} />
-          
-          <Route path="/reports/generate" element={<ReportGenerator />} />
+            <Route path="/reserve/list" element={<ReserveList />} />
+            <Route path="/reserve/add" element={<AddEditReserve />} />
+            <Route path="/reserve/edit/:id" element={<AddEditReserve />} />
 
-          <Route path="/rack/semana" element={<Rack />} />
+            <Route path="/desctnumber/list" element={<DesctNumberList />} />
+            <Route path="/desctnumber/add" element={<AddEditDesctNumber />} />
+            <Route path="/desctnumber/edit" element={<AddEditDesctNumber />} />
 
-        </Routes>
-      </div>
-    </Router>
+            <Route path="/desctfrec/list" element={<DesctFrecList />} />
+            <Route path="/desctfrec/add" element={<AddEditDesctFrec />} />
+            <Route path="/desctfrec/edit" element={<AddEditDesctFrec />} />
+
+            <Route path="/specialdays/list" element={<SpecialDayList />} />
+            <Route path="/specialdays/add" element={<AddEditSpecialDay />} />
+            <Route path="/specialdays/edit/:id" element={<AddEditSpecialDay />} />
+
+            <Route path="/tariff/list" element={<TariffList />} />
+            <Route path="/tariff/add" element={<AddEditTariff />} />
+            <Route path="/tariff/edit/:id" element={<AddEditTariff />} />
+            <Route path="/tariff/special/list" element={<TariffSpecialList />} />
+            <Route path="/tariff/special/edit" element={<AddEditTariffSpecial />} />
+
+            <Route path="/reports/generate" element={<ReportGenerator />} />
+
+            <Route path="/rack/semana" element={<Rack />} />
+
+          </Routes>
+        </div>
+      </Router>
+    </SnackbarProvider>
   );
 }
 
