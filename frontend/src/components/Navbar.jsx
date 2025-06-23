@@ -1,24 +1,28 @@
-import * as React from "react";
-import AppBar from "@mui/material/AppBar";
-import Box from "@mui/material/Box";
-import Toolbar from "@mui/material/Toolbar";
-import Typography from "@mui/material/Typography";
-import Button from "@mui/material/Button";
-import IconButton from "@mui/material/IconButton";
-import MenuIcon from "@mui/icons-material/Menu";
-import Sidemenu from "./Sidemenu";
-import { useState } from "react";
+import * as React from 'react';
+import AppBar from '@mui/material/AppBar';
+import Box from '@mui/material/Box';
+import Toolbar from '@mui/material/Toolbar';
+import Typography from '@mui/material/Typography';
+import IconButton from '@mui/material/IconButton';
+import MenuIcon from '@mui/icons-material/Menu';
+import { useState } from 'react';
+import Sidemenu from './Sidemenu';
 
 export default function Navbar() {
   const [open, setOpen] = useState(false);
 
-  const toggleDrawer = (open) => (event) => {
-    setOpen(open);
+  // Esta es la forma correcta para Material UI Drawer
+  const toggleDrawer = (drawerOpen) => (event) => {
+    // Opcional: Ignora tab y shift para accesibilidad
+    if (event && event.type === 'keydown' && (event.key === 'Tab' || event.key === 'Shift')) {
+      return;
+    }
+    setOpen(drawerOpen);
   };
 
   return (
     <Box sx={{ flexGrow: 1 }}>
-      <AppBar position="static" sx={{ backgroundColor: "var(--background-color)" }}>
+      <AppBar position="static" sx={{ backgroundColor: 'var(--background-color)' }}>
         <Toolbar>
           <IconButton
             size="large"
@@ -30,14 +34,16 @@ export default function Navbar() {
           >
             <MenuIcon />
           </IconButton>
-          <Typography variant="h6"
+          <Typography
+            variant="h6"
             component="div"
-            sx={{ flexGrow: 1, color: "var(--text-optional-color)" }}>
+            sx={{ flexGrow: 1, color: 'var(--text-optional-color)' }}
+          >
             KartingRM: Negocio líder en la industria del karting
           </Typography>
         </Toolbar>
       </AppBar>
-      <Sidemenu open={open} toggleDrawer={toggleDrawer}></Sidemenu>
+      <Sidemenu open={open} toggleDrawer={toggleDrawer} />
     </Box>
   );
 }

@@ -1,6 +1,6 @@
-import { useRef } from "react";
+import { useRef, useEffect } from 'react';
 
-export const useUndo = (showSnackbar) => {
+const useUndo = (showSnackbar) => {
   const pendingDataRef = useRef(null);
   const undoTimeoutRef = useRef(null);
 
@@ -15,7 +15,12 @@ export const useUndo = (showSnackbar) => {
     }
   };
 
-  const startUndoTimer = (onSave, restoreCallback, msg= "Accion realizada correctamente. Puedes deshacer en 5 segundos." ,timeout = 5000) => {
+  const startUndoTimer = (
+    onSave,
+    restoreCallback,
+    msg = 'Accion realizada correctamente. Puedes deshacer en 5 segundos.',
+    timeout = 5000,
+  ) => {
     undoTimeoutRef.current = setTimeout(() => {
       onSave();
     }, timeout);
@@ -26,5 +31,9 @@ export const useUndo = (showSnackbar) => {
     });
   };
 
+  useEffect(() => clearTimeout(undoTimeoutRef.current), []);
+
   return { setPendingData, startUndoTimer };
 };
+
+export default useUndo;

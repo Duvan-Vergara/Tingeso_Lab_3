@@ -1,9 +1,27 @@
 @echo off
-echo ======= LIMPIANDO TODOS LOS RECURSOS DE KUBERNETES =======
+setlocal
 
-REM Elimina todos los recursos del directorio deployment (deployments, services, jobs, configmaps, secrets, etc.)
-kubectl config use-context docker-desktop
+REM Recibe el contexto como argumento (1 o 2)
+set ENTORNO=%1
+if "%ENTORNO%"=="" (
+    echo Selecciona el entorno a limpiar:
+    echo 1. PC (Minikube)
+    echo 2. Notebook (Docker Desktop)
+    set /p ENTORNO="Elige una opción [1/2]: "
+)
+
+if "%ENTORNO%"=="1" (
+    set KUBE_CTX=minikube
+) else if "%ENTORNO%"=="2" (
+    set KUBE_CTX=docker-desktop
+) else (
+    echo Opcion no valida. Saliendo...
+    exit /b 1
+)
+
+kubectl config use-context %KUBE_CTX%
 kubectl delete -f deployment\ --recursive
+
 
 REM Elimina los PersistentVolumes (PV) manualmente si los tienes definidos fuera de los YAML de deployment
 kubectl delete pv m1-db-pv --ignore-not-found

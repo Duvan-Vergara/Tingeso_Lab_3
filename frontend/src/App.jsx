@@ -1,34 +1,24 @@
-import './App.css'
-import { BrowserRouter as Router, Route, Routes, Navigate } from 'react-router-dom'
+import './App.css';
+import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import { SnackbarProvider } from './components/GlobalSnackbar';
-import Navbar from "./components/Navbar"
+import Navbar from './components/Navbar';
 import Home from './components/Home';
-
-
 import TariffList from './components/tariff/TariffList';
 import AddEditTariff from './components/tariff/AddEditTariff';
-
 import TariffSpecialList from './components/tariff/TariffSpecialList';
 import AddEditTariffSpecial from './components/tariff/AddEditTariffSpecial';
-
 import SpecialDayList from './components/tariff/SpecialDayList';
 import AddEditSpecialDay from './components/tariff/AddEditSpecialDay';
-
 import UserList from './components/reserve/UsersList';
 import AddEditUser from './components/reserve/AddEditUser';
-
 import ReserveList from './components/reserve/ReserveList';
 import AddEditReserve from './components/reserve/AddEditReserve';
 import ReportGenerator from './components/reserve/ReportGenerator';
-
 import DesctNumberList from './components/reserve/DesctNumberList';
 import AddEditDesctNumber from './components/reserve/AddEditDesctNumber';
-
 import DesctFrecList from './components/reserve/DesctFrecList';
 import AddEditDesctFrec from './components/reserve/AddEditDesctFrec';
-
 import Rack from './components/reserve/Rack';
-
 import NotFound from './components/NotFound';
 
 function App() {
@@ -36,7 +26,7 @@ function App() {
     <SnackbarProvider>
       <Router>
         <div className="container">
-          <Navbar></Navbar>
+          <Navbar />
           <Routes>
             <Route path="/" element={<Home />} />
             <Route path="/home" element={<Home />} />
@@ -71,6 +61,7 @@ function App() {
 
             <Route path="/rack/semana" element={<Rack />} />
 
+            <Route path="*" element={<NotFound />} />
           </Routes>
         </div>
       </Router>
@@ -78,4 +69,4 @@ function App() {
   );
 }
 
-export default App
+export default App;

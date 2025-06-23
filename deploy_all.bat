@@ -1,11 +1,29 @@
 @echo off
 setlocal enabledelayedexpansion
 
-REM Preguntar si se desea limpiar antes de desplegar
-kubectl config use-context docker-desktop
+REM Preguntar entorno si no se pasa como argumento
+set ENTORNO=%1
+if "%ENTORNO%"=="" (
+    echo Selecciona el entorno:
+    echo 1. PC (Minikube)
+    echo 2. Notebook (Docker Desktop)
+    set /p ENTORNO="Elige una opción [1/2]: "
+)
+
+if "%ENTORNO%"=="1" (
+    set KUBE_CTX=minikube
+) else if "%ENTORNO%"=="2" (
+    set KUBE_CTX=docker-desktop
+) else (
+    echo Opcion no valida. Saliendo...
+    exit /b 1
+)
+
+kubectl config use-context !KUBE_CTX!
+
 set /p CLEAN="¿Deseas limpiar todos los recursos de Kubernetes antes de desplegar? (S/N): "
 if /I "%CLEAN%"=="S" (
-    call clean_k8s.bat
+    call clean_k8s.bat !KUBE_CTX!
 )
 
 REM Aplica todos los YAML de deployment y servicios

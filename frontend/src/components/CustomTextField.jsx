@@ -1,6 +1,14 @@
-import TextField from "@mui/material/TextField";
+import TextField from '@mui/material/TextField';
+import PropTypes from 'prop-types';
 
-const CustomTextField = ({ label, value, onChange, type = "text", helperText, ...props }) => {
+function CustomTextField({
+  label,
+  value,
+  onChange,
+  type = 'text',
+  helperText,
+  ...props
+}) {
   return (
     <TextField
       label={label}
@@ -8,33 +16,47 @@ const CustomTextField = ({ label, value, onChange, type = "text", helperText, ..
       onChange={onChange}
       type={type}
       helperText={helperText}
-      variant="outlined" // Mantener el estilo de caja
+      variant="outlined"
       fullWidth
       margin="normal"
       sx={{
-        "& .MuiOutlinedInput-root": {
-          color: "var(--text-color)", // Color del texto
-          "& fieldset": {
-            borderColor: "var(--border-color)", // Color del borde por defecto
+        '& .MuiOutlinedInput-root': {
+          color: 'var(--text-color)',
+          '& fieldset': {
+            borderColor: 'var(--border-color)',
           },
-          "&:hover fieldset": {
-            borderColor: "var(--accent-color)", // Color del borde al pasar el mouse
+          '&:hover fieldset': {
+            borderColor: 'var(--accent-color)',
           },
-          "&.Mui-focused fieldset": {
-            borderColor: "var(--secondary-color)", // Color del borde al estar enfocado
-            borderWidth: "2px", // Borde más grueso al estar enfocado
+          '&.Mui-focused fieldset': {
+            borderColor: 'var(--secondary-color)',
+            borderWidth: '2px',
           },
-          "&.Mui-focused": {
-            backgroundColor: "rgba(160, 76, 255, 0.2)", // Fondo más claro al estar enfocado
+          '&.Mui-focused': {
+            backgroundColor: 'rgba(160, 76, 255, 0.2)',
           },
         },
-        "& .MuiFormLabel-root": {
-          color: "var(--text-color)", // Color de la etiqueta
+        '& .MuiFormLabel-root': {
+          color: 'var(--text-color)',
         },
       }}
-      {...props} // Permitir pasar otras propiedades como `InputLabelProps`
+      // eslint-disable-next-line react/jsx-props-no-spreading
+      {...props}
     />
   );
+}
+
+CustomTextField.propTypes = {
+  label: PropTypes.string.isRequired,
+  value: PropTypes.string.isRequired,
+  onChange: PropTypes.func.isRequired,
+  type: PropTypes.string,
+  helperText: PropTypes.string,
+};
+
+CustomTextField.defaultProps = {
+  type: 'text',
+  helperText: '',
 };
 
 export default CustomTextField;

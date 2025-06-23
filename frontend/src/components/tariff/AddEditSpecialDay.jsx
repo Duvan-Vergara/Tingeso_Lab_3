@@ -1,16 +1,16 @@
-import { useState, useEffect } from "react";
-import { useParams, useNavigate } from "react-router-dom";
-import specialDayService from "../../services/specialday.service";
-import Box from "@mui/material/Box";
-import Button from "@mui/material/Button";
-import SaveIcon from "@mui/icons-material/Save";
-import ArrowBackIcon from "@mui/icons-material/ArrowBack";
-import CustomTextField from "../CustomTextField";
-import FormControl from "@mui/material/FormControl";
+import { useState, useEffect } from 'react';
+import { useParams, useNavigate } from 'react-router-dom';
+import Box from '@mui/material/Box';
+import Button from '@mui/material/Button';
+import SaveIcon from '@mui/icons-material/Save';
+import ArrowBackIcon from '@mui/icons-material/ArrowBack';
+import FormControl from '@mui/material/FormControl';
+import CustomTextField from '../CustomTextField';
+import specialDayService from '../../services/specialday.service';
 
-const AddEditSpecialDay = () => {
-  const [date, setDate] = useState("");
-  const [description, setDescription] = useState("");
+function AddEditSpecialDay() {
+  const [date, setDate] = useState('');
+  const [description, setDescription] = useState('');
   const { id } = useParams();
   const navigate = useNavigate();
 
@@ -24,7 +24,7 @@ const AddEditSpecialDay = () => {
           setDescription(specialDay.description);
         })
         .catch((error) => {
-          console.error("Error al cargar el día especial:", error);
+          console.error('Error al cargar el día especial:', error);
         });
     }
   }, [id]);
@@ -37,19 +37,19 @@ const AddEditSpecialDay = () => {
       specialDayService
         .createSpecialDay({ ...specialDay, id })
         .then(() => {
-          navigate("/specialdays/list");
+          navigate('/specialdays/list');
         })
         .catch((error) => {
-          console.error("Error al actualizar el día especial:", error);
+          console.error('Error al actualizar el día especial:', error);
         });
     } else {
       specialDayService
         .createSpecialDay(specialDay)
         .then(() => {
-          navigate("/specialdays/list");
+          navigate('/specialdays/list');
         })
         .catch((error) => {
-          console.error("Error al crear el día especial:", error);
+          console.error('Error al crear el día especial:', error);
         });
     }
   };
@@ -62,18 +62,18 @@ const AddEditSpecialDay = () => {
       justifyContent="center"
       component="form"
       sx={{
-        backgroundColor: "var(--optional-color)",
-        padding: "2rem",
-        borderRadius: "12px",
-        boxShadow: "0 4px 8px rgba(90, 26, 26, 0.5)",
-        maxWidth: "600px",
-        margin: "2rem auto",
-        border: "1px solid var(--secondary-color)",
+        backgroundColor: 'var(--optional-color)',
+        padding: '2rem',
+        borderRadius: '12px',
+        boxShadow: '0 4px 8px rgba(90, 26, 26, 0.5)',
+        maxWidth: '600px',
+        margin: '2rem auto',
+        border: '1px solid var(--secondary-color)',
       }}
       onSubmit={saveSpecialDay}
     >
-      <h3 style={{ color: "var(--text-optional-color)" }}>
-        {id ? "Editar Día Especial" : "Nuevo Día Especial"}
+      <h3 style={{ color: 'var(--text-optional-color)' }}>
+        {id ? 'Editar Día Especial' : 'Nuevo Día Especial'}
       </h3>
       <FormControl fullWidth>
         <CustomTextField
@@ -95,24 +95,24 @@ const AddEditSpecialDay = () => {
         <Button
           variant="contained"
           sx={{
-            backgroundColor: "var(--primary-color)",
-            color: "var(--text-color)",
-            "&:hover": { backgroundColor: "var(--accent-color)" },
+            backgroundColor: 'var(--primary-color)',
+            color: 'var(--text-color)',
+            '&:hover': { backgroundColor: 'var(--accent-color)' },
           }}
           type="submit"
           startIcon={<SaveIcon />}
-          style={{ marginBottom: "0.5rem" }}
+          style={{ marginBottom: '0.5rem' }}
         >
           Guardar
         </Button>
         <Button
           variant="contained"
           sx={{
-            backgroundColor: "var(--secondary-color)",
-            color: "var(--text-color)",
-            "&:hover": { backgroundColor: "var(--accent-color)" },
+            backgroundColor: 'var(--secondary-color)',
+            color: 'var(--text-color)',
+            '&:hover': { backgroundColor: 'var(--accent-color)' },
           }}
-          onClick={() => navigate("/specialdays/list")}
+          onClick={() => navigate('/specialdays/list')}
           startIcon={<ArrowBackIcon />}
         >
           Volver
@@ -120,6 +120,6 @@ const AddEditSpecialDay = () => {
       </FormControl>
     </Box>
   );
-};
+}
 
 export default AddEditSpecialDay;

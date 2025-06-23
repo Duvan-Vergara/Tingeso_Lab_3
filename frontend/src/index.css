@@ -45,7 +45,6 @@ a:hover {
   color: var(--hover-color);
 }
 
-
 h1,
 h2,
 h3 {
@@ -60,9 +59,10 @@ button {
   padding: 0.6em 1.2em;
   font-size: 1em;
   cursor: pointer;
-  transition: background-color 0.3s, border-color 0.3s;
+  transition:
+    background-color 0.3s,
+    border-color 0.3s;
 }
-
 
 button:hover {
   background-color: var(--hover-color);

@@ -9,14 +9,12 @@ kubectl cluster-info
 kubectl get nodes
 kubectl get pods --all-namespaces
 --------------------------------------------------------------
-Aqui es igual en ambos
 
-Luego de ejecutar los script en orden:
+Para ejecutar:
 build_all_jar
 clean_docker (solo si se quieren eliminar todos los volúmenes y todo de docker)
 build_and_push_all
 deploy_all
-
 
 --------------------------------------------------------------------
 Para verificar el estados de los recursos :
@@ -34,10 +32,13 @@ kubectl get pods
 --------------------------------------------------------------------
 En PC:
 Para acceder a la aplicacion:
-http://172.26.48.240:30080
+
+el numero antes de ":" es la ip de la minikube (se obtiene con minikube ip)
+
+http://172.20.218.237:30080
 
 eureka:
-http://172.26.48.240:30861
+http://172.20.218.237:30861
 --------------------------------------------------------------------
 En Notebook al usar kubernetes de docker desktop se usa:
 Para acceder a la aplicacion:
@@ -46,11 +47,11 @@ http://localhost:30080
 eureka:
 http://localhost:30861
 --------------------------------------------------------------------
-Limpieza(opcional):
-kubectl delete -f deployment\ --recursive
-
-para detener lo de minikube:
+Limpieza(opcional, pero la hago igual):
+clean_k8s
+--------------------------------------------------------------------
+Para detener lo de minikube (PC):
 minikube stop
 
-y para limpieza completa(eliminación total de vm y todo):
+y para limpieza completa(eliminación total de vm y todo, EN PC):
 minikube delete
