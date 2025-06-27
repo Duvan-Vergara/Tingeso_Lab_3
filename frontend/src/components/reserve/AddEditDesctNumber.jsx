@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
@@ -15,41 +15,80 @@ function AddEditDesctNumber() {
   const navigate = useNavigate();
   const editing = location.state !== null;
 
-  const [minpersonas, setMinpersonas] = useState(
-    editing ? location.state.minpersonas : 0,
-  );
-  const [maxpersonas, setMaxpersonas] = useState(
-    editing ? location.state.maxpersonas : 0,
-  );
-  const [porcentajedesct, setPorcentajedesct] = useState(
-    editing ? location.state.porcentajedesct : 0,
-  );
+  const [minpersonas, setMinpersonas] = useState('');
+  const [maxpersonas, setMaxpersonas] = useState('');
+  const [porcentajedesct, setPorcentajedesct] = useState('');
   const { showSnackbar } = useSnackbar();
-  const { setPendingData, startUndoTimer } = useUndo(showSnackbar);
+  const { setPendingData } = useUndo(showSnackbar);
+
+  useEffect(() => {
+    if (location.state && location.state.undo) {
+      setMinpersonas(location.state.minpersonas || '');
+      setMaxpersonas(location.state.maxpersonas || '');
+      setPorcentajedesct(location.state.porcentajedesct || '');
+    } else if (editing) {
+      setMinpersonas(location.state.minpersonas || '');
+      setMaxpersonas(location.state.maxpersonas || '');
+      setPorcentajedesct(location.state.porcentajedesct || '');
+    } else {
+      setMinpersonas('');
+      setMaxpersonas('');
+      setPorcentajedesct('');
+    }
+  }, [editing, location.state]);
 
   const saveDesct = (e) => {
     e.preventDefault();
-
-    // Validar campos
-    if (minpersonas < 0 || maxpersonas < 0 || porcentajedesct < 0) {
-      alert('Por favor, completa todos los campos correctamente.');
+    // Validación de campos
+    if (
+      minpersonas === '' || maxpersonas === '' || porcentajedesct === '' || Number(minpersonas) < 0
+      || Number(maxpersonas) < 0 || Number(porcentajedesct) < 0
+    ) {
+      showSnackbar({ msg: 'Por favor, completa todos los campos correctamente.', severity: 'warning' });
       return;
     }
-
-    const desct = { minpersonas, maxpersonas, porcentajedesct };
-
+    const desct = {
+      minpersonas: Number(minpersonas),
+      maxpersonas: Number(maxpersonas),
+      porcentajedesct: Number(porcentajedesct),
+    };
     setPendingData(desct);
-
     if (editing) {
       desctNumberService
         .createDesctNumber({ ...desct, id: location.state.id })
-        .then(() => navigate('/desctnumber/list'))
-        .catch((error) => console.error('Error al actualizar descuento:', error));
+        .then(() => {
+          navigate('/desctnumber/list', {
+            state: {
+              undoData: { ...desct, id: location.state.id },
+              undoMsg: 'Descuento actualizado correctamente. Puedes deshacer en 5 segundos.',
+              undoPath: `/desctnumber/edit/${location.state.id}`,
+            },
+          });
+        })
+        .catch(() => {
+          showSnackbar({
+            msg: 'Ha ocurrido un error al intentar actualizar el descuento.',
+            severity: 'error',
+          });
+        });
     } else {
       desctNumberService
         .createDesctNumber(desct)
-        .then(() => navigate('/desctnumber/list'))
-        .catch((error) => console.error('Error al crear descuento:', error));
+        .then(() => {
+          navigate('/desctnumber/list', {
+            state: {
+              undoData: desct,
+              undoMsg: 'Descuento creado correctamente. Puedes deshacer en 5 segundos.',
+              undoPath: '/desctnumber/add',
+            },
+          });
+        })
+        .catch(() => {
+          showSnackbar({
+            msg: 'Ha ocurrido un error al intentar crear el descuento.',
+            severity: 'error',
+          });
+        });
     }
   };
 
@@ -79,7 +118,7 @@ function AddEditDesctNumber() {
           label="Mín. Personas"
           type="number"
           value={minpersonas}
-          onChange={(e) => setMinpersonas(Number(e.target.value))}
+          onChange={(e) => setMinpersonas(e.target.value)}
         />
       </FormControl>
       <FormControl fullWidth>
@@ -87,7 +126,7 @@ function AddEditDesctNumber() {
           label="Máx. Personas"
           type="number"
           value={maxpersonas}
-          onChange={(e) => setMaxpersonas(Number(e.target.value))}
+          onChange={(e) => setMaxpersonas(e.target.value)}
         />
       </FormControl>
       <FormControl fullWidth>
@@ -95,7 +134,7 @@ function AddEditDesctNumber() {
           label="Porcentaje Descuento (%)"
           type="number"
           value={porcentajedesct}
-          onChange={(e) => setPorcentajedesct(Number(e.target.value))}
+          onChange={(e) => setPorcentajedesct(e.target.value)}
         />
       </FormControl>
       <FormControl>

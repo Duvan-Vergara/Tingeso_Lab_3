@@ -11,10 +11,12 @@ import { useSnackbar } from '../GlobalSnackbar';
 import useUndo from '../useUndo';
 
 function AddEditTariff() {
-  const [laps, setLaps] = useState(0);
-  const [max_minutes, setMax_minutes] = useState(0);
-  const [regular_price, setRegular_price] = useState(0.0);
-  const [total_duration, setTotal_duration] = useState(0);
+  const [laps, setLaps] = useState('');
+  const [maxMinutes, setMaxMinutes] = useState('');
+  const [regularPrice, setRegularPrice] = useState('');
+  const [totalDuration, setTotalDuration] = useState('');
+  const [error, setError] = useState('');
+  const [success, setSuccess] = useState('');
   const { id } = useParams();
   const navigate = useNavigate();
   const { showSnackbar } = useSnackbar();
@@ -26,36 +28,45 @@ function AddEditTariff() {
         .getTariffById(id)
         .then((response) => {
           const tariff = response.data;
-          setLaps(tariff.laps);
-          setMax_minutes(tariff.max_minutes);
-          setRegular_price(tariff.regular_price);
-          setTotal_duration(tariff.total_duration);
+          setLaps(tariff.laps.toString());
+          setMaxMinutes(tariff.max_minutes.toString());
+          setRegularPrice(tariff.regular_price.toString());
+          setTotalDuration(tariff.total_duration.toString());
         })
-        .catch((error) => {
-          console.error('Error al cargar la tarifa:', error);
+        .catch(() => {
+          setError('Error al cargar la tarifa.');
         });
     }
   }, [id]);
 
   const saveTariff = (e) => {
     e.preventDefault();
+    setError('');
+    setSuccess('');
 
-    // Validar campos
     if (
-      laps <= 0
-      || max_minutes <= 0
-      || regular_price < 0
-      || total_duration < 0
+      !laps
+      || !maxMinutes
+      || !regularPrice
+      || !totalDuration
+      || Number.isNaN(Number(laps))
+      || Number.isNaN(Number(maxMinutes))
+      || Number.isNaN(Number(regularPrice))
+      || Number.isNaN(Number(totalDuration))
+      || Number(laps) <= 0
+      || Number(maxMinutes) <= 0
+      || Number(regularPrice) < 0
+      || Number(totalDuration) < 0
     ) {
-      alert('Por favor, completa todos los campos correctamente.');
+      setError('Por favor, completa todos los campos correctamente.');
       return;
     }
 
     const tariff = {
-      laps,
-      max_minutes,
-      regular_price,
-      total_duration,
+      laps: Number(laps),
+      max_minutes: Number(maxMinutes),
+      regular_price: Number(regularPrice),
+      total_duration: Number(totalDuration),
     };
 
     setPendingData(tariff);
@@ -66,27 +77,29 @@ function AddEditTariff() {
           tariffService
             .saveTariff({ ...tariff, id })
             .then(() => {
+              setSuccess('Tarifa actualizada correctamente.');
               navigate('/tariff/list');
             })
-            .catch((error) => {
-              console.error('Error al actualizar la tarifa:', error);
+            .catch(() => {
+              setError('Error al actualizar la tarifa.');
             });
         } else {
           tariffService
             .saveTariff(tariff)
             .then(() => {
+              setSuccess('Tarifa creada correctamente.');
               navigate('/tariff/list');
             })
-            .catch((error) => {
-              console.error('Error al crear la tarifa:', error);
+            .catch(() => {
+              setError('Error al crear la tarifa.');
             });
         }
       },
       (data) => {
-        setLaps(data.laps);
-        setMax_minutes(data.max_minutes);
-        setRegular_price(data.regular_price);
-        setTotal_duration(data.total_duration);
+        setLaps(data.laps.toString());
+        setMaxMinutes(data.max_minutes.toString());
+        setRegularPrice(data.regular_price.toString());
+        setTotalDuration(data.total_duration.toString());
       },
       id
         ? 'Tarifa actualizada correctamente. Puedes deshacer en 5 segundos.'
@@ -118,6 +131,7 @@ function AddEditTariff() {
       <FormControl fullWidth>
         <CustomTextField
           label="Vueltas"
+          type="number"
           value={laps}
           onChange={(e) => setLaps(e.target.value)}
         />
@@ -125,25 +139,38 @@ function AddEditTariff() {
       <FormControl fullWidth>
         <CustomTextField
           label="Máx. Minutos"
-          value={max_minutes}
-          onChange={(e) => setMax_minutes(e.target.value)}
+          type="number"
+          value={maxMinutes}
+          onChange={(e) => setMaxMinutes(e.target.value)}
         />
       </FormControl>
-
       <FormControl fullWidth>
         <CustomTextField
           label="Precio Regular"
-          value={regular_price}
-          onChange={(e) => setRegular_price(e.target.value)}
+          type="number"
+          value={regularPrice}
+          onChange={(e) => setRegularPrice(e.target.value)}
         />
       </FormControl>
       <FormControl fullWidth>
         <CustomTextField
           label="Duración Total (minutos)"
-          value={total_duration}
-          onChange={(e) => setTotal_duration(e.target.value)}
+          type="number"
+          value={totalDuration}
+          onChange={(e) => setTotalDuration(e.target.value)}
         />
       </FormControl>
+      {(error || success) && (
+        <div
+          style={{
+            color: error ? 'var(--accent-color)' : 'var(--text-optional-color)',
+            marginBottom: '1rem',
+            fontWeight: 'bold',
+          }}
+        >
+          {error || success}
+        </div>
+      )}
       <FormControl>
         <Button
           variant="contained"

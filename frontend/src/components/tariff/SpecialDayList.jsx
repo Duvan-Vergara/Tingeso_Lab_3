@@ -1,149 +1,71 @@
-import { useEffect, useState } from 'react';
-import Table from '@mui/material/Table';
-import TableBody from '@mui/material/TableBody';
-import TableCell from '@mui/material/TableCell';
-import TableContainer from '@mui/material/TableContainer';
-import TableHead from '@mui/material/TableHead';
-import TableRow from '@mui/material/TableRow';
-import Paper from '@mui/material/Paper';
-import Button from '@mui/material/Button';
-import EditIcon from '@mui/icons-material/Edit';
-import DeleteIcon from '@mui/icons-material/Delete';
-import { useNavigate } from 'react-router-dom';
-import { useSnackbar } from '../GlobalSnackbar';
-import ConfirmDialog from '../ConfirmDialog';
+import { useState, useEffect, useCallback } from 'react';
+import { useNavigate, useLocation } from 'react-router-dom';
 import specialDayService from '../../services/specialday.service';
+import { useSnackbar } from '../GlobalSnackbar';
+import GenericList from '../GenericList';
 
 function SpecialDayList() {
   const [specialDays, setSpecialDays] = useState([]);
-  const [confirmOpen, setConfirmOpen] = useState(false);
-  const [dayToDelete, setDayToDelete] = useState(null);
-
+  const navigate = useNavigate();
+  const location = useLocation();
   const { showSnackbar } = useSnackbar();
 
-  const navigate = useNavigate();
-
-  const loadSpecialDays = () => {
-    specialDayService
-      .getAllSpecialDays()
-      .then((response) => {
-        setSpecialDays(response.data);
-      })
-      .catch(() => {
-        showSnackbar({ msg: 'Error al cargar los días especiales.' });
+  useEffect(() => {
+    if (location.state && location.state.undoMsg && location.state.undoData) {
+      showSnackbar({
+        msg: location.state.undoMsg,
+        onUndo: () => {
+          navigate(location.state.undoPath, {
+            state: { ...location.state.undoData, undo: true },
+          });
+        },
       });
-  };
+      window.history.replaceState({}, document.title);
+    }
+  }, [location, showSnackbar, navigate]);
+
+  const loadSpecialDays = useCallback(async () => {
+    try {
+      const response = await specialDayService.getAllSpecialDays();
+      return response.data;
+    } catch (error) {
+      showSnackbar({ msg: 'Error al cargar los días especiales.' });
+      return [];
+    }
+  }, [showSnackbar]);
 
   useEffect(() => {
-    loadSpecialDays();
-  }, []);
+    const fetchSpecialDays = async () => {
+      const daysData = await loadSpecialDays();
+      setSpecialDays(daysData);
+    };
+    fetchSpecialDays();
+  }, [loadSpecialDays]);
 
-  // Eliminar un día especial
-  const handleDelete = (id) => {
-    const confirmDelete = window.confirm(
-      '¿Está seguro de que desea eliminar este día especial?',
-    );
-    if (confirmDelete) {
-      specialDayService
-        .deleteSpecialDayById(id)
-        .then(() => {
-          loadSpecialDays();
-        })
-        .catch((error) => {
-          console.error('Error al eliminar el día especial:', error);
-        });
-    }
-  };
-
-  // Navegar a la página de edición
-  const handleEdit = (id) => {
-    navigate(`/specialdays/edit/${id}`);
-  };
-
-  // Navegar a la página de agregar
-  const handleAdd = () => {
+  const handleAddDay = () => {
     navigate('/specialdays/add');
   };
 
+  const handleEditDay = (id) => {
+    navigate(`/specialdays/edit/${id}`);
+  };
+
+  const columns = [
+    { field: 'date', headerName: 'Fecha', width: 120 },
+    { field: 'description', headerName: 'Descripción', width: 250 },
+  ];
+
   return (
-    <TableContainer
-      component={Paper}
-      sx={{ backgroundColor: 'rgba(30, 30, 47, 0.9)' }}
-    >
-      <h3 style={{ color: 'var(--text-optional-color)', textAlign: 'center' }}>
-        Lista de Dias Especiales
-      </h3>
-      <Button
-        variant="contained"
-        sx={{
-          backgroundColor: 'var(--primary-color)',
-          color: 'var(--text-color)',
-          '&:hover': { backgroundColor: 'var(--hover-color)' },
-        }}
-        onClick={handleAdd}
-      >
-        Agregar Dia Especial
-      </Button>
-      <Table>
-        <TableHead>
-          <TableRow>
-            <TableCell sx={{ color: 'var(--text-color)', fontWeight: 'bold' }}>
-              Fecha
-            </TableCell>
-            <TableCell sx={{ color: 'var(--text-color)', fontWeight: 'bold' }}>
-              Descripción
-            </TableCell>
-            <TableCell
-              align="center"
-              sx={{ color: 'var(--text-color)', fontWeight: 'bold' }}
-            >
-              Operaciones
-            </TableCell>
-          </TableRow>
-        </TableHead>
-        <TableBody>
-          {specialDays.map((day) => (
-            <TableRow key={day.id}>
-              <TableCell sx={{ color: 'var(--text-color)' }}>
-                {day.date}
-              </TableCell>
-              <TableCell sx={{ color: 'var(--text-color)' }}>
-                {day.description}
-              </TableCell>
-              <TableCell align="center">
-                <Button
-                  variant="contained"
-                  sx={{
-                    backgroundColor: 'var(--primary-color)',
-                    color: 'var(--text-color)',
-                    '&:hover': { backgroundColor: 'var(--hover-color)' },
-                  }}
-                  size="small"
-                  onClick={() => handleEdit(day.id)}
-                  startIcon={<EditIcon />}
-                >
-                  Editar
-                </Button>
-                <Button
-                  variant="contained"
-                  sx={{
-                    backgroundColor: 'var(--secondary-color)',
-                    color: 'var(--text-color)',
-                    '&:hover': { backgroundColor: 'var(--hover-color)' },
-                  }}
-                  size="small"
-                  onClick={() => handleDelete(day.id)}
-                  style={{ marginLeft: '0.5rem' }}
-                  startIcon={<DeleteIcon />}
-                >
-                  Eliminar
-                </Button>
-              </TableCell>
-            </TableRow>
-          ))}
-        </TableBody>
-      </Table>
-    </TableContainer>
+    <GenericList
+      title="Lista de Días Especiales"
+      service={specialDayService}
+      data={specialDays}
+      loadItems={loadSpecialDays}
+      onAdd={handleAddDay}
+      onEdit={handleEditDay}
+      columns={columns}
+      showSnackbar={showSnackbar}
+    />
   );
 }
 

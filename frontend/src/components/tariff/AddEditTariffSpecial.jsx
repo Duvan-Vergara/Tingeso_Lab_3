@@ -7,11 +7,15 @@ import FormControl from '@mui/material/FormControl';
 import { useNavigate } from 'react-router-dom';
 import CustomTextField from '../CustomTextField';
 import tariffSpecialService from '../../services/tariffspecial.service';
+import { useSnackbar } from '../GlobalSnackbar';
 
 function AddEditTariffSpecial() {
-  const [weekendDiscountPercentage, setWeekendDiscountPercentage] = useState(0);
-  const [holidayIncreasePercentage, setHolidayIncreasePercentage] = useState(0);
+  const [weekendDiscountPercentage, setWeekendDiscountPercentage] = useState('');
+  const [holidayIncreasePercentage, setHolidayIncreasePercentage] = useState('');
+  const [error, setError] = useState('');
+  const [success, setSuccess] = useState('');
   const navigate = useNavigate();
+  const { showSnackbar } = useSnackbar();
 
   useEffect(() => {
     tariffSpecialService
@@ -19,25 +23,47 @@ function AddEditTariffSpecial() {
       .then((response) => {
         const tariff = response.data;
         if (tariff) {
-          setWeekendDiscountPercentage(tariff.weekendDiscountPercentage);
-          setHolidayIncreasePercentage(tariff.holidayIncreasePercentage);
+          setWeekendDiscountPercentage(tariff.weekendDiscountPercentage.toString());
+          setHolidayIncreasePercentage(tariff.holidayIncreasePercentage.toString());
         }
       })
-      .catch((error) => {
-        console.error('Error al cargar la tarifa especial:', error);
+      .catch(() => {
+        setError('Error al cargar la tarifa especial.');
       });
   }, []);
 
   const saveTariffSpecial = (e) => {
     e.preventDefault();
-    const tariff = { weekendDiscountPercentage, holidayIncreasePercentage };
+    setError('');
+    setSuccess('');
+
+    // Validación
+    if (
+      weekendDiscountPercentage === ''
+      || holidayIncreasePercentage === ''
+      || Number.isNaN(Number(weekendDiscountPercentage))
+      || Number.isNaN(Number(holidayIncreasePercentage))
+    ) {
+      setError('Por favor, completa todos los campos correctamente.');
+      showSnackbar({ msg: 'Por favor, completa todos los campos correctamente.', severity: 'warning' });
+      return;
+    }
+
+    const tariff = {
+      weekendDiscountPercentage: Number(weekendDiscountPercentage),
+      holidayIncreasePercentage: Number(holidayIncreasePercentage),
+    };
+
     tariffSpecialService
       .updateTariffSpecial(tariff)
       .then(() => {
-        navigate('/tariff/special/list');
+        setSuccess('Tarifa especial actualizada correctamente.');
+        showSnackbar({ msg: 'Tarifa especial actualizada correctamente.', severity: 'success' });
+        setTimeout(() => navigate('/tariff/special/list'), 800);
       })
-      .catch((error) => {
-        console.error('Error al actualizar la tarifa especial:', error);
+      .catch(() => {
+        setError('Error al actualizar la tarifa especial.');
+        showSnackbar({ msg: 'Error al actualizar la tarifa especial.', severity: 'error' });
       });
   };
 
@@ -67,7 +93,7 @@ function AddEditTariffSpecial() {
           label="Descuento Fin de Semana (%)"
           type="number"
           value={weekendDiscountPercentage}
-          onChange={(e) => setWeekendDiscountPercentage(Number(e.target.value))}
+          onChange={(e) => setWeekendDiscountPercentage(e.target.value)}
         />
       </FormControl>
       <FormControl fullWidth>
@@ -75,9 +101,20 @@ function AddEditTariffSpecial() {
           label="Aumento Festivo (%)"
           type="number"
           value={holidayIncreasePercentage}
-          onChange={(e) => setHolidayIncreasePercentage(Number(e.target.value))}
+          onChange={(e) => setHolidayIncreasePercentage(e.target.value)}
         />
       </FormControl>
+      {(error || success) && (
+        <div
+          style={{
+            color: error ? 'var(--accent-color)' : 'var(--text-optional-color)',
+            marginBottom: '1rem',
+            fontWeight: 'bold',
+          }}
+        >
+          {error || success}
+        </div>
+      )}
       <FormControl>
         <Button
           variant="contained"

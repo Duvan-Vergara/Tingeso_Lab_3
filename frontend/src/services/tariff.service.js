@@ -19,6 +19,6 @@ export default {
   getAllTariffs,
   saveTariff,
   getTariffById,
-  deleteTariffById,
+  deleteById: deleteTariffById,
   getBasePrice,
 };

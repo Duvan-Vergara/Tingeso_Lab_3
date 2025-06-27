@@ -1,60 +1,55 @@
-import { useEffect, useState } from 'react';
-import Table from '@mui/material/Table';
-import TableBody from '@mui/material/TableBody';
-import TableCell from '@mui/material/TableCell';
-import TableContainer from '@mui/material/TableContainer';
-import TableHead from '@mui/material/TableHead';
-import TableRow from '@mui/material/TableRow';
-import Paper from '@mui/material/Paper';
-import Button from '@mui/material/Button';
-import EditIcon from '@mui/icons-material/Edit';
-import DeleteIcon from '@mui/icons-material/Delete';
-import { useNavigate } from 'react-router-dom';
+import { useState, useEffect, useCallback } from 'react';
+import { useNavigate, useLocation } from 'react-router-dom';
 import tariffService from '../../services/tariff.service';
 import { useSnackbar } from '../GlobalSnackbar';
-import useListOperations from '../useListOperations';
-import ConfirmDialog from '../ConfirmDialog';
+import GenericList from '../GenericList';
 
 function TariffList() {
   const [tariffs, setTariffs] = useState([]);
-
+  const navigate = useNavigate();
+  const location = useLocation();
   const { showSnackbar } = useSnackbar();
 
-  const navigate = useNavigate();
-
-  const loadTariffs = () => {
-    tariffService
-      .getAllTariffs()
-      .then((response) => {
-        setTariffs(response.data);
-      })
-      .catch(() => {
-        showSnackbar({ msg: 'Error al cargar las tarifas.' });
+  useEffect(() => {
+    if (location.state && location.state.undoMsg && location.state.undoData) {
+      showSnackbar({
+        msg: location.state.undoMsg,
+        onUndo: () => {
+          navigate(location.state.undoPath, {
+            state: { ...location.state.undoData, undo: true },
+          });
+        },
       });
-  };
+      window.history.replaceState({}, document.title);
+    }
+  }, [location, showSnackbar, navigate]);
+
+  const loadTariffs = useCallback(async () => {
+    try {
+      const response = await tariffService.getAllTariffs();
+      return response.data;
+    } catch (error) {
+      showSnackbar({ msg: 'Error al cargar las tarifas.' });
+      return [];
+    }
+  }, [showSnackbar]);
 
   useEffect(() => {
-    loadTariffs();
-  });
+    const fetchTariffs = async () => {
+      const tariffsData = await loadTariffs();
+      setTariffs(tariffsData);
+    };
+    fetchTariffs();
+  }, [loadTariffs]);
 
-  const {
-    handleDeleteOpen,
-    handleCancelDelete,
-    handleConfirmDelete,
-    confirmOpen,
-  } = useListOperations(tariffService, loadTariffs);
-
-  // Navegar a la página de edición
-  const handleEdit = (id) => {
-    navigate(`/tariff/edit/${id}`);
-  };
-
-  // Navegar a la página de agregar
-  const handleAdd = () => {
+  const handleAddTariff = () => {
     navigate('/tariff/add');
   };
 
-  // Manejar el precio base
+  const handleEditTariff = (id) => {
+    navigate(`/tariff/edit/${id}`);
+  };
+
   const handleBasePrice = (idTarifa) => {
     const fecha = new Date().toISOString().split('T')[0]; // YYYY-MM-DD
     tariffService
@@ -71,133 +66,39 @@ function TariffList() {
       });
   };
 
+  const columns = [
+    { field: 'laps', headerName: 'Vueltas', width: 100 },
+    { field: 'max_minutes', headerName: 'Máx. Minutos', width: 120 },
+    {
+      field: 'regular_price',
+      headerName: 'Precio Regular',
+      width: 140,
+      valueFormatter: (value) => value.toLocaleString('es-CL'),
+    },
+    { field: 'total_duration', headerName: 'Duración Total (minutos)', width: 180 },
+  ];
+
+  // Acciones personalizadas para cada fila
+  const customActions = [
+    {
+      label: 'Precio Base',
+      color: 'accent',
+      onClick: (row) => handleBasePrice(row.id),
+    },
+  ];
+
   return (
-    <TableContainer
-      component={Paper}
-      sx={{ backgroundColor: 'rgba(30, 30, 47, 0.9)' }}
-    >
-      <h3 style={{ color: 'var(--text-optional-color)', textAlign: 'center' }}>
-        Lista de Tarifas
-      </h3>
-      <Button
-        variant="contained"
-        sx={{
-          backgroundColor: 'var(--primary-color)',
-          color: 'var(--text-color)',
-          '&:hover': { backgroundColor: 'var(--hover-color)' },
-        }}
-        onClick={handleAdd}
-        style={{ margin: '1rem' }}
-      >
-        Añadir Tarifa
-      </Button>
-      <Table>
-        <TableHead>
-          <TableRow>
-            <TableCell
-              align="left"
-              sx={{ fontWeight: 'bold', color: 'var(--text-color)' }}
-            >
-              Vueltas
-            </TableCell>
-            <TableCell
-              align="left"
-              sx={{ fontWeight: 'bold', color: 'var(--text-color)' }}
-            >
-              Máx. Minutos
-            </TableCell>
-            <TableCell
-              align="left"
-              sx={{ fontWeight: 'bold', color: 'var(--text-color)' }}
-            >
-              Precio Regular
-            </TableCell>
-            <TableCell
-              align="left"
-              sx={{ fontWeight: 'bold', color: 'var(--text-color)' }}
-            >
-              Duracion Total (minutos)
-            </TableCell>
-            <TableCell
-              align="center"
-              sx={{ fontWeight: 'bold', color: 'var(--text-color)' }}
-            >
-              Operaciones
-            </TableCell>
-          </TableRow>
-        </TableHead>
-        <TableBody>
-          {tariffs.map((tariff) => (
-            <TableRow key={tariff.id}>
-              <TableCell align="left" sx={{ color: 'var(--text-color)' }}>
-                {tariff.laps}
-              </TableCell>
-              <TableCell align="left" sx={{ color: 'var(--text-color)' }}>
-                {tariff.max_minutes}
-              </TableCell>
-              <TableCell align="left" sx={{ color: 'var(--text-color)' }}>
-                {tariff.regular_price.toLocaleString('es-CL')}
-              </TableCell>
-              <TableCell align="left" sx={{ color: 'var(--text-color)' }}>
-                {tariff.total_duration}
-              </TableCell>
-              <TableCell align="center">
-                <Button
-                  variant="contained"
-                  sx={{
-                    backgroundColor: 'var(--primary-color)',
-                    color: 'var(--text-color)',
-                    '&:hover': { backgroundColor: 'var(--hover-color)' },
-                  }}
-                  size="small"
-                  onClick={() => handleEdit(tariff.id)}
-                  startIcon={<EditIcon />}
-                >
-                  Editar
-                </Button>
-                <Button
-                  variant="contained"
-                  sx={{
-                    backgroundColor: 'var(--secondary-color)',
-                    color: 'var(--text-color)',
-                    '&:hover': { backgroundColor: 'var(--hover-color)' },
-                  }}
-                  size="small"
-                  onClick={() => handleDeleteOpen(tariff.id)}
-                  style={{ marginLeft: '0.5rem' }}
-                  startIcon={<DeleteIcon />}
-                >
-                  Eliminar
-                </Button>
-                <Button
-                  variant="contained"
-                  sx={{
-                    backgroundColor: 'var(--accent-color)',
-                    color: 'var(--text-color)',
-                    '&:hover': { backgroundColor: 'var(--hover-color)' },
-                  }}
-                  size="small"
-                  onClick={() => handleBasePrice(tariff.id)}
-                  style={{ marginLeft: '0.5rem' }}
-                  startIcon={<EditIcon />}
-                >
-                  Precio Base
-                </Button>
-              </TableCell>
-            </TableRow>
-          ))}
-        </TableBody>
-      </Table>
-      <ConfirmDialog
-        open={confirmOpen}
-        title="Confirmar Eliminación"
-        message="¿Estás seguro de que deseas eliminar esta tarifa?"
-        onCancel={handleCancelDelete}
-        onConfirm={handleConfirmDelete}
-        confirmText="Eliminar"
-        cancelText="Cancelar"
-      />
-    </TableContainer>
+    <GenericList
+      title="Lista de Tarifas"
+      service={tariffService}
+      data={tariffs}
+      loadItems={loadTariffs}
+      onAdd={handleAddTariff}
+      onEdit={handleEditTariff}
+      columns={columns}
+      showSnackbar={showSnackbar}
+      customActions={customActions}
+    />
   );
 }
 

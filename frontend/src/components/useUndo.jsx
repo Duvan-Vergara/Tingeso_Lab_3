@@ -1,39 +1,37 @@
 import { useRef, useEffect } from 'react';
 
 const useUndo = (showSnackbar) => {
-  const pendingDataRef = useRef(null);
   const undoTimeoutRef = useRef(null);
+  const pendingDataRef = useRef(null);
 
-  const setPendingData = (data) => {
-    pendingDataRef.current = data;
-  };
-
-  const handleUndo = (restoreCallback) => {
-    clearTimeout(undoTimeoutRef.current);
-    if (pendingDataRef.current) {
-      restoreCallback(pendingDataRef.current);
-    }
-  };
-
-  const startUndoTimer = (
+  const submitWithUndo = (
+    data,
     onSave,
-    restoreCallback,
-    msg = 'Accion realizada correctamente. Puedes deshacer en 5 segundos.',
+    onRestore,
+    msg = 'Acción realizada correctamente. Puedes deshacer en 5 segundos.',
     timeout = 5000,
   ) => {
+    pendingDataRef.current = data;
     undoTimeoutRef.current = setTimeout(() => {
-      onSave();
+      onSave(data);
+      pendingDataRef.current = null;
     }, timeout);
 
     showSnackbar({
       msg,
-      onUndo: () => handleUndo(restoreCallback),
+      onUndo: () => {
+        clearTimeout(undoTimeoutRef.current);
+        if (pendingDataRef.current) {
+          onRestore(pendingDataRef.current);
+          pendingDataRef.current = null;
+        }
+      },
     });
   };
 
-  useEffect(() => clearTimeout(undoTimeoutRef.current), []);
+  useEffect(() => () => clearTimeout(undoTimeoutRef.current), []);
 
-  return { setPendingData, startUndoTimer };
+  return { submitWithUndo };
 };
 
 export default useUndo;

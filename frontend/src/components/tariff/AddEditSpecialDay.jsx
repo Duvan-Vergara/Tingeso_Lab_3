@@ -7,12 +7,16 @@ import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import FormControl from '@mui/material/FormControl';
 import CustomTextField from '../CustomTextField';
 import specialDayService from '../../services/specialday.service';
+import { useSnackbar } from '../GlobalSnackbar';
 
 function AddEditSpecialDay() {
   const [date, setDate] = useState('');
   const [description, setDescription] = useState('');
+  const [error, setError] = useState('');
+  const [success, setSuccess] = useState('');
   const { id } = useParams();
   const navigate = useNavigate();
+  const { showSnackbar } = useSnackbar();
 
   useEffect(() => {
     if (id) {
@@ -23,34 +27,47 @@ function AddEditSpecialDay() {
           setDate(specialDay.date);
           setDescription(specialDay.description);
         })
-        .catch((error) => {
-          console.error('Error al cargar el día especial:', error);
+        .catch(() => {
+          setError('Error al cargar el día especial.');
+          showSnackbar({ msg: 'Error al cargar el día especial.', severity: 'error' });
         });
     }
-  }, [id]);
+  }, [id, showSnackbar]);
 
   const saveSpecialDay = (e) => {
     e.preventDefault();
+    setError('');
+    setSuccess('');
+
+    // Validación
+    if (!date || !description) {
+      setError('Por favor, completa todos los campos.');
+      showSnackbar({ msg: 'Por favor, completa todos los campos.', severity: 'warning' });
+      return;
+    }
+
     const specialDay = { date, description };
+
+    const onSuccess = (msg) => {
+      setSuccess(msg);
+      showSnackbar({ msg, severity: 'success' });
+      setTimeout(() => navigate('/specialdays/list'), 800);
+    };
+    const onError = (msg) => {
+      setError(msg);
+      showSnackbar({ msg, severity: 'error' });
+    };
 
     if (id) {
       specialDayService
         .createSpecialDay({ ...specialDay, id })
-        .then(() => {
-          navigate('/specialdays/list');
-        })
-        .catch((error) => {
-          console.error('Error al actualizar el día especial:', error);
-        });
+        .then(() => onSuccess('Día especial actualizado correctamente.'))
+        .catch(() => onError('Error al actualizar el día especial.'));
     } else {
       specialDayService
         .createSpecialDay(specialDay)
-        .then(() => {
-          navigate('/specialdays/list');
-        })
-        .catch((error) => {
-          console.error('Error al crear el día especial:', error);
-        });
+        .then(() => onSuccess('Día especial creado correctamente.'))
+        .catch(() => onError('Error al crear el día especial.'));
     }
   };
 
@@ -91,6 +108,17 @@ function AddEditSpecialDay() {
           onChange={(e) => setDescription(e.target.value)}
         />
       </FormControl>
+      {(error || success) && (
+        <div
+          style={{
+            color: error ? 'var(--accent-color)' : 'var(--text-optional-color)',
+            marginBottom: '1rem',
+            fontWeight: 'bold',
+          }}
+        >
+          {error || success}
+        </div>
+      )}
       <FormControl>
         <Button
           variant="contained"

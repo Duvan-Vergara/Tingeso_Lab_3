@@ -1,6 +1,5 @@
 import { useState } from 'react';
 import Box from '@mui/material/Box';
-import Button from '@mui/material/Button';
 import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
 import TableCell from '@mui/material/TableCell';
@@ -27,22 +26,22 @@ function Rack() {
   const [dia, setDia] = useState(new Date().getDate());
   const [rack, setRack] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
 
   const handleConsultar = async (e) => {
     e.preventDefault();
     setLoading(true);
+    setError('');
     try {
-      console.log('Consultando rack semanal para:', { anio, mes, dia });
       const response = await axios.post('/api/racksemanal/obtener', {
         anio,
         mes,
         dia,
       });
       setRack(response.data);
-      console.log('Rack semanal:', response.data);
-    } catch (error) {
+    } catch (err) {
       setRack([]);
-      alert('Error al consultar el rack semanal');
+      setError('Error al consultar el rack semanal. Intenta nuevamente.');
     }
     setLoading(false);
   };
@@ -92,19 +91,19 @@ function Rack() {
           inputProps={{ min: 1, max: 31 }}
           required
         />
-        <Button
+        <button
           type="submit"
-          variant="contained"
-          sx={{
-            backgroundColor: 'var(--primary-color)',
-            color: 'var(--text-color)',
-            '&:hover': { backgroundColor: 'var(--hover-color)' },
-          }}
           disabled={loading}
+          style={{ minWidth: 120 }}
         >
           {loading ? 'Consultando...' : 'Consultar'}
-        </Button>
+        </button>
       </form>
+      {error && (
+        <div style={{ color: 'var(--accent-color)', textAlign: 'center', marginBottom: '1rem' }}>
+          {error}
+        </div>
+      )}
       <TableContainer
         component={Paper}
         sx={{ boxShadow: 3, backgroundColor: 'var(--background-color)' }}
@@ -112,9 +111,9 @@ function Rack() {
         <Table>
           <TableHead>
             <TableRow>
-              {diasSemana.map((dia, idx) => (
+              {diasSemana.map((nombreDia) => (
                 <TableCell
-                  key={idx}
+                  key={nombreDia}
                   sx={{
                     color: 'var(--primary-color)',
                     fontWeight: 'bold',
@@ -122,34 +121,45 @@ function Rack() {
                     backgroundColor: 'var(--optional-color)',
                   }}
                 >
-                  {dia}
+                  {nombreDia}
                 </TableCell>
               ))}
             </TableRow>
           </TableHead>
           <TableBody>
             <TableRow>
-              {rack.map((reservas, idx) => (
-                <TableCell
-                  key={idx}
-                  sx={{
-                    textAlign: 'center',
-                    color: reservas.length > 0 ? 'var(--text-color)' : '#888',
-                    backgroundColor:
-                      reservas.length > 0
-                        ? 'var(--secondary-color)'
-                        : 'transparent',
-                  }}
-                >
-                  {reservas.length > 0
-                    ? reservas.map((r, i) => (
-                      <div key={i} style={{ margin: '0.5rem 0' }}>
-                        {r}
-                      </div>
-                    ))
-                    : 'Sin reservas'}
-                </TableCell>
-              ))}
+              {loading ? (
+                diasSemana.map((nombreDia) => (
+                  <TableCell key={nombreDia} sx={{ textAlign: 'center', color: '#888' }}>
+                    <span style={{ color: 'var(--accent-color)' }}>Cargando...</span>
+                  </TableCell>
+                ))
+              ) : (
+                rack.map((reservas, idx) => (
+                  <TableCell
+                    key={diasSemana[idx] || `col-${idx}`}
+                    sx={{
+                      textAlign: 'center',
+                      color: reservas.length > 0 ? 'var(--text-color)' : '#888',
+                      backgroundColor:
+                        reservas.length > 0
+                          ? 'var(--secondary-color)'
+                          : 'transparent',
+                    }}
+                  >
+                    {reservas.length > 0
+                      ? reservas.map((r, i) => (
+                        <div
+                          key={typeof r === 'string' ? r : `${diasSemana[idx] || idx}-${i}`}
+                          style={{ margin: '0.5rem 0' }}
+                        >
+                          {r}
+                        </div>
+                      ))
+                      : 'Sin reservas'}
+                  </TableCell>
+                ))
+              )}
             </TableRow>
           </TableBody>
         </Table>

@@ -18,6 +18,10 @@ function GenericList({
   onAdd,
   onEdit,
   extraActions,
+  confirmText,
+  cancelText,
+  confirmTitle,
+  confirmMessage,
 }) {
   const {
     confirmOpen,
@@ -112,8 +116,10 @@ function GenericList({
       </Table>
       <ConfirmDialog
         open={confirmOpen}
-        title="Confirmar Eliminación"
-        message="¿Está seguro de que desea eliminar este elemento?"
+        title={confirmTitle}
+        message={confirmMessage}
+        confirmText={confirmText}
+        cancelText={cancelText}
         onCancel={handleCancelDelete}
         onConfirm={handleConfirmDelete}
       />
@@ -136,16 +142,25 @@ GenericList.propTypes = {
     }),
   ).isRequired,
   service: PropTypes.shape({
-    delete: PropTypes.func.isRequired,
+    delete: PropTypes.func,
+    deleteById: PropTypes.func,
   }).isRequired,
   loadItems: PropTypes.func.isRequired,
   onAdd: PropTypes.func.isRequired,
   onEdit: PropTypes.func.isRequired,
   extraActions: PropTypes.func,
+  confirmText: PropTypes.string,
+  cancelText: PropTypes.string,
+  confirmTitle: PropTypes.string,
+  confirmMessage: PropTypes.string,
 };
 
 GenericList.defaultProps = {
   extraActions: null,
+  confirmText: 'Confirmar',
+  cancelText: 'Cancelar',
+  confirmTitle: 'Confirmar Eliminación',
+  confirmMessage: '¿Está seguro de que desea eliminar este elemento?',
 };
 
 export default GenericList;

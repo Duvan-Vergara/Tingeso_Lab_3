@@ -20,7 +20,7 @@ export default {
   getAllReserves,
   getReserveById,
   saveReserve,
-  deleteReserveById,
+  deleteById: deleteReserveById,
   sendPaymentReceipt,
   sendPaymentReceiptV2,
   calculateFinalPrice,

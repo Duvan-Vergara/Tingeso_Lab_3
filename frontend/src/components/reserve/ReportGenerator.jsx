@@ -10,6 +10,9 @@ function ReportGenerator() {
   const [endDate, setEndDate] = useState(null);
   const [anchorElStart, setAnchorElStart] = useState(null);
   const [anchorElEnd, setAnchorElEnd] = useState(null);
+  const [error, setError] = useState('');
+  const [success, setSuccess] = useState('');
+  const [loading, setLoading] = useState(false);
 
   const months = [
     'Enero',
@@ -31,58 +34,60 @@ function ReportGenerator() {
     (_, i) => new Date().getFullYear() - i,
   );
 
-  const handleGenerateTariffReport = () => {
+  const handleGenerateTariffReport = async () => {
+    setError('');
+    setSuccess('');
     if (!startDate || !endDate) {
-      alert('Por favor, seleccione las fechas de inicio y fin.');
+      setError('Por favor, seleccione las fechas de inicio y fin.');
       return;
     }
-
     if (new Date(startDate) > new Date(endDate)) {
-      alert('La fecha de inicio no puede ser posterior a la fecha de fin.');
+      setError('La fecha de inicio no puede ser posterior a la fecha de fin.');
       return;
     }
-
-    reportService
-      .generateTariffReport(startDate, endDate)
-      .then((response) => {
-        const url = window.URL.createObjectURL(new Blob([response.data]));
-        const link = document.createElement('a');
-        link.href = url;
-        link.setAttribute('download', 'reporte_tarifas.xlsx');
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
-      })
-      .catch((error) => {
-        console.error('Error al generar el reporte de tarifas:', error);
-        alert('Error al generar el reporte de tarifas.');
-      });
+    setLoading(true);
+    try {
+      const response = await reportService.generateTariffReport(startDate, endDate);
+      const url = window.URL.createObjectURL(new Blob([response.data]));
+      const link = document.createElement('a');
+      link.href = url;
+      link.setAttribute('download', 'reporte_tarifas.xlsx');
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      setSuccess('Reporte de tarifas generado y descargado correctamente.');
+    } catch (err) {
+      setError('Error al generar el reporte de tarifas.');
+    }
+    setLoading(false);
   };
 
-  const handleGenerateGroupSizeReport = () => {
+  const handleGenerateGroupSizeReport = async () => {
+    setError('');
+    setSuccess('');
     if (!startDate || !endDate) {
-      alert('Por favor, seleccione las fechas de inicio y fin.');
+      setError('Por favor, seleccione las fechas de inicio y fin.');
       return;
     }
     if (new Date(startDate) > new Date(endDate)) {
-      alert('La fecha de inicio no puede ser posterior a la fecha de fin.');
+      setError('La fecha de inicio no puede ser posterior a la fecha de fin.');
       return;
     }
-    reportService
-      .generateGroupSizeReport(startDate, endDate)
-      .then((response) => {
-        const url = window.URL.createObjectURL(new Blob([response.data]));
-        const link = document.createElement('a');
-        link.href = url;
-        link.setAttribute('download', 'reporte_tamanio_grupo.xlsx');
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
-      })
-      .catch((error) => {
-        console.error('Error al generar el reporte de tamaño de grupo:', error);
-        alert('Error al generar el reporte de tamaño de grupo.');
-      });
+    setLoading(true);
+    try {
+      const response = await reportService.generateGroupSizeReport(startDate, endDate);
+      const url = window.URL.createObjectURL(new Blob([response.data]));
+      const link = document.createElement('a');
+      link.href = url;
+      link.setAttribute('download', 'reporte_tamanio_grupo.xlsx');
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      setSuccess('Reporte de tamaño de grupo generado y descargado correctamente.');
+    } catch (err) {
+      setError('Error al generar el reporte de tamaño de grupo.');
+    }
+    setLoading(false);
   };
 
   const handleOpenStartMenu = (event) => {
@@ -195,24 +200,34 @@ function ReportGenerator() {
         {endDate || 'No seleccionada'}
       </Typography>
 
-      <div style={{ display: 'flex', justifyContent: 'center', gap: '1rem' }}>
-        <Button
-          variant="contained"
-          color="secondary"
-          onClick={handleGenerateTariffReport}
-          disabled={!startDate || !endDate}
+      {(error || success) && (
+        <div
+          style={{
+            color: error ? 'var(--accent-color)' : 'var(--text-optional-color)',
+            marginBottom: '1rem',
+            fontWeight: 'bold',
+          }}
         >
-          Generar Reporte de Tarifas
-        </Button>
+          {error || success}
+        </div>
+      )}
 
-        <Button
-          variant="contained"
-          color="secondary"
-          onClick={handleGenerateGroupSizeReport}
-          disabled={!startDate || !endDate}
+      <div style={{ display: 'flex', justifyContent: 'center', gap: '1rem' }}>
+        <button
+          type="button"
+          onClick={handleGenerateTariffReport}
+          disabled={!startDate || !endDate || loading}
         >
-          Generar Reporte de Tamaño de Grupo
-        </Button>
+          {loading ? 'Generando...' : 'Generar Reporte de Tarifas'}
+        </button>
+
+        <button
+          type="button"
+          onClick={handleGenerateGroupSizeReport}
+          disabled={!startDate || !endDate || loading}
+        >
+          {loading ? 'Generando...' : 'Generar Reporte de Tamaño de Grupo'}
+        </button>
       </div>
     </div>
   );

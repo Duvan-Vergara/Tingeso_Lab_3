@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
-import { useNavigate, useLocation } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import userService from '../../services/user.service';
 import { useSnackbar } from '../GlobalSnackbar';
 import GenericList from '../GenericList';
@@ -7,22 +7,7 @@ import GenericList from '../GenericList';
 function UserList() {
   const [users, setUsers] = useState([]);
   const navigate = useNavigate();
-  const location = useLocation();
   const { showSnackbar } = useSnackbar();
-
-  useEffect(() => {
-    if (location.state && location.state.undoMsg && location.state.undoData) {
-      showSnackbar({
-        msg: location.state.undoMsg,
-        onUndo: () => {
-          navigate(location.state.undoPath, {
-            state: { ...location.state.undoData, undo: true },
-          });
-        },
-      });
-      window.history.replaceState({}, document.title);
-    }
-  }, [location, showSnackbar, navigate]);
 
   const loadUsers = useCallback(async () => {
     try {
@@ -68,6 +53,10 @@ function UserList() {
       onEdit={handleEditUser}
       columns={columns}
       showSnackbar={showSnackbar}
+      confirmTitle="¿Eliminar Usuario?"
+      confirmMessage="¿Estás seguro de que deseas eliminar este usuario?"
+      confirmText="Eliminar"
+      cancelText="Cancelar"
     />
   );
 }

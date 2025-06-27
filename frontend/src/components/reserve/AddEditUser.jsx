@@ -20,9 +20,8 @@ function AddEditUser() {
   const navigate = useNavigate();
   const location = useLocation();
   const { showSnackbar } = useSnackbar();
-  const { setPendingData } = useUndo(showSnackbar);
+  const { submitWithUndo } = useUndo(showSnackbar);
 
-  // Restaura datos si viene de un undo
   useEffect(() => {
     if (location.state && location.state.undo) {
       setRut(location.state.rut || '');
@@ -67,45 +66,37 @@ function AddEditUser() {
       email,
       birthDate,
     };
-    setPendingData(user);
 
-    if (id) {
-      userService
-        .saveUser({ ...user, id })
-        .then(() => {
-          navigate('/user/list', {
-            state: {
-              undoData: { ...user, id },
-              undoMsg: 'Usuario actualizado correctamente. Puedes deshacer en 5 segundos.',
-              undoPath: `/user/edit/${id}`,
-            },
+    submitWithUndo(
+      user,
+      (data) => {
+        // Guardar en backend solo si no se deshace
+        const savePromise = id
+          ? userService.saveUser({ ...data, id })
+          : userService.saveUser(data);
+        savePromise
+          .then(() => {
+            navigate('/user/list'); // No pasar undoMsg ni undoData
+          })
+          .catch(() => {
+            showSnackbar({
+              msg: 'Ha ocurrido un error al intentar guardar el usuario.',
+              severity: 'error',
+            });
           });
-        })
-        .catch(() => {
-          showSnackbar({
-            msg: 'Ha ocurrido un error al intentar actualizar el usuario.',
-            severity: 'error',
-          });
-        });
-    } else {
-      userService
-        .saveUser(user)
-        .then(() => {
-          navigate('/user/list', {
-            state: {
-              undoData: user,
-              undoMsg: 'Usuario creado correctamente. Puedes deshacer en 5 segundos.',
-              undoPath: '/user/add',
-            },
-          });
-        })
-        .catch(() => {
-          showSnackbar({
-            msg: 'Ha ocurrido un error al intentar crear el usuario.',
-            severity: 'error',
-          });
-        });
-    }
+      },
+      (data) => {
+        // Restaurar el formulario si se deshace
+        setRut(data.rut || '');
+        setName(data.name || '');
+        setLastName(data.lastName || '');
+        setEmail(data.email || '');
+        setBirthDate(data.birthDate || '');
+      },
+      id
+        ? 'Usuario actualizado correctamente. Puedes deshacer en 5 segundos.'
+        : 'Usuario creado correctamente. Puedes deshacer en 5 segundos.',
+    );
   };
 
   return (

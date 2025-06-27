@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
@@ -7,35 +7,88 @@ import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import FormControl from '@mui/material/FormControl';
 import CustomTextField from '../CustomTextField';
 import desctFrecService from '../../services/desctfrec.service';
+import { useSnackbar } from '../GlobalSnackbar';
+import useUndo from '../useUndo';
 
 function AddEditDesctFrec() {
   const location = useLocation();
   const navigate = useNavigate();
   const editing = location.state !== null;
 
-  const [minveces, setMinveces] = useState(
-    editing ? location.state.minveces : 0,
-  );
-  const [maxveces, setMaxveces] = useState(
-    editing ? location.state.maxveces : 0,
-  );
-  const [porcentajedesct, setPorcentajedesct] = useState(
-    editing ? location.state.porcentajedesct : 0,
-  );
+  const [minveces, setMinveces] = useState('');
+  const [maxveces, setMaxveces] = useState('');
+  const [porcentajedesct, setPorcentajedesct] = useState('');
+  const { showSnackbar } = useSnackbar();
+  const { setPendingData } = useUndo(showSnackbar);
+
+  useEffect(() => {
+    if (location.state && location.state.undo) {
+      setMinveces(location.state.minveces || '');
+      setMaxveces(location.state.maxveces || '');
+      setPorcentajedesct(location.state.porcentajedesct || '');
+    } else if (editing) {
+      setMinveces(location.state.minveces || '');
+      setMaxveces(location.state.maxveces || '');
+      setPorcentajedesct(location.state.porcentajedesct || '');
+    } else {
+      setMinveces('');
+      setMaxveces('');
+      setPorcentajedesct('');
+    }
+  }, [editing, location.state]);
 
   const saveDesct = (e) => {
     e.preventDefault();
-    const desct = { minveces, maxveces, porcentajedesct };
+    // Validación de campos
+    if (
+      minveces === '' || maxveces === '' || porcentajedesct === '' || Number(minveces) < 0
+      || Number(maxveces) < 0 || Number(porcentajedesct) < 0
+    ) {
+      showSnackbar({ msg: 'Por favor, completa todos los campos correctamente.', severity: 'warning' });
+      return;
+    }
+    const desct = {
+      minveces: Number(minveces),
+      maxveces: Number(maxveces),
+      porcentajedesct: Number(porcentajedesct),
+    };
+    setPendingData(desct);
     if (editing) {
       desctFrecService
         .createDesctFrecu({ ...desct, id: location.state.id })
-        .then(() => navigate('/desctfrec/list'))
-        .catch((error) => console.error('Error al actualizar descuento:', error));
+        .then(() => {
+          navigate('/desctfrec/list', {
+            state: {
+              undoData: { ...desct, id: location.state.id },
+              undoMsg: 'Descuento actualizado correctamente. Puedes deshacer en 5 segundos.',
+              undoPath: `/desctfrec/edit/${location.state.id}`,
+            },
+          });
+        })
+        .catch(() => {
+          showSnackbar({
+            msg: 'Ha ocurrido un error al intentar actualizar el descuento.',
+            severity: 'error',
+          });
+        });
     } else {
       desctFrecService
         .createDesctFrecu(desct)
-        .then(() => navigate('/desctfrec/list'))
-        .catch((error) => console.error('Error al crear descuento:', error));
+        .then(() => {
+          navigate('/desctfrec/list', {
+            state: {
+              undoData: desct,
+              undoMsg: 'Descuento creado correctamente. Puedes deshacer en 5 segundos.',
+              undoPath: '/desctfrec/add',
+            },
+          });
+        })
+        .catch(() => {
+          showSnackbar({
+            msg: 'Ha ocurrido un error al intentar crear el descuento.',
+            severity: 'error',
+          });
+        });
     }
   };
 
@@ -65,7 +118,7 @@ function AddEditDesctFrec() {
           label="Mín. Veces"
           type="number"
           value={minveces}
-          onChange={(e) => setMinveces(Number(e.target.value))}
+          onChange={(e) => setMinveces(e.target.value)}
         />
       </FormControl>
       <FormControl fullWidth>
@@ -73,7 +126,7 @@ function AddEditDesctFrec() {
           label="Máx. Veces"
           type="number"
           value={maxveces}
-          onChange={(e) => setMaxveces(Number(e.target.value))}
+          onChange={(e) => setMaxveces(e.target.value)}
         />
       </FormControl>
       <FormControl fullWidth>
@@ -81,7 +134,7 @@ function AddEditDesctFrec() {
           label="Porcentaje Descuento (%)"
           type="number"
           value={porcentajedesct}
-          onChange={(e) => setPorcentajedesct(Number(e.target.value))}
+          onChange={(e) => setPorcentajedesct(e.target.value)}
         />
       </FormControl>
       <FormControl>

@@ -1,108 +1,89 @@
-import { useEffect, useState } from 'react';
-import Button from '@mui/material/Button';
-import EditIcon from '@mui/icons-material/Edit';
-import Table from '@mui/material/Table';
-import TableBody from '@mui/material/TableBody';
-import TableCell from '@mui/material/TableCell';
-import TableContainer from '@mui/material/TableContainer';
-import TableHead from '@mui/material/TableHead';
-import TableRow from '@mui/material/TableRow';
-import Paper from '@mui/material/Paper';
-import { useNavigate } from 'react-router-dom';
+import { useEffect, useState, useCallback } from 'react';
+import { useNavigate, useLocation } from 'react-router-dom';
 import desctFrecService from '../../services/desctfrec.service';
+import { useSnackbar } from '../GlobalSnackbar';
+import GenericList from '../GenericList';
 
-function DesctNumberList() {
+function DesctFrecList() {
   const [descts, setDescts] = useState([]);
   const navigate = useNavigate();
+  const location = useLocation();
+  const { showSnackbar } = useSnackbar();
 
   useEffect(() => {
-    desctFrecService
-      .getAllDesctFrecu()
-      .then((response) => setDescts(response.data))
-      .catch((error) => console.error('Error al cargar descuentos:', error));
-  }, []);
+    if (location.state && location.state.undoMsg && location.state.undoData) {
+      showSnackbar({
+        msg: location.state.undoMsg,
+        onUndo: () => {
+          navigate(location.state.undoPath, {
+            state: { ...location.state.undoData, undo: true },
+          });
+        },
+      });
+      window.history.replaceState({}, document.title);
+    }
+  }, [location, showSnackbar, navigate]);
 
-  const handleEdit = (desct) => {
-    navigate('/desctfrec/edit', { state: desct });
-  };
+  const loadDescts = useCallback(async () => {
+    try {
+      const response = await desctFrecService.getAllDesctFrecu();
+      return response.data;
+    } catch (error) {
+      showSnackbar({ msg: 'Error al cargar los descuentos.' });
+      return [];
+    }
+  }, [showSnackbar]);
+
+  useEffect(() => {
+    const fetchDescts = async () => {
+      const desctsData = await loadDescts();
+      setDescts(desctsData);
+    };
+    fetchDescts();
+  }, [loadDescts]);
 
   const handleAdd = () => {
     navigate('/desctfrec/add');
   };
 
+  const handleEdit = (id) => {
+    const desct = descts.find((d) => d.id === id);
+    navigate('/desctfrec/edit', { state: desct });
+  };
+
+  const handleDelete = async (id) => {
+    try {
+      await desctFrecService.deleteDesctFrec(id);
+      setDescts(descts.filter((desct) => desct.id !== id));
+      showSnackbar({ msg: 'Descuento eliminado correctamente.' });
+    } catch (error) {
+      showSnackbar({ msg: 'Error al eliminar el descuento.' });
+    }
+  };
+
+  const columns = [
+    { field: 'minveces', headerName: 'Mín. veces', width: 120 },
+    { field: 'maxveces', headerName: 'Máx. veces', width: 120 },
+    { field: 'porcentajedesct', headerName: 'Porcentaje Descuento (%)', width: 180 },
+  ];
+
   return (
-    <TableContainer
-      component={Paper}
-      sx={{ backgroundColor: 'rgba(30, 30, 47, 0.9)' }}
-    >
-      <h3 style={{ color: 'var(--text-optional-color)', textAlign: 'center' }}>
-        Descuentos por Frecuencia
-      </h3>
-      <Button
-        variant="contained"
-        sx={{
-          backgroundColor: 'var(--primary-color)',
-          color: 'var(--text-color)',
-          '&:hover': { backgroundColor: 'var(--hover-color)' },
-        }}
-        onClick={handleAdd}
-        style={{ margin: '1rem' }}
-      >
-        Añadir Descuento
-      </Button>
-      <Table>
-        <TableHead>
-          <TableRow>
-            <TableCell sx={{ color: 'var(--text-color)', fontWeight: 'bold' }}>
-              Mín. veces
-            </TableCell>
-            <TableCell sx={{ color: 'var(--text-color)', fontWeight: 'bold' }}>
-              Máx. veces
-            </TableCell>
-            <TableCell sx={{ color: 'var(--text-color)', fontWeight: 'bold' }}>
-              Porcentaje Descuento (%)
-            </TableCell>
-            <TableCell
-              align="center"
-              sx={{ color: 'var(--text-color)', fontWeight: 'bold' }}
-            >
-              Operaciones
-            </TableCell>
-          </TableRow>
-        </TableHead>
-        <TableBody>
-          {descts.map((desct) => (
-            <TableRow key={desct.id}>
-              <TableCell sx={{ color: 'var(--text-color)' }}>
-                {desct.minveces}
-              </TableCell>
-              <TableCell sx={{ color: 'var(--text-color)' }}>
-                {desct.maxveces}
-              </TableCell>
-              <TableCell sx={{ color: 'var(--text-color)' }}>
-                {desct.porcentajedesct}
-              </TableCell>
-              <TableCell align="center">
-                <Button
-                  variant="contained"
-                  sx={{
-                    backgroundColor: 'var(--primary-color)',
-                    color: 'var(--text-color)',
-                    '&:hover': { backgroundColor: 'var(--hover-color)' },
-                  }}
-                  size="small"
-                  onClick={() => handleEdit(desct)}
-                  startIcon={<EditIcon />}
-                >
-                  Editar
-                </Button>
-              </TableCell>
-            </TableRow>
-          ))}
-        </TableBody>
-      </Table>
-    </TableContainer>
+    <GenericList
+      title="Descuentos por Frecuencia"
+      service={desctFrecService}
+      data={descts}
+      loadItems={loadDescts}
+      onAdd={handleAdd}
+      onEdit={handleEdit}
+      onDelete={handleDelete}
+      columns={columns}
+      showSnackbar={showSnackbar}
+      confirmTitle="¿Eliminar Descuento?"
+      confirmMessage="¿Estás seguro de que deseas eliminar este descuento?"
+      confirmText="Eliminar"
+      cancelText="Cancelar"
+    />
   );
 }
 
-export default DesctNumberList;
+export default DesctFrecList;

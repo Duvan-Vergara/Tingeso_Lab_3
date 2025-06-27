@@ -1,5 +1,5 @@
-import { useState, useEffect } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useState, useEffect, useCallback } from 'react';
+import { useParams, useNavigate, useLocation } from 'react-router-dom';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import FormControl from '@mui/material/FormControl';
@@ -16,186 +16,221 @@ import useUndo from '../useUndo';
 
 function AddEditReserve() {
   const [clientName, setClientName] = useState('');
-  const [reserveday, setreserveday] = useState('');
-  const [tariff_id, settariff_id] = useState('');
+  const [reserveDay, setReserveDay] = useState('');
+  const [tariffId, setTariffId] = useState('');
   const [tariffs, setTariffs] = useState([]);
-  const [final_price, setfinal_price] = useState(0.0);
+  const [finalPrice, setFinalPrice] = useState(0.0);
   const [users, setUsers] = useState([]);
   const [selectedUsers, setSelectedUsers] = useState([]);
   const [beginTime, setBeginTime] = useState('');
   const [finish, setFinishTime] = useState('');
   const { id } = useParams();
   const navigate = useNavigate();
+  const location = useLocation();
   const { showSnackbar } = useSnackbar();
-  const { setPendingData, startUndoTimer } = useUndo(showSnackbar);
+  const { setPendingData } = useUndo(showSnackbar);
 
-  function formatDateToYYYYMMDD(dateStr) {
-    if (!dateStr) return '';
-    const [dd, mm, yyyy] = dateStr.split('-');
-    return `${yyyy}-${mm}-${dd}`;
-  }
-
-  const loadUsers = () => {
+  const loadUsers = useCallback(() => {
     userService
       .getAllUsers()
       .then((response) => {
         setUsers(response.data);
-        console.log('Usuarios cargados:', response.data);
       })
-      .catch((error) => {
-        console.error('Error al cargar usuarios:', error);
+      .catch(() => {
+        showSnackbar({
+          msg: 'Error al cargar usuarios.',
+          severity: 'error',
+        });
       });
-  };
+  }, [showSnackbar]);
 
-  // Cargar tarifas disponibles
-  const loadTariffs = () => {
+  const loadTariffs = useCallback(() => {
     tariffService
       .getAllTariffs()
       .then((response) => {
         setTariffs(response.data);
-        console.log('Tarifas cargadas:', response.data);
       })
-      .catch((error) => {
-        console.error('Error al cargar tarifas:', error);
+      .catch(() => {
+        showSnackbar({
+          msg: 'Error al cargar tarifas.',
+          severity: 'error',
+        });
       });
-  };
+  }, [showSnackbar]);
 
-  // Cargar datos de la reserva si se está editando
   useEffect(() => {
     loadTariffs();
     loadUsers();
-    console.log('Datos Cargados');
-    if (id) {
+    if (location.state && location.state.undo) {
+      setClientName(location.state.clientName || '');
+      setReserveDay(location.state.reserveDay || '');
+      setTariffId(location.state.tariffId || '');
+      setFinalPrice(location.state.finalPrice || 0.0);
+      if (
+        location.state.selectedUsers && Array.isArray(location.state.selectedUsers)
+      ) {
+        const restoredUsers = users.filter(
+          (u) => location.state.selectedUsers.some((sel) => sel.id === u.id),
+        );
+        setSelectedUsers(restoredUsers);
+      } else {
+        setSelectedUsers([]);
+      }
+      setBeginTime(location.state.beginTime || '');
+      setFinishTime(location.state.finish || '');
+    } else if (id) {
       reserveService
         .getReserveById(id)
         .then((response) => {
           const reserve = response.data;
-          console.log('Reserva cargada:', reserve);
-          console.log('Precio final cargado:', reserve.final_price);
-          setClientName(reserve.reserves_users?.[0]?.name || ''); // Asumir que el primer usuario es el creador
-          setreserveday(formatDateToYYYYMMDD(reserve.reserveday));
-          settariff_id(reserve.tariff_id || ''); // la id de la tarifa asignada a la reserva
-          setfinal_price(reserve.final_price || 0);
-          setSelectedUsers(reserve.reserves_users || []); // Cargar usuarios del grupo
-          setBeginTime(reserve.begin || ''); // Extraer hora de inicio
-          setFinishTime(reserve.finish || ''); // Extraer hora de finalización
+          setClientName(reserve.clientName || '');
+          setReserveDay(reserve.reserveday || '');
+          setTariffId(reserve.tariff_id || '');
+          setFinalPrice(reserve.final_price || 0.0);
+          setSelectedUsers(reserve.reserves_users || []);
+          setBeginTime(reserve.begin || '');
+          setFinishTime(reserve.finish || '');
         })
-        .catch((error) => {
-          console.error('Error al cargar la reserva:', error);
+        .catch(() => {
+          showSnackbar({
+            msg: 'Error al cargar la reserva.',
+            severity: 'error',
+          });
         });
+    } else {
+      setClientName('');
+      setReserveDay('');
+      setTariffId('');
+      setFinalPrice(0.0);
+      setSelectedUsers([]);
+      setBeginTime('');
+      setFinishTime('');
     }
-  }, [id]);
+  }, [id, location.state, users, showSnackbar, loadTariffs, loadUsers]);
 
-  // Guardar o actualizar la reserva
   const saveReserve = (e) => {
     e.preventDefault();
-
-    if (!reserveday || !tariff_id || !beginTime || !finish) {
-      alert('Por favor, complete todos los campos obligatorios.');
+    if (
+      !clientName
+      || !reserveDay
+      || !tariffId
+      || !beginTime
+      || !finish
+      || selectedUsers.length === 0
+    ) {
+      showSnackbar({
+        msg: 'Por favor, completa todos los campos.',
+        severity: 'warning',
+      });
       return;
     }
-
-    const reserve = {
-      reserveday,
+    // Mapear a snake_case para el backend
+    const reserveData = {
+      clientName,
+      reserveday: reserveDay,
+      tariff_id: tariffId,
+      final_price: finalPrice,
+      reserves_users: selectedUsers.map((u) => u.id),
       begin: beginTime,
       finish,
-      reserves_users: selectedUsers,
-      tariff_id,
-      final_price,
     };
-
-    setPendingData(reserve);
-
-    console.log('Datos de reserva a enviar(Para guardar o editar):', reserve);
-
-    startUndoTimer(
-      () => {
-        if (id) {
-          // Actualizar reserva existente
-          reserveService
-            .saveReserve({ ...reserve, id })
-            .then((response) => {
-              console.log('Reserva actualizada:', response.data);
-              navigate('/reserve/list');
-            })
-            .catch((error) => {
-              console.error('Error al actualizar la reserva:', error);
-            });
-        } else {
-          // Crear nueva reserva
-          reserveService
-            .saveReserve(reserve)
-            .then((response) => {
-              console.log('Reserva creada:', response.data);
-              navigate('/reserve/list');
-            })
-            .catch((error) => {
-              console.error('Error al crear la reserva:', error);
-            });
-        }
-      },
-      (data) => {
-        setreserveday(data.reserveday);
-        setBeginTime(data.begin);
-        setFinishTime(data.finish);
-        setSelectedUsers(data.reserves_users);
-        settariff_id(data.tariff_id);
-        setfinal_price(data.final_price);
-      },
-      id
-        ? 'Reserva actualizada correctamente. Puedes deshacer en 5 segundos.'
-        : 'Reserva creada correctamente. Puedes deshacer en 5 segundos.',
-    );
+    // Para undo, mantener camelCase
+    const undoData = {
+      clientName,
+      reserveDay,
+      tariffId,
+      finalPrice,
+      selectedUsers,
+      beginTime,
+      finish,
+      undo: true,
+    };
+    setPendingData(undoData);
+    if (id) {
+      reserveService
+        .updateReserve(id, reserveData)
+        .then(() => {
+          navigate('/reserve/list', {
+            state: {
+              undoData,
+              undoMsg:
+                'Reserva actualizada correctamente. Puedes deshacer en 5 segundos.',
+              undoPath: `/reserve/edit/${id}`,
+            },
+          });
+        })
+        .catch(() => {
+          showSnackbar({
+            msg: 'Ha ocurrido un error al intentar actualizar la reserva.',
+            severity: 'error',
+          });
+        });
+    } else {
+      reserveService
+        .createReserve(reserveData)
+        .then(() => {
+          navigate('/reserve/list', {
+            state: {
+              undoData,
+              undoMsg:
+                'Reserva creada correctamente. Puedes deshacer en 5 segundos.',
+              undoPath: '/reserve/add',
+            },
+          });
+        })
+        .catch(() => {
+          showSnackbar({
+            msg: 'Ha ocurrido un error al intentar crear la reserva.',
+            severity: 'error',
+          });
+        });
+    }
   };
 
-  // Recalcular el precio final al cambiar los valores clave
-  const recalculatePrice = () => {
-    // Si no hay tarifa o usuarios seleccionados, no se puede calcular el precio
-    if (!tariff_id || selectedUsers.length === 0 || !reserveday) {
-      setfinal_price(0);
+  const recalculatePrice = useCallback(() => {
+    if (
+      !tariffId
+      || selectedUsers.length === 0
+      || !reserveDay
+    ) {
+      setFinalPrice(0);
       return;
     }
-
-    // Construir el objeto de reserva con los datos disponibles
     const reserve = {
-      reserveday,
+      reserveday: reserveDay,
       begin: beginTime,
       finish,
       reserves_users: selectedUsers,
-      tariff_id,
+      tariff_id: tariffId,
     };
-
-    console.log('Datos enviados para calcular el precio:', reserve);
-
     reserveService
       .calculateFinalPrice(reserve)
       .then((response) => {
-        console.log('Precio final calculado:', response.data);
-        setfinal_price(response.data);
+        setFinalPrice(response.data);
       })
-      .catch((error) => {
-        console.error('Error al calcular el precio final:', error);
-        setfinal_price(0); // Si hay un error, establecer el precio a 0
+      .catch(() => {
+        showSnackbar({
+          msg: 'Error al calcular el precio final.',
+          severity: 'error',
+        });
+        setFinalPrice(0);
       });
-  };
+  }, [tariffId, selectedUsers, reserveDay, beginTime, finish, showSnackbar]);
 
   useEffect(() => {
-    console.log('Recalculando precio...');
     recalculatePrice();
-  }, [reserveday, beginTime, finish, tariff_id, selectedUsers]);
+  }, [reserveDay, beginTime, finish, tariffId, selectedUsers, recalculatePrice]);
 
   useEffect(() => {
-    // Si el grupo queda vacío, limpia el titular
     if (selectedUsers.length === 0) {
       setClientName('');
     } else {
-      // Si el titular actual ya no está en el grupo, selecciona el primero
       const stillInGroup = selectedUsers.some((u) => u.name === clientName);
       if (!stillInGroup) {
         setClientName(selectedUsers[0].name);
       }
     }
-  }, [selectedUsers]);
+  }, [selectedUsers, clientName]);
 
   return (
     <Box
@@ -227,7 +262,7 @@ function AddEditReserve() {
           value={clientName}
           onChange={(e) => setClientName(e.target.value)}
           required
-          disabled={selectedUsers.length == 0}
+          disabled={selectedUsers.length === 0}
           helperText={
             selectedUsers.length === 0
               ? 'Agrega al menos un usuario al grupo'
@@ -250,9 +285,9 @@ function AddEditReserve() {
           id="reserveday"
           label="Fecha"
           type="date"
-          value={reserveday}
+          value={reserveDay}
           onChange={(e) => {
-            setreserveday(e.target.value);
+            setReserveDay(e.target.value);
           }}
           InputLabelProps={{
             shrink: true,
@@ -300,7 +335,7 @@ function AddEditReserve() {
           isOptionEqualToValue={(option, value) => option.id === value.id}
           renderInput={(params) => (
             <CustomTextField
-              {...params}
+              InputProps={params.InputProps}
               label="Seleccionar Usuarios"
               variant="standard"
             />
@@ -312,8 +347,8 @@ function AddEditReserve() {
           id="tariff"
           label="Tarifa"
           select
-          value={tariff_id}
-          onChange={(e) => settariff_id(e.target.value)}
+          value={tariffId}
+          onChange={(e) => setTariffId(e.target.value)}
         >
           {tariffs.map((tariff) => (
             <MenuItem key={tariff.id} value={tariff.id}>
@@ -327,7 +362,7 @@ function AddEditReserve() {
         <CustomTextField
           id="final_price"
           label="Precio Final"
-          value={final_price.toLocaleString('es-CL', {
+          value={finalPrice.toLocaleString('es-CL', {
             style: 'currency',
             currency: 'CLP',
           })}
