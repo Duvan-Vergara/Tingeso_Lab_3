@@ -40,15 +40,15 @@ function BuildBackend {
     docker push duvanvergara/gateway-service:latest
     Pop-Location
 
-    # Microservicios m1 a m7
+    # Microservicios renombrados
     $servicios = @(
-        'm1',
-        'm2',
-        'm3',
-        'm4',
-        'm5',
-        'm6',
-        'm7'
+        'tariff-service',
+        'discount-people-service',
+        'discount-frequent-service',
+        'special-rates-service',
+        'reserve-service',
+        'rack-service',
+        'reports-service'
     )
     foreach ($svc in $servicios) {
         $svcName = ($svc.Trim() -replace '[\r\n]', '')

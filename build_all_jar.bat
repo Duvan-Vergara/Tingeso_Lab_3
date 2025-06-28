@@ -13,7 +13,7 @@ cd backend\gateway-service
 call mvn clean package -DskipTests
 cd ../..
 
-for %%i in (m1 m2 m3 m4 m5 m6 m7) do (
+for %%i in (tariff-service discount-people-service discount-frequent-service special-rates-service reserve-service rack-service reports-service) do (
     cd backend\%%i
     call mvn clean package -DskipTests
     cd ../..

@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
-import { useNavigate, useLocation } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import specialDayService from '../../services/specialday.service';
 import { useSnackbar } from '../GlobalSnackbar';
 import GenericList from '../GenericList';
@@ -7,22 +7,7 @@ import GenericList from '../GenericList';
 function SpecialDayList() {
   const [specialDays, setSpecialDays] = useState([]);
   const navigate = useNavigate();
-  const location = useLocation();
   const { showSnackbar } = useSnackbar();
-
-  useEffect(() => {
-    if (location.state && location.state.undoMsg && location.state.undoData) {
-      showSnackbar({
-        msg: location.state.undoMsg,
-        onUndo: () => {
-          navigate(location.state.undoPath, {
-            state: { ...location.state.undoData, undo: true },
-          });
-        },
-      });
-      window.history.replaceState({}, document.title);
-    }
-  }, [location, showSnackbar, navigate]);
 
   const loadSpecialDays = useCallback(async () => {
     try {
@@ -65,6 +50,10 @@ function SpecialDayList() {
       onEdit={handleEditDay}
       columns={columns}
       showSnackbar={showSnackbar}
+      confirmTitle="¿Eliminar Día Especial?"
+      confirmMessage="¿Estás seguro de que deseas eliminar este día especial?"
+      confirmText="Eliminar"
+      cancelText="Cancelar"
     />
   );
 }

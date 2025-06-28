@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
-import { useNavigate, useLocation } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import reserveService from '../../services/reserve.service';
 import { useSnackbar } from '../GlobalSnackbar';
 import GenericList from '../GenericList';
@@ -7,7 +7,6 @@ import GenericList from '../GenericList';
 function ReserveList() {
   const [reserves, setReserves] = useState([]);
   const navigate = useNavigate();
-  const location = useLocation();
   const { showSnackbar } = useSnackbar();
 
   const loadReserves = useCallback(async () => {
@@ -28,11 +27,11 @@ function ReserveList() {
     fetchReserves();
   }, [loadReserves]);
 
-  const handleAdd = () => {
+  const handleAddReserve = () => {
     navigate('/reserve/add');
   };
 
-  const handleEdit = (id) => {
+  const handleEditReserve = (id) => {
     navigate(`/reserve/edit/${id}`);
   };
 
@@ -102,7 +101,7 @@ function ReserveList() {
         onClick={() => handleSendPaymentReceiptV2(row.id)}
         style={{ marginLeft: '0.5rem' }}
       >
-        Enviar Comprobante 2
+        Comprobante V2
       </button>
     </>
   );
@@ -113,8 +112,8 @@ function ReserveList() {
       service={reserveService}
       data={reserves}
       loadItems={loadReserves}
-      onAdd={handleAdd}
-      onEdit={handleEdit}
+      onAdd={handleAddReserve}
+      onEdit={handleEditReserve}
       columns={columns}
       showSnackbar={showSnackbar}
       extraActions={extraActions}

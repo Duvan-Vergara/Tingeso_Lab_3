@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { useLocation, useNavigate } from 'react-router-dom';
+import { useParams, useNavigate, useLocation } from 'react-router-dom';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import SaveIcon from '@mui/icons-material/Save';
@@ -11,85 +11,82 @@ import { useSnackbar } from '../GlobalSnackbar';
 import useUndo from '../useUndo';
 
 function AddEditDesctNumber() {
-  const location = useLocation();
-  const navigate = useNavigate();
-  const editing = location.state !== null;
-
   const [minpersonas, setMinpersonas] = useState('');
   const [maxpersonas, setMaxpersonas] = useState('');
   const [porcentajedesct, setPorcentajedesct] = useState('');
+  const { id } = useParams();
+  const navigate = useNavigate();
+  const location = useLocation();
   const { showSnackbar } = useSnackbar();
-  const { setPendingData } = useUndo(showSnackbar);
+  const { submitWithUndo } = useUndo(showSnackbar);
 
   useEffect(() => {
     if (location.state && location.state.undo) {
       setMinpersonas(location.state.minpersonas || '');
       setMaxpersonas(location.state.maxpersonas || '');
       setPorcentajedesct(location.state.porcentajedesct || '');
-    } else if (editing) {
-      setMinpersonas(location.state.minpersonas || '');
-      setMaxpersonas(location.state.maxpersonas || '');
-      setPorcentajedesct(location.state.porcentajedesct || '');
+    } else if (id) {
+      desctNumberService
+        .getDesctNumberById(id)
+        .then((desct) => {
+          setMinpersonas(desct.data.minpersonas || '');
+          setMaxpersonas(desct.data.maxpersonas || '');
+          setPorcentajedesct(desct.data.porcentajedesct || '');
+        })
+        .catch(() => {
+          showSnackbar({ msg: 'Error al cargar el descuento.' });
+        });
     } else {
       setMinpersonas('');
       setMaxpersonas('');
       setPorcentajedesct('');
     }
-  }, [editing, location.state]);
+  }, [id, location.state, showSnackbar]);
 
   const saveDesct = (e) => {
     e.preventDefault();
-    // Validación de campos
+
     if (
       minpersonas === '' || maxpersonas === '' || porcentajedesct === '' || Number(minpersonas) < 0
       || Number(maxpersonas) < 0 || Number(porcentajedesct) < 0
     ) {
-      showSnackbar({ msg: 'Por favor, completa todos los campos correctamente.', severity: 'warning' });
+      showSnackbar({ msg: 'Por favor, completa todos los campos correctamente.' });
       return;
     }
+
     const desct = {
       minpersonas: Number(minpersonas),
       maxpersonas: Number(maxpersonas),
       porcentajedesct: Number(porcentajedesct),
     };
-    setPendingData(desct);
-    if (editing) {
-      desctNumberService
-        .createDesctNumber({ ...desct, id: location.state.id })
-        .then(() => {
-          navigate('/desctnumber/list', {
-            state: {
-              undoData: { ...desct, id: location.state.id },
-              undoMsg: 'Descuento actualizado correctamente. Puedes deshacer en 5 segundos.',
-              undoPath: `/desctnumber/edit/${location.state.id}`,
-            },
+
+    submitWithUndo(
+      desct,
+      (data) => {
+        // Guardar en backend solo si no se deshace
+        const savePromise = id
+          ? desctNumberService.createDesctNumber({ ...data, id })
+          : desctNumberService.createDesctNumber(data);
+        savePromise
+          .then(() => {
+            navigate('/desctnumber/list');
+          })
+          .catch(() => {
+            showSnackbar({
+              msg: 'Ha ocurrido un error al intentar guardar el descuento.',
+            });
           });
-        })
-        .catch(() => {
-          showSnackbar({
-            msg: 'Ha ocurrido un error al intentar actualizar el descuento.',
-            severity: 'error',
-          });
-        });
-    } else {
-      desctNumberService
-        .createDesctNumber(desct)
-        .then(() => {
-          navigate('/desctnumber/list', {
-            state: {
-              undoData: desct,
-              undoMsg: 'Descuento creado correctamente. Puedes deshacer en 5 segundos.',
-              undoPath: '/desctnumber/add',
-            },
-          });
-        })
-        .catch(() => {
-          showSnackbar({
-            msg: 'Ha ocurrido un error al intentar crear el descuento.',
-            severity: 'error',
-          });
-        });
-    }
+      },
+      (data) => {
+        // Restaurar el formulario si se deshace
+        setMinpersonas(data.minpersonas || '');
+        setMaxpersonas(data.maxpersonas || '');
+        setPorcentajedesct(data.porcentajedesct || '');
+      },
+      id
+        ? 'Descuento actualizado correctamente. Puedes deshacer en 5 segundos.'
+        : 'Descuento creado correctamente. Puedes deshacer en 5 segundos.',
+    );
   };
 
   return (
@@ -111,7 +108,7 @@ function AddEditDesctNumber() {
       onSubmit={saveDesct}
     >
       <h3 style={{ color: 'var(--text-optional-color)' }}>
-        {editing ? 'Editar Descuento' : 'Nuevo Descuento'}
+        {id ? 'Editar Descuento' : 'Nuevo Descuento'}
       </h3>
       <FormControl fullWidth>
         <CustomTextField

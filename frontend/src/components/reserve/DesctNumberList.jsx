@@ -1,5 +1,5 @@
-import { useEffect, useState, useCallback } from 'react';
-import { useNavigate, useLocation } from 'react-router-dom';
+import { useState, useEffect, useCallback } from 'react';
+import { useNavigate } from 'react-router-dom';
 import desctNumberService from '../../services/desctnumber.service';
 import { useSnackbar } from '../GlobalSnackbar';
 import GenericList from '../GenericList';
@@ -7,22 +7,7 @@ import GenericList from '../GenericList';
 function DesctNumberList() {
   const [descts, setDescts] = useState([]);
   const navigate = useNavigate();
-  const location = useLocation();
   const { showSnackbar } = useSnackbar();
-
-  useEffect(() => {
-    if (location.state && location.state.undoMsg && location.state.undoData) {
-      showSnackbar({
-        msg: location.state.undoMsg,
-        onUndo: () => {
-          navigate(location.state.undoPath, {
-            state: { ...location.state.undoData, undo: true },
-          });
-        },
-      });
-      window.history.replaceState({}, document.title);
-    }
-  }, [location, showSnackbar, navigate]);
 
   const loadDescts = useCallback(async () => {
     try {
@@ -47,18 +32,7 @@ function DesctNumberList() {
   };
 
   const handleEdit = (id) => {
-    const desct = descts.find((d) => d.id === id);
-    navigate('/desctnumber/edit', { state: desct });
-  };
-
-  const handleDelete = async (id) => {
-    try {
-      await desctNumberService.deleteDesctNumber(id);
-      setDescts(descts.filter((desct) => desct.id !== id));
-      showSnackbar({ msg: 'Descuento eliminado correctamente.' });
-    } catch (error) {
-      showSnackbar({ msg: 'Error al eliminar el descuento.' });
-    }
+    navigate(`/desctnumber/edit/${id}`);
   };
 
   const columns = [
@@ -75,7 +49,6 @@ function DesctNumberList() {
       loadItems={loadDescts}
       onAdd={handleAdd}
       onEdit={handleEdit}
-      onDelete={handleDelete}
       columns={columns}
       showSnackbar={showSnackbar}
       confirmTitle="¿Eliminar Descuento?"

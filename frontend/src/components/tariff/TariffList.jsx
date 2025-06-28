@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
-import { useNavigate, useLocation } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import tariffService from '../../services/tariff.service';
 import { useSnackbar } from '../GlobalSnackbar';
 import GenericList from '../GenericList';
@@ -7,22 +7,7 @@ import GenericList from '../GenericList';
 function TariffList() {
   const [tariffs, setTariffs] = useState([]);
   const navigate = useNavigate();
-  const location = useLocation();
   const { showSnackbar } = useSnackbar();
-
-  useEffect(() => {
-    if (location.state && location.state.undoMsg && location.state.undoData) {
-      showSnackbar({
-        msg: location.state.undoMsg,
-        onUndo: () => {
-          navigate(location.state.undoPath, {
-            state: { ...location.state.undoData, undo: true },
-          });
-        },
-      });
-      window.history.replaceState({}, document.title);
-    }
-  }, [location, showSnackbar, navigate]);
 
   const loadTariffs = useCallback(async () => {
     try {
@@ -73,19 +58,20 @@ function TariffList() {
       field: 'regular_price',
       headerName: 'Precio Regular',
       width: 140,
-      valueFormatter: (value) => value.toLocaleString('es-CL'),
+      render: (value) => value.toLocaleString('es-CL'),
     },
     { field: 'total_duration', headerName: 'Duración Total (minutos)', width: 180 },
   ];
 
-  // Acciones personalizadas para cada fila
-  const customActions = [
-    {
-      label: 'Precio Base',
-      color: 'accent',
-      onClick: (row) => handleBasePrice(row.id),
-    },
-  ];
+  const extraActions = (row) => (
+    <button
+      type="button"
+      onClick={() => handleBasePrice(row.id)}
+      style={{ marginLeft: '0.5rem' }}
+    >
+      Precio Base
+    </button>
+  );
 
   return (
     <GenericList
@@ -97,7 +83,11 @@ function TariffList() {
       onEdit={handleEditTariff}
       columns={columns}
       showSnackbar={showSnackbar}
-      customActions={customActions}
+      extraActions={extraActions}
+      confirmTitle="¿Eliminar Tarifa?"
+      confirmMessage="¿Estás seguro de que deseas eliminar esta tarifa?"
+      confirmText="Eliminar"
+      cancelText="Cancelar"
     />
   );
 }

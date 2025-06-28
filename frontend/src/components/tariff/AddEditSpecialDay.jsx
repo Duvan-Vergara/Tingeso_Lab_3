@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams, useNavigate, useLocation } from 'react-router-dom';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import SaveIcon from '@mui/icons-material/Save';
@@ -8,18 +8,22 @@ import FormControl from '@mui/material/FormControl';
 import CustomTextField from '../CustomTextField';
 import specialDayService from '../../services/specialday.service';
 import { useSnackbar } from '../GlobalSnackbar';
+import useUndo from '../useUndo';
 
 function AddEditSpecialDay() {
   const [date, setDate] = useState('');
   const [description, setDescription] = useState('');
-  const [error, setError] = useState('');
-  const [success, setSuccess] = useState('');
   const { id } = useParams();
   const navigate = useNavigate();
+  const location = useLocation();
   const { showSnackbar } = useSnackbar();
+  const { submitWithUndo } = useUndo(showSnackbar);
 
   useEffect(() => {
-    if (id) {
+    if (location.state && location.state.undo) {
+      setDate(location.state.date || '');
+      setDescription(location.state.description || '');
+    } else if (id) {
       specialDayService
         .getSpecialDayById(id)
         .then((response) => {
@@ -28,47 +32,50 @@ function AddEditSpecialDay() {
           setDescription(specialDay.description);
         })
         .catch(() => {
-          setError('Error al cargar el día especial.');
-          showSnackbar({ msg: 'Error al cargar el día especial.', severity: 'error' });
+          showSnackbar({ msg: 'Error al cargar el día especial.' });
         });
+    } else {
+      setDate('');
+      setDescription('');
     }
-  }, [id, showSnackbar]);
+  }, [id, location.state, showSnackbar]);
 
   const saveSpecialDay = (e) => {
     e.preventDefault();
-    setError('');
-    setSuccess('');
 
-    // Validación
     if (!date || !description) {
-      setError('Por favor, completa todos los campos.');
-      showSnackbar({ msg: 'Por favor, completa todos los campos.', severity: 'warning' });
+      showSnackbar({ msg: 'Por favor, completa todos los campos.' });
       return;
     }
 
     const specialDay = { date, description };
 
-    const onSuccess = (msg) => {
-      setSuccess(msg);
-      showSnackbar({ msg, severity: 'success' });
-      setTimeout(() => navigate('/specialdays/list'), 800);
-    };
-    const onError = (msg) => {
-      setError(msg);
-      showSnackbar({ msg, severity: 'error' });
-    };
-
-    if (id) {
-      specialDayService
-        .createSpecialDay({ ...specialDay, id })
-        .then(() => onSuccess('Día especial actualizado correctamente.'))
-        .catch(() => onError('Error al actualizar el día especial.'));
-    } else {
-      specialDayService
-        .createSpecialDay(specialDay)
-        .then(() => onSuccess('Día especial creado correctamente.'))
-        .catch(() => onError('Error al crear el día especial.'));
-    }
+    submitWithUndo(
+      specialDay,
+      (data) => {
+        // Guardar en backend solo si no se deshace
+        const savePromise = id
+          ? specialDayService.createSpecialDay({ ...data, id })
+          : specialDayService.createSpecialDay(data);
+        savePromise
+          .then(() => {
+            navigate('/specialdays/list');
+          })
+          .catch(() => {
+            showSnackbar({
+              msg: 'Ha ocurrido un error al intentar guardar el día especial.',
+            });
+          });
+      },
+      (data) => {
+        // Restaurar el formulario si se deshace
+        setDate(data.date || '');
+        setDescription(data.description || '');
+      },
+      id
+        ? 'Día especial actualizado correctamente. Puedes deshacer en 5 segundos.'
+        : 'Día especial creado correctamente. Puedes deshacer en 5 segundos.',
+    );
   };
 
   return (
@@ -108,17 +115,6 @@ function AddEditSpecialDay() {
           onChange={(e) => setDescription(e.target.value)}
         />
       </FormControl>
-      {(error || success) && (
-        <div
-          style={{
-            color: error ? 'var(--accent-color)' : 'var(--text-optional-color)',
-            marginBottom: '1rem',
-            fontWeight: 'bold',
-          }}
-        >
-          {error || success}
-        </div>
-      )}
       <FormControl>
         <Button
           variant="contained"

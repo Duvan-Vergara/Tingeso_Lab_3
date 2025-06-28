@@ -1,0 +1,19 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: discount-frequent-service-db-populate
+spec:
+  template:
+    spec:
+      containers:
+      - name: mysql-client
+        image: mysql:latest
+        command: ["sh", "-c", "mysql -h discount-frequent-service-db-service -uroot -proot < /scripts/discount-frequent-service-db.mysql.sql"]
+        volumeMounts:
+        - name: sql-script
+          mountPath: /scripts
+      restartPolicy: OnFailure
+      volumes:
+      - name: sql-script
+        configMap:
+          name: discount-frequent-service-db-sql

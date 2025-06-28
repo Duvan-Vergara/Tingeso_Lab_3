@@ -27,49 +27,49 @@ spring:
             allow-credentials: true
       routes:
         - id: tariff-service
-          uri: lb://m1
+          uri: lb://tariff-service
           predicates:
             - Path=/api/tariffs/**
           filters:
             - StripPrefix=1
 
         - id: discount-number-service
-          uri: lb://m2
+          uri: lb://discount-people-service
           predicates:
             - Path=/api/desctnumber/**
           filters:
             - StripPrefix=1
 
         - id: discount-frequent-service
-          uri: lb://m3
+          uri: lb://discount-frequent-service
           predicates:
             - Path=/api/desctfrecu/**
           filters:
             - StripPrefix=1
 
         - id: special-tariff-service
-          uri: lb://m4
+          uri: lb://special-rates-service
           predicates:
             - Path=/api/specialtariffs/**
           filters:
             - StripPrefix=1
 
         - id: reservation-service
-          uri: lb://m5
+          uri: lb://reserve-service
           predicates:
             - Path=/api/reserves/**
           filters:
             - StripPrefix=1
 
         - id: rack-management-service
-          uri: lb://m6
+          uri: lb://rack-service
           predicates:
             - Path=/api/racksemanal/**
           filters:
             - StripPrefix=1
 
         - id: report-management-service
-          uri: lb://m7
+          uri: lb://reports-service
           predicates:
             - Path=/api/reportes/**
           filters:

@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { useLocation, useNavigate } from 'react-router-dom';
+import { useParams, useNavigate, useLocation } from 'react-router-dom';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import SaveIcon from '@mui/icons-material/Save';
@@ -11,85 +11,82 @@ import { useSnackbar } from '../GlobalSnackbar';
 import useUndo from '../useUndo';
 
 function AddEditDesctFrec() {
-  const location = useLocation();
-  const navigate = useNavigate();
-  const editing = location.state !== null;
-
   const [minveces, setMinveces] = useState('');
   const [maxveces, setMaxveces] = useState('');
   const [porcentajedesct, setPorcentajedesct] = useState('');
+  const { id } = useParams();
+  const navigate = useNavigate();
+  const location = useLocation();
   const { showSnackbar } = useSnackbar();
-  const { setPendingData } = useUndo(showSnackbar);
+  const { submitWithUndo } = useUndo(showSnackbar);
 
   useEffect(() => {
     if (location.state && location.state.undo) {
       setMinveces(location.state.minveces || '');
       setMaxveces(location.state.maxveces || '');
       setPorcentajedesct(location.state.porcentajedesct || '');
-    } else if (editing) {
-      setMinveces(location.state.minveces || '');
-      setMaxveces(location.state.maxveces || '');
-      setPorcentajedesct(location.state.porcentajedesct || '');
+    } else if (id) {
+      desctFrecService
+        .getDesctFrecById(id)
+        .then((desct) => {
+          setMinveces(desct.data.minveces || '');
+          setMaxveces(desct.data.maxveces || '');
+          setPorcentajedesct(desct.data.porcentajedesct || '');
+        })
+        .catch(() => {
+          showSnackbar({ msg: 'Error al cargar el descuento.' });
+        });
     } else {
       setMinveces('');
       setMaxveces('');
       setPorcentajedesct('');
     }
-  }, [editing, location.state]);
+  }, [id, location.state, showSnackbar]);
 
   const saveDesct = (e) => {
     e.preventDefault();
-    // Validación de campos
+
     if (
       minveces === '' || maxveces === '' || porcentajedesct === '' || Number(minveces) < 0
       || Number(maxveces) < 0 || Number(porcentajedesct) < 0
     ) {
-      showSnackbar({ msg: 'Por favor, completa todos los campos correctamente.', severity: 'warning' });
+      showSnackbar({ msg: 'Por favor, completa todos los campos correctamente.' });
       return;
     }
+
     const desct = {
       minveces: Number(minveces),
       maxveces: Number(maxveces),
       porcentajedesct: Number(porcentajedesct),
     };
-    setPendingData(desct);
-    if (editing) {
-      desctFrecService
-        .createDesctFrecu({ ...desct, id: location.state.id })
-        .then(() => {
-          navigate('/desctfrec/list', {
-            state: {
-              undoData: { ...desct, id: location.state.id },
-              undoMsg: 'Descuento actualizado correctamente. Puedes deshacer en 5 segundos.',
-              undoPath: `/desctfrec/edit/${location.state.id}`,
-            },
+
+    submitWithUndo(
+      desct,
+      (data) => {
+        // Guardar en backend solo si no se deshace
+        const savePromise = id
+          ? desctFrecService.createDesctFrecu({ ...data, id })
+          : desctFrecService.createDesctFrecu(data);
+        savePromise
+          .then(() => {
+            navigate('/desctfrec/list');
+          })
+          .catch(() => {
+            showSnackbar({
+              msg: 'Ha ocurrido un error al intentar guardar el descuento.',
+            });
           });
-        })
-        .catch(() => {
-          showSnackbar({
-            msg: 'Ha ocurrido un error al intentar actualizar el descuento.',
-            severity: 'error',
-          });
-        });
-    } else {
-      desctFrecService
-        .createDesctFrecu(desct)
-        .then(() => {
-          navigate('/desctfrec/list', {
-            state: {
-              undoData: desct,
-              undoMsg: 'Descuento creado correctamente. Puedes deshacer en 5 segundos.',
-              undoPath: '/desctfrec/add',
-            },
-          });
-        })
-        .catch(() => {
-          showSnackbar({
-            msg: 'Ha ocurrido un error al intentar crear el descuento.',
-            severity: 'error',
-          });
-        });
-    }
+      },
+      (data) => {
+        // Restaurar el formulario si se deshace
+        setMinveces(data.minveces || '');
+        setMaxveces(data.maxveces || '');
+        setPorcentajedesct(data.porcentajedesct || '');
+      },
+      id
+        ? 'Descuento actualizado correctamente. Puedes deshacer en 5 segundos.'
+        : 'Descuento creado correctamente. Puedes deshacer en 5 segundos.',
+    );
   };
 
   return (
@@ -111,7 +108,7 @@ function AddEditDesctFrec() {
       onSubmit={saveDesct}
     >
       <h3 style={{ color: 'var(--text-optional-color)' }}>
-        {editing ? 'Editar Descuento' : 'Nuevo Descuento'}
+        {id ? 'Editar Descuento' : 'Nuevo Descuento'}
       </h3>
       <FormControl fullWidth>
         <CustomTextField

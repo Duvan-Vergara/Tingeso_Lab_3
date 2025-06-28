@@ -1,0 +1,65 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: discount-people-service-deployment
+  labels:
+    app: discount-people-service-deployment
+spec:
+  selector:
+    matchLabels:
+      app: discount-people-service-deployment
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: discount-people-service-deployment
+    spec:
+      containers:
+        - name: discount-people-service
+          image: duvanvergara/discount-people-service:latest
+          ports:
+            - containerPort: 8080
+          env:
+            - name: SERVER_PORT
+              value: "8080"
+            - name: MYSQL_HOST
+              valueFrom:
+                configMapKeyRef:
+                  name: mysql-config-map
+                  key: DB_HOST_M2
+            - name: MYSQL_PORT
+              valueFrom:
+                configMapKeyRef:
+                  name: mysql-config-map
+                  key: DB_PORT_M2
+            - name: MYSQL_DB
+              valueFrom:
+                configMapKeyRef:
+                  name: mysql-config-map
+                  key: DB_DBNAME_M2
+            - name: DB_USER
+              valueFrom:
+                secretKeyRef:
+                  name: mysql-user-credentials
+                  key: username
+            - name: DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: mysql-user-credentials
+                  key: password
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: discount-people-service-service
+  labels:
+    app: discount-people-service-service
+spec:
+  selector:
+    app: discount-people-service-deployment
+  ports:
+    - nodePort: 30002
+      protocol: TCP
+      port: 8080
+      targetPort: 8080
+  type: NodePort

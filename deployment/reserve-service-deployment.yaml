@@ -1,0 +1,65 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: reserve-service-deployment
+  labels:
+    app: reserve-service-deployment
+spec:
+  selector:
+    matchLabels:
+      app: reserve-service-deployment
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: reserve-service-deployment
+    spec:
+      containers:
+        - name: reserve-service
+          image: duvanvergara/reserve-service:latest
+          ports:
+            - containerPort: 8080
+          env:
+            - name: SERVER_PORT
+              value: "8080"
+            - name: MYSQL_HOST
+              valueFrom:
+                configMapKeyRef:
+                  name: mysql-config-map
+                  key: DB_HOST_M5
+            - name: MYSQL_PORT
+              valueFrom:
+                configMapKeyRef:
+                  name: mysql-config-map
+                  key: DB_PORT_M5
+            - name: MYSQL_DB
+              valueFrom:
+                configMapKeyRef:
+                  name: mysql-config-map
+                  key: DB_DBNAME_M5
+            - name: DB_USER
+              valueFrom:
+                secretKeyRef:
+                  name: mysql-user-credentials
+                  key: username
+            - name: DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: mysql-user-credentials
+                  key: password
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: reserve-service-service
+  labels:
+    app: reserve-service-service
+spec:
+  selector:
+    app: reserve-service-deployment
+  ports:
+    - nodePort: 30005
+      protocol: TCP
+      port: 8080
+      targetPort: 8080
+  type: NodePort

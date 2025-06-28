@@ -28,7 +28,7 @@ function AddEditReserve() {
   const navigate = useNavigate();
   const location = useLocation();
   const { showSnackbar } = useSnackbar();
-  const { setPendingData } = useUndo(showSnackbar);
+  const { submitWithUndo } = useUndo(showSnackbar);
 
   const loadUsers = useCallback(() => {
     userService
@@ -61,21 +61,13 @@ function AddEditReserve() {
   useEffect(() => {
     loadTariffs();
     loadUsers();
+
     if (location.state && location.state.undo) {
       setClientName(location.state.clientName || '');
       setReserveDay(location.state.reserveDay || '');
       setTariffId(location.state.tariffId || '');
       setFinalPrice(location.state.finalPrice || 0.0);
-      if (
-        location.state.selectedUsers && Array.isArray(location.state.selectedUsers)
-      ) {
-        const restoredUsers = users.filter(
-          (u) => location.state.selectedUsers.some((sel) => sel.id === u.id),
-        );
-        setSelectedUsers(restoredUsers);
-      } else {
-        setSelectedUsers([]);
-      }
+      setSelectedUsers(location.state.selectedUsers || []);
       setBeginTime(location.state.beginTime || '');
       setFinishTime(location.state.finish || '');
     } else if (id) {
@@ -106,10 +98,11 @@ function AddEditReserve() {
       setBeginTime('');
       setFinishTime('');
     }
-  }, [id, location.state, users, showSnackbar, loadTariffs, loadUsers]);
+  }, [id, location.state, showSnackbar, loadTariffs, loadUsers]);
 
   const saveReserve = (e) => {
     e.preventDefault();
+
     if (
       !clientName
       || !reserveDay
@@ -124,18 +117,9 @@ function AddEditReserve() {
       });
       return;
     }
-    // Mapear a snake_case para el backend
-    const reserveData = {
-      clientName,
-      reserveday: reserveDay,
-      tariff_id: tariffId,
-      final_price: finalPrice,
-      reserves_users: selectedUsers.map((u) => u.id),
-      begin: beginTime,
-      finish,
-    };
-    // Para undo, mantener camelCase
-    const undoData = {
+
+    // Datos para el formulario (camelCase)
+    const formData = {
       clientName,
       reserveDay,
       tariffId,
@@ -143,48 +127,52 @@ function AddEditReserve() {
       selectedUsers,
       beginTime,
       finish,
-      undo: true,
     };
-    setPendingData(undoData);
-    if (id) {
-      reserveService
-        .updateReserve(id, reserveData)
-        .then(() => {
-          navigate('/reserve/list', {
-            state: {
-              undoData,
-              undoMsg:
-                'Reserva actualizada correctamente. Puedes deshacer en 5 segundos.',
-              undoPath: `/reserve/edit/${id}`,
-            },
+
+    submitWithUndo(
+      formData,
+      (data) => {
+        // Mapear a snake_case para el backend
+        const reserveData = {
+          clientName: data.clientName,
+          reserveday: data.reserveDay,
+          tariff_id: data.tariffId,
+          final_price: data.finalPrice,
+          reserves_users: data.selectedUsers.map((u) => u.id),
+          begin: data.beginTime,
+          finish: data.finish,
+        };
+
+        // Guardar en backend solo si no se deshace
+        const savePromise = id
+          ? reserveService.updateReserve(id, reserveData)
+          : reserveService.createReserve(reserveData);
+
+        savePromise
+          .then(() => {
+            navigate('/reserve/list');
+          })
+          .catch(() => {
+            showSnackbar({
+              msg: 'Ha ocurrido un error al intentar guardar la reserva.',
+              severity: 'error',
+            });
           });
-        })
-        .catch(() => {
-          showSnackbar({
-            msg: 'Ha ocurrido un error al intentar actualizar la reserva.',
-            severity: 'error',
-          });
-        });
-    } else {
-      reserveService
-        .createReserve(reserveData)
-        .then(() => {
-          navigate('/reserve/list', {
-            state: {
-              undoData,
-              undoMsg:
-                'Reserva creada correctamente. Puedes deshacer en 5 segundos.',
-              undoPath: '/reserve/add',
-            },
-          });
-        })
-        .catch(() => {
-          showSnackbar({
-            msg: 'Ha ocurrido un error al intentar crear la reserva.',
-            severity: 'error',
-          });
-        });
-    }
+      },
+      (data) => {
+        // Restaurar el formulario si se deshace
+        setClientName(data.clientName || '');
+        setReserveDay(data.reserveDay || '');
+        setTariffId(data.tariffId || '');
+        setFinalPrice(data.finalPrice || 0.0);
+        setSelectedUsers(data.selectedUsers || []);
+        setBeginTime(data.beginTime || '');
+        setFinishTime(data.finish || '');
+      },
+      id
+        ? 'Reserva actualizada correctamente. Puedes deshacer en 5 segundos.'
+        : 'Reserva creada correctamente. Puedes deshacer en 5 segundos.',
+    );
   };
 
   const recalculatePrice = useCallback(() => {

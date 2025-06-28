@@ -44,11 +44,11 @@ do {
 
     # Bases de datos y PVCs
     kubectl apply -f mysql-deployment.yaml
-    kubectl apply -f m1-db-deployment-service.yaml
-    kubectl apply -f m2-db-deployment-service.yaml
-    kubectl apply -f m3-db-deployment-service.yaml
-    kubectl apply -f m4-db-deployment-service.yaml
-    kubectl apply -f m5-db-deployment-service.yaml
+    kubectl apply -f tariff-service-db-deployment-service.yaml
+    kubectl apply -f discount-people-service-db-deployment-service.yaml
+    kubectl apply -f discount-frequent-service-db-deployment-service.yaml
+    kubectl apply -f special-rates-service-db-deployment-service.yaml
+    kubectl apply -f reserve-service-db-deployment-service.yaml
 
     # Config Service
     kubectl apply -f config-service-deployment-service.yaml
@@ -72,9 +72,13 @@ do {
     kubectl apply -f gateway-service-deployment-service.yaml
 
     # Microservicios funcionales
-    foreach ($svc in 1..7) {
-        kubectl apply -f "m$svc-deployment.yaml"
-    }
+    kubectl apply -f tariff-service-deployment.yaml
+    kubectl apply -f discount-people-service-deployment.yaml
+    kubectl apply -f discount-frequent-service-deployment.yaml
+    kubectl apply -f special-rates-service-deployment.yaml
+    kubectl apply -f reserve-service-deployment.yaml
+    kubectl apply -f rack-service-deployment.yaml
+    kubectl apply -f reports-service-deployment.yaml
 
     # Frontend
     kubectl apply -f frotend-deployment.yaml

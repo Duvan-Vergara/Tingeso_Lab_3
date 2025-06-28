@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams, useNavigate, useLocation } from 'react-router-dom';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import SaveIcon from '@mui/icons-material/Save';
@@ -15,15 +15,19 @@ function AddEditTariff() {
   const [maxMinutes, setMaxMinutes] = useState('');
   const [regularPrice, setRegularPrice] = useState('');
   const [totalDuration, setTotalDuration] = useState('');
-  const [error, setError] = useState('');
-  const [success, setSuccess] = useState('');
   const { id } = useParams();
   const navigate = useNavigate();
+  const location = useLocation();
   const { showSnackbar } = useSnackbar();
-  const { setPendingData, startUndoTimer } = useUndo(showSnackbar);
+  const { submitWithUndo } = useUndo(showSnackbar);
 
   useEffect(() => {
-    if (id) {
+    if (location.state && location.state.undo) {
+      setLaps(location.state.laps || '');
+      setMaxMinutes(location.state.max_minutes || '');
+      setRegularPrice(location.state.regular_price || '');
+      setTotalDuration(location.state.total_duration || '');
+    } else if (id) {
       tariffService
         .getTariffById(id)
         .then((response) => {
@@ -34,15 +38,18 @@ function AddEditTariff() {
           setTotalDuration(tariff.total_duration.toString());
         })
         .catch(() => {
-          setError('Error al cargar la tarifa.');
+          showSnackbar({ msg: 'Error al cargar la tarifa.' });
         });
+    } else {
+      setLaps('');
+      setMaxMinutes('');
+      setRegularPrice('');
+      setTotalDuration('');
     }
-  }, [id]);
+  }, [id, location.state, showSnackbar]);
 
   const saveTariff = (e) => {
     e.preventDefault();
-    setError('');
-    setSuccess('');
 
     if (
       !laps
@@ -58,7 +65,7 @@ function AddEditTariff() {
       || Number(regularPrice) < 0
       || Number(totalDuration) < 0
     ) {
-      setError('Por favor, completa todos los campos correctamente.');
+      showSnackbar({ msg: 'Por favor, completa todos los campos correctamente.' });
       return;
     }
 
@@ -69,33 +76,25 @@ function AddEditTariff() {
       total_duration: Number(totalDuration),
     };
 
-    setPendingData(tariff);
-
-    startUndoTimer(
-      () => {
-        if (id) {
-          tariffService
-            .saveTariff({ ...tariff, id })
-            .then(() => {
-              setSuccess('Tarifa actualizada correctamente.');
-              navigate('/tariff/list');
-            })
-            .catch(() => {
-              setError('Error al actualizar la tarifa.');
+    submitWithUndo(
+      tariff,
+      (data) => {
+        // Guardar en backend solo si no se deshace
+        const savePromise = id
+          ? tariffService.saveTariff({ ...data, id })
+          : tariffService.saveTariff(data);
+        savePromise
+          .then(() => {
+            navigate('/tariff/list');
+          })
+          .catch(() => {
+            showSnackbar({
+              msg: 'Ha ocurrido un error al intentar guardar la tarifa.',
             });
-        } else {
-          tariffService
-            .saveTariff(tariff)
-            .then(() => {
-              setSuccess('Tarifa creada correctamente.');
-              navigate('/tariff/list');
-            })
-            .catch(() => {
-              setError('Error al crear la tarifa.');
-            });
-        }
+          });
       },
       (data) => {
+        // Restaurar el formulario si se deshace
         setLaps(data.laps.toString());
         setMaxMinutes(data.max_minutes.toString());
         setRegularPrice(data.regular_price.toString());
@@ -160,17 +159,6 @@ function AddEditTariff() {
           onChange={(e) => setTotalDuration(e.target.value)}
         />
       </FormControl>
-      {(error || success) && (
-        <div
-          style={{
-            color: error ? 'var(--accent-color)' : 'var(--text-optional-color)',
-            marginBottom: '1rem',
-            fontWeight: 'bold',
-          }}
-        >
-          {error || success}
-        </div>
-      )}
       <FormControl>
         <Button
           variant="contained"
