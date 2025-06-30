@@ -1,6 +1,7 @@
 import './App.css';
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import { SnackbarProvider } from './components/GlobalSnackbar';
+import { LoadingProvider, LoadingBar } from './components/LoadingBar';
 import Navbar from './components/Navbar';
 import Home from './components/Home';
 import TariffList from './components/tariff/TariffList';
@@ -19,15 +20,20 @@ import AddEditDesctNumber from './components/reserve/AddEditDesctNumber';
 import DesctFrecList from './components/reserve/DesctFrecList';
 import AddEditDesctFrec from './components/reserve/AddEditDesctFrec';
 import Rack from './components/reserve/Rack';
+import FAQ from './components/FAQ';
+import KeyboardShortcuts from './components/KeyboardShortcuts';
 import NotFound from './components/NotFound';
 
 function App() {
   return (
-    <SnackbarProvider>
-      <Router>
-        <div className="container">
-          <Navbar />
-          <Routes>
+    <LoadingProvider>
+      <SnackbarProvider>
+        <Router>
+          <LoadingBar />
+          <KeyboardShortcuts />
+          <div className="container">
+            <Navbar />
+            <Routes>
             <Route path="/" element={<Home />} />
             <Route path="/home" element={<Home />} />
 
@@ -61,11 +67,14 @@ function App() {
 
             <Route path="/rack/semana" element={<Rack />} />
 
+            <Route path="/faq" element={<FAQ />} />
+
             <Route path="*" element={<NotFound />} />
           </Routes>
         </div>
       </Router>
     </SnackbarProvider>
+  </LoadingProvider>
   );
 }
 

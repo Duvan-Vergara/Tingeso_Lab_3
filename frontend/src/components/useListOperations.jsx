@@ -1,11 +1,13 @@
 import { useState } from 'react';
 import { useSnackbar } from './GlobalSnackbar';
+import { useAsyncLoading } from './LoadingBar';
 import useUndo from './useUndo';
 
 function useListOperations(service, loadItems) {
   const [confirmOpen, setConfirmOpen] = useState(false);
   const [itemToDelete, setItemToDelete] = useState(null);
   const { showSnackbar } = useSnackbar();
+  const { executeWithLoading } = useAsyncLoading();
   const { submitWithUndo } = useUndo(showSnackbar);
 
   const handleDeleteOpen = (id) => {
@@ -22,15 +24,15 @@ function useListOperations(service, loadItems) {
     submitWithUndo(
       itemToDelete,
       (id) => {
-        service
-          .deleteById(id)
-          .then(() => {
+        executeWithLoading(async () => {
+          try {
+            await service.deleteById(id);
             showSnackbar({ msg: 'Elemento eliminado correctamente.' });
             loadItems();
-          })
-          .catch(() => {
+          } catch (error) {
             showSnackbar({ msg: 'Error al eliminar el elemento.' });
-          });
+          }
+        });
       },
       () => {
         showSnackbar({ msg: 'Eliminación deshecha.' });

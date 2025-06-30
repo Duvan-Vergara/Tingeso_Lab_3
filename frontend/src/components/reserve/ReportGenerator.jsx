@@ -4,6 +4,7 @@ import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
 import Typography from '@mui/material/Typography';
 import reportService from '../../services/report.service';
+import { useAsyncLoading, useLoading } from '../LoadingBar';
 
 function ReportGenerator() {
   const [startDate, setStartDate] = useState(null);
@@ -12,7 +13,8 @@ function ReportGenerator() {
   const [anchorElEnd, setAnchorElEnd] = useState(null);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
-  const [loading, setLoading] = useState(false);
+  const { executeWithLoading } = useAsyncLoading();
+  const { isLoading } = useLoading();
 
   const months = [
     'Enero',
@@ -45,21 +47,22 @@ function ReportGenerator() {
       setError('La fecha de inicio no puede ser posterior a la fecha de fin.');
       return;
     }
-    setLoading(true);
-    try {
-      const response = await reportService.generateTariffReport(startDate, endDate);
-      const url = window.URL.createObjectURL(new Blob([response.data]));
-      const link = document.createElement('a');
-      link.href = url;
-      link.setAttribute('download', 'reporte_tarifas.xlsx');
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-      setSuccess('Reporte de tarifas generado y descargado correctamente.');
-    } catch (err) {
-      setError('Error al generar el reporte de tarifas.');
-    }
-    setLoading(false);
+
+    executeWithLoading(async () => {
+      try {
+        const response = await reportService.generateTariffReport(startDate, endDate);
+        const url = window.URL.createObjectURL(new Blob([response.data]));
+        const link = document.createElement('a');
+        link.href = url;
+        link.setAttribute('download', 'reporte_tarifas.xlsx');
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        setSuccess('Reporte de tarifas generado y descargado correctamente.');
+      } catch (err) {
+        setError('Error al generar el reporte de tarifas.');
+      }
+    });
   };
 
   const handleGenerateGroupSizeReport = async () => {
@@ -73,21 +76,22 @@ function ReportGenerator() {
       setError('La fecha de inicio no puede ser posterior a la fecha de fin.');
       return;
     }
-    setLoading(true);
-    try {
-      const response = await reportService.generateGroupSizeReport(startDate, endDate);
-      const url = window.URL.createObjectURL(new Blob([response.data]));
-      const link = document.createElement('a');
-      link.href = url;
-      link.setAttribute('download', 'reporte_tamanio_grupo.xlsx');
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-      setSuccess('Reporte de tamaño de grupo generado y descargado correctamente.');
-    } catch (err) {
-      setError('Error al generar el reporte de tamaño de grupo.');
-    }
-    setLoading(false);
+
+    executeWithLoading(async () => {
+      try {
+        const response = await reportService.generateGroupSizeReport(startDate, endDate);
+        const url = window.URL.createObjectURL(new Blob([response.data]));
+        const link = document.createElement('a');
+        link.href = url;
+        link.setAttribute('download', 'reporte_tamanio_grupo.xlsx');
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        setSuccess('Reporte de tamaño de grupo generado y descargado correctamente.');
+      } catch (err) {
+        setError('Error al generar el reporte de tamaño de grupo.');
+      }
+    });
   };
 
   const handleOpenStartMenu = (event) => {
@@ -216,17 +220,17 @@ function ReportGenerator() {
         <button
           type="button"
           onClick={handleGenerateTariffReport}
-          disabled={!startDate || !endDate || loading}
+          disabled={!startDate || !endDate || isLoading}
         >
-          {loading ? 'Generando...' : 'Generar Reporte de Tarifas'}
+          {isLoading ? 'Generando...' : 'Generar Reporte de Tarifas'}
         </button>
 
         <button
           type="button"
           onClick={handleGenerateGroupSizeReport}
-          disabled={!startDate || !endDate || loading}
+          disabled={!startDate || !endDate || isLoading}
         >
-          {loading ? 'Generando...' : 'Generar Reporte de Tamaño de Grupo'}
+          {isLoading ? 'Generando...' : 'Generar Reporte de Tamaño de Grupo'}
         </button>
       </div>
     </div>

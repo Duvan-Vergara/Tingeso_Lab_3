@@ -9,6 +9,7 @@ import PeopleAltIcon from '@mui/icons-material/PeopleAlt';
 import PaidIcon from '@mui/icons-material/Paid';
 import DiscountIcon from '@mui/icons-material/Discount';
 import MoreTimeIcon from '@mui/icons-material/MoreTime';
+import HelpOutlineIcon from '@mui/icons-material/HelpOutline';
 import HomeIcon from '@mui/icons-material/Home';
 import StarIcon from '@mui/icons-material/Star';
 import GroupAddIcon from '@mui/icons-material/GroupAdd';
@@ -103,6 +104,15 @@ export default function Sidemenu({ open, toggleDrawer }) {
             <MoreTimeIcon sx={{ color: 'var(--text-optional-color)' }} />
           </ListItemIcon>
           <ListItemText primary="Rack Semanal" />
+        </ListItemButton>
+
+        <Divider sx={{ backgroundColor: 'var(--border-color)' }} />
+
+        <ListItemButton onClick={() => navigate('/faq')}>
+          <ListItemIcon>
+            <HelpOutlineIcon sx={{ color: 'var(--text-optional-color)' }} />
+          </ListItemIcon>
+          <ListItemText primary="Preguntas Frecuentes" />
         </ListItemButton>
       </List>
       <Divider sx={{ backgroundColor: 'var(--border-color)' }} />

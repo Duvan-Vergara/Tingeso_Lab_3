@@ -9,6 +9,7 @@ import Paper from '@mui/material/Paper';
 import Button from '@mui/material/Button';
 import ConfirmDialog from './ConfirmDialog';
 import useListOperations from './useListOperations';
+import { useAsyncLoading } from './LoadingBar';
 
 function GenericList({
   columns,
@@ -23,6 +24,7 @@ function GenericList({
   confirmTitle,
   confirmMessage,
 }) {
+  const { executeWithLoading } = useAsyncLoading();
   const {
     confirmOpen,
     handleDeleteOpen,

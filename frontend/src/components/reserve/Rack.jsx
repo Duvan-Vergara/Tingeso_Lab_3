@@ -8,6 +8,7 @@ import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import Paper from '@mui/material/Paper';
 import CustomTextField from '../CustomTextField';
+import { useAsyncLoading, useLoading } from '../LoadingBar';
 import axios from '../../http-common';
 
 const diasSemana = [
@@ -25,25 +26,27 @@ function Rack() {
   const [mes, setMes] = useState(new Date().getMonth() + 1);
   const [dia, setDia] = useState(new Date().getDate());
   const [rack, setRack] = useState([]);
-  const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const { executeWithLoading } = useAsyncLoading();
+  const { isLoading } = useLoading();
 
   const handleConsultar = async (e) => {
     e.preventDefault();
-    setLoading(true);
     setError('');
-    try {
-      const response = await axios.post('/api/racksemanal/obtener', {
-        anio,
-        mes,
-        dia,
-      });
-      setRack(response.data);
-    } catch (err) {
-      setRack([]);
-      setError('Error al consultar el rack semanal. Intenta nuevamente.');
-    }
-    setLoading(false);
+    
+    executeWithLoading(async () => {
+      try {
+        const response = await axios.post('/api/racksemanal/obtener', {
+          anio,
+          mes,
+          dia,
+        });
+        setRack(response.data);
+      } catch (err) {
+        setRack([]);
+        setError('Error al consultar el rack semanal. Intenta nuevamente.');
+      }
+    });
   };
 
   return (
@@ -93,10 +96,10 @@ function Rack() {
         />
         <button
           type="submit"
-          disabled={loading}
+          disabled={isLoading}
           style={{ minWidth: 120 }}
         >
-          {loading ? 'Consultando...' : 'Consultar'}
+          {isLoading ? 'Consultando...' : 'Consultar'}
         </button>
       </form>
       {error && (
@@ -128,7 +131,7 @@ function Rack() {
           </TableHead>
           <TableBody>
             <TableRow>
-              {loading ? (
+              {isLoading ? (
                 diasSemana.map((nombreDia) => (
                   <TableCell key={nombreDia} sx={{ textAlign: 'center', color: '#888' }}>
                     <span style={{ color: 'var(--accent-color)' }}>Cargando...</span>

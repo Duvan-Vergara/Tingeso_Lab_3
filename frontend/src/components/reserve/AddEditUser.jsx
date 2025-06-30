@@ -8,6 +8,7 @@ import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import userService from '../../services/user.service';
 import CustomTextField from '../CustomTextField';
 import { useSnackbar } from '../GlobalSnackbar';
+import { useAsyncLoading } from '../LoadingBar';
 import useUndo from '../useUndo';
 
 function AddEditUser() {
@@ -20,6 +21,7 @@ function AddEditUser() {
   const navigate = useNavigate();
   const location = useLocation();
   const { showSnackbar } = useSnackbar();
+  const { executeWithLoading } = useAsyncLoading();
   const { submitWithUndo } = useUndo(showSnackbar);
 
   useEffect(() => {
@@ -30,18 +32,18 @@ function AddEditUser() {
       setEmail(location.state.email || '');
       setBirthDate(location.state.birthDate || '');
     } else if (id) {
-      userService
-        .getUserById(id)
-        .then((user) => {
+      executeWithLoading(async () => {
+        try {
+          const user = await userService.getUserById(id);
           setRut(user.data.rut);
           setName(user.data.name);
           setLastName(user.data.lastName);
           setEmail(user.data.email);
           setBirthDate(user.data.birthDate);
-        })
-        .catch(() => {
+        } catch (error) {
           showSnackbar({ msg: 'Error al cargar el usuario.', severity: 'error' });
-        });
+        }
+      });
     } else {
       setRut('');
       setName('');
@@ -49,7 +51,7 @@ function AddEditUser() {
       setEmail('');
       setBirthDate('');
     }
-  }, [id, location.state, showSnackbar]);
+  }, [id, location.state, showSnackbar, executeWithLoading]);
 
   const saveUser = (e) => {
     e.preventDefault();
@@ -74,16 +76,18 @@ function AddEditUser() {
         const savePromise = id
           ? userService.saveUser({ ...data, id })
           : userService.saveUser(data);
-        savePromise
-          .then(() => {
+        
+        executeWithLoading(async () => {
+          try {
+            await savePromise;
             navigate('/user/list'); // No pasar undoMsg ni undoData
-          })
-          .catch(() => {
+          } catch (error) {
             showSnackbar({
               msg: 'Ha ocurrido un error al intentar guardar el usuario.',
               severity: 'error',
             });
-          });
+          }
+        });
       },
       (data) => {
         // Restaurar el formulario si se deshace

@@ -2,22 +2,26 @@ import { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import reserveService from '../../services/reserve.service';
 import { useSnackbar } from '../GlobalSnackbar';
+import { useAsyncLoading } from '../LoadingBar';
 import GenericList from '../GenericList';
 
 function ReserveList() {
   const [reserves, setReserves] = useState([]);
   const navigate = useNavigate();
   const { showSnackbar } = useSnackbar();
+  const { executeWithLoading } = useAsyncLoading();
 
   const loadReserves = useCallback(async () => {
-    try {
-      const response = await reserveService.getAllReserves();
-      return response.data;
-    } catch (error) {
-      showSnackbar({ msg: 'Error al cargar las reservas.' });
-      return [];
-    }
-  }, [showSnackbar]);
+    return executeWithLoading(async () => {
+      try {
+        const response = await reserveService.getAllReserves();
+        return response.data;
+      } catch (error) {
+        showSnackbar({ msg: 'Error al cargar las reservas.' });
+        return [];
+      }
+    });
+  }, [showSnackbar, executeWithLoading]);
 
   useEffect(() => {
     const fetchReserves = async () => {
@@ -36,25 +40,25 @@ function ReserveList() {
   };
 
   const handleSendPaymentReceipt = (id) => {
-    reserveService
-      .sendPaymentReceipt(id)
-      .then(() => {
+    executeWithLoading(async () => {
+      try {
+        await reserveService.sendPaymentReceipt(id);
         showSnackbar({ msg: 'Comprobante de pago enviado con éxito.' });
-      })
-      .catch(() => {
+      } catch (error) {
         showSnackbar({ msg: 'Error al enviar el comprobante de pago.' });
-      });
+      }
+    });
   };
 
   const handleSendPaymentReceiptV2 = (id) => {
-    reserveService
-      .sendPaymentReceiptV2(id)
-      .then(() => {
+    executeWithLoading(async () => {
+      try {
+        await reserveService.sendPaymentReceiptV2(id);
         showSnackbar({ msg: 'Comprobante de pago (v2) enviado con éxito.' });
-      })
-      .catch(() => {
+      } catch (error) {
         showSnackbar({ msg: 'Error al enviar el comprobante de pago (v2).' });
-      });
+      }
+    });
   };
 
   const columns = [
