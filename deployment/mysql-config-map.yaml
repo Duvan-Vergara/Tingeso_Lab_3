@@ -1,0 +1,27 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: mysql-config-map
+  labels:
+    app: mysql-config-map
+data:
+  # Configuración para tariff-service (M1 - RF1)
+  DB_HOST_TARIFF: "tariff-service-db-service"
+  DB_PORT_TARIFF: "3306"
+  DB_DBNAME_TARIFF: "tartifasbd"
+  # Configuración para discount-people-service (M2 - RF2)
+  DB_HOST_DISCOUNT_PEOPLE: "discount-people-service-db-service"
+  DB_PORT_DISCOUNT_PEOPLE: "3306"
+  DB_DBNAME_DISCOUNT_PEOPLE: "desctpersona"
+  # Configuración para discount-frequent-service (M3 - RF3)
+  DB_HOST_DISCOUNT_FREQUENT: "discount-frequent-service-db-service"
+  DB_PORT_DISCOUNT_FREQUENT: "3306"
+  DB_DBNAME_DISCOUNT_FREQUENT: "desctpersonafrect"
+  # Configuración para special-rates-service (M4 - RF4)
+  DB_HOST_SPECIAL_RATES: "special-rates-service-db-service"
+  DB_PORT_SPECIAL_RATES: "3306"
+  DB_DBNAME_SPECIAL_RATES: "tartiffspecialbd"
+  # Configuración para reserve-service (M5 - RF5-RF6)
+  DB_HOST_RESERVE: "reserve-service-db-service"
+  DB_PORT_RESERVE: "3306"
+  DB_DBNAME_RESERVE: "reserve"

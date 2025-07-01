@@ -1,5 +1,4 @@
 import { useState } from 'react';
-import Box from '@mui/material/Box';
 import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
 import TableCell from '@mui/material/TableCell';
@@ -8,7 +7,9 @@ import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import Paper from '@mui/material/Paper';
 import CustomTextField from '../CustomTextField';
-import { useAsyncLoading, useLoading } from '../LoadingBar';
+import CardLayout from '../CardLayout';
+import LoadingState from '../LoadingState';
+import { useAsyncLoading } from '../LoadingBar';
 import axios from '../../http-common';
 
 const diasSemana = [
@@ -27,13 +28,14 @@ function Rack() {
   const [dia, setDia] = useState(new Date().getDate());
   const [rack, setRack] = useState([]);
   const [error, setError] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
   const { executeWithLoading } = useAsyncLoading();
-  const { isLoading } = useLoading();
 
   const handleConsultar = async (e) => {
     e.preventDefault();
     setError('');
-    
+    setIsLoading(true);
+
     executeWithLoading(async () => {
       try {
         const response = await axios.post('/api/racksemanal/obtener', {
@@ -45,23 +47,17 @@ function Rack() {
       } catch (err) {
         setRack([]);
         setError('Error al consultar el rack semanal. Intenta nuevamente.');
+      } finally {
+        setIsLoading(false);
       }
     });
   };
 
   return (
-    <Box
-      sx={{
-        maxWidth: 900,
-        margin: '2rem auto',
-        background: 'rgba(30,30,47,0.9)',
-        borderRadius: 2,
-        p: 3,
-      }}
+    <CardLayout
+      title="Rack Semanal de Reservas"
+      className="rack-container"
     >
-      <h2 style={{ color: 'var(--text-optional-color)', textAlign: 'center' }}>
-        Rack Semanal de Reservas
-      </h2>
       <form
         onSubmit={handleConsultar}
         style={{
@@ -107,38 +103,35 @@ function Rack() {
           {error}
         </div>
       )}
-      <TableContainer
-        component={Paper}
-        sx={{ boxShadow: 3, backgroundColor: 'var(--background-color)' }}
-      >
-        <Table>
-          <TableHead>
-            <TableRow>
-              {diasSemana.map((nombreDia) => (
-                <TableCell
-                  key={nombreDia}
-                  sx={{
-                    color: 'var(--primary-color)',
-                    fontWeight: 'bold',
-                    textAlign: 'center',
-                    backgroundColor: 'var(--optional-color)',
-                  }}
-                >
-                  {nombreDia}
-                </TableCell>
-              ))}
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            <TableRow>
-              {isLoading ? (
-                diasSemana.map((nombreDia) => (
-                  <TableCell key={nombreDia} sx={{ textAlign: 'center', color: '#888' }}>
-                    <span style={{ color: 'var(--accent-color)' }}>Cargando...</span>
+
+      {isLoading ? (
+        <LoadingState message="Consultando rack semanal..." />
+      ) : (
+        <TableContainer
+          component={Paper}
+          sx={{ boxShadow: 3, backgroundColor: 'var(--background-color)' }}
+        >
+          <Table>
+            <TableHead>
+              <TableRow>
+                {diasSemana.map((nombreDia) => (
+                  <TableCell
+                    key={nombreDia}
+                    sx={{
+                      color: 'var(--primary-color)',
+                      fontWeight: 'bold',
+                      textAlign: 'center',
+                      backgroundColor: 'var(--optional-color)',
+                    }}
+                  >
+                    {nombreDia}
                   </TableCell>
-                ))
-              ) : (
-                rack.map((reservas, idx) => (
+                ))}
+              </TableRow>
+            </TableHead>
+            <TableBody>
+              <TableRow>
+                {rack.map((reservas, idx) => (
                   <TableCell
                     key={diasSemana[idx] || `col-${idx}`}
                     sx={{
@@ -161,13 +154,13 @@ function Rack() {
                       ))
                       : 'Sin reservas'}
                   </TableCell>
-                ))
-              )}
-            </TableRow>
-          </TableBody>
-        </Table>
-      </TableContainer>
-    </Box>
+                ))}
+              </TableRow>
+            </TableBody>
+          </Table>
+        </TableContainer>
+      )}
+    </CardLayout>
   );
 }
 

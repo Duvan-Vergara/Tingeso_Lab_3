@@ -18,11 +18,18 @@ export const useLoading = () => {
 export const LoadingProvider = ({ children }) => {
   const [isLoading, setIsLoading] = useState(false);
   const [loadingCount, setLoadingCount] = useState(0);
+  const [progress, setProgress] = useState(0);
 
   // Función para iniciar la carga
   const startLoading = () => {
-    setLoadingCount(prev => prev + 1);
-    setIsLoading(true);
+    setLoadingCount(prev => {
+      const newCount = prev + 1;
+      if (newCount === 1) {
+        setIsLoading(true);
+        setProgress(0);
+      }
+      return newCount;
+    });
   };
 
   // Función para terminar la carga
@@ -30,15 +37,36 @@ export const LoadingProvider = ({ children }) => {
     setLoadingCount(prev => {
       const newCount = Math.max(0, prev - 1);
       if (newCount === 0) {
-        // Agregar un pequeño delay para que la barra sea visible aunque sea muy rápido
-        setTimeout(() => setIsLoading(false), 300);
+        // Completar la barra al 100% antes de ocultarla
+        setProgress(100);
+        setTimeout(() => {
+          setIsLoading(false);
+          setProgress(0);
+        }, 300);
       }
       return newCount;
     });
   };
 
+  // Simular progreso mientras está cargando
+  useEffect(() => {
+    let timer;
+    if (isLoading && progress < 90) {
+      timer = setInterval(() => {
+        setProgress(prev => {
+          if (prev >= 90) return prev;
+          // Progreso más rápido al inicio, luego más lento
+          const increment = Math.random() * 15 * (1 - prev / 100);
+          return Math.min(prev + increment, 90);
+        });
+      }, 150);
+    }
+    return () => clearInterval(timer);
+  }, [isLoading, progress]);
+
   const value = {
     isLoading,
+    progress,
     startLoading,
     stopLoading,
   };
@@ -56,37 +84,9 @@ LoadingProvider.propTypes = {
 
 // Componente de la barra de carga
 export const LoadingBar = () => {
-  const { isLoading } = useLoading();
-  const [progress, setProgress] = useState(0);
+  const { isLoading, progress } = useLoading();
 
-  useEffect(() => {
-    if (isLoading) {
-      setProgress(0);
-      const timer = setInterval(() => {
-        setProgress((oldProgress) => {
-          if (oldProgress === 100) {
-            return 100;
-          }
-          // Progreso más rápido al inicio, luego más lento
-          const diff = Math.random() * 10;
-          return Math.min(oldProgress + diff, 95);
-        });
-      }, 100);
-
-      return () => {
-        clearInterval(timer);
-      };
-    } else {
-      // Completar la barra rápidamente cuando termina la carga
-      setProgress(100);
-      const timer = setTimeout(() => {
-        setProgress(0);
-      }, 500);
-      return () => clearTimeout(timer);
-    }
-  }, [isLoading]);
-
-  if (!isLoading && progress === 0) {
+  if (!isLoading) {
     return null;
   }
 
@@ -108,8 +108,8 @@ export const LoadingBar = () => {
           height: '4px',
           backgroundColor: 'rgba(0, 0, 0, 0.1)',
           '& .MuiLinearProgress-bar': {
-            backgroundColor: '#1976d2',
-            transition: progress === 100 ? 'transform 0.3s ease-out' : 'transform 0.1s ease-out',
+            background: 'linear-gradient(90deg, var(--primary-color), var(--accent-color))',
+            transition: 'transform 0.2s ease-out',
           },
         }}
       />
@@ -126,8 +126,6 @@ export const useAsyncLoading = () => {
     try {
       const result = await asyncFunction();
       return result;
-    } catch (error) {
-      throw error;
     } finally {
       stopLoading();
     }

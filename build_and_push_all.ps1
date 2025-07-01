@@ -56,6 +56,10 @@ function BuildBackend {
         $svcPath = Join-Path $PSScriptRoot "backend/$svcName"
         $dockerfilePath = Join-Path $svcPath 'Dockerfile'
         $jarPath = Join-Path $svcPath 'target/backend.jar'
+        
+        Write-Host "Procesando servicio: $svcName" -ForegroundColor Magenta
+        Write-Host "Ruta del servicio: $svcPath" -ForegroundColor Gray
+        
         if ((Test-Path $svcPath -PathType Container) -and (Test-Path $dockerfilePath)) {
             if (!(Test-Path $jarPath)) {
                 Write-Host "[ADVERTENCIA] No se encontró $jarPath. Debes compilar el microservicio antes de hacer build Docker. Se omite $svcName." -ForegroundColor Yellow
@@ -63,10 +67,20 @@ function BuildBackend {
             }
             $tag = "duvanvergara/" + $svcName + ":latest"
             Write-Host "\n=== Build & Push $svcName ===" -ForegroundColor Cyan
+            Write-Host "Tag que se va a usar: $tag" -ForegroundColor Green
             Push-Location $svcPath
+            
+            Write-Host "Ejecutando: docker build -t $tag ." -ForegroundColor Gray
             docker build -t $tag .
+            
             if ($LASTEXITCODE -eq 0) {
+                Write-Host "Build exitoso. Haciendo push de: $tag" -ForegroundColor Green
                 docker push $tag
+                if ($LASTEXITCODE -eq 0) {
+                    Write-Host "Push exitoso para: $tag" -ForegroundColor Green
+                } else {
+                    Write-Host "[ERROR] Falló el push de $tag" -ForegroundColor Red
+                }
             } else {
                 Write-Host "[ERROR] Falló el build de $svcName. No se hace push." -ForegroundColor Red
             }
@@ -78,6 +92,11 @@ function BuildBackend {
         }
     }
     Write-Host "BACKEND listo.`n" -ForegroundColor Green
+    
+    # Mostrar las imágenes construidas
+    Write-Host "=== VERIFICACIÓN: Imágenes construidas ===" -ForegroundColor Cyan
+    docker images --filter=reference="duvanvergara/*" --format "table {{.Repository}}\t{{.Tag}}\t{{.CreatedAt}}\t{{.Size}}"
+    
     Pause
 }
 
@@ -109,6 +128,9 @@ do {
             $exitMenu = $true
         }
         "4" { $exitMenu = $true }
-        default { Write-Host "Opción no válida.`n" -ForegroundColor Yellow, Pause }
+        default { 
+            Write-Host "Opción no válida.`n" -ForegroundColor Yellow
+            Pause 
+        }
     }
 } while (-not $exitMenu)

@@ -3,33 +3,37 @@ import { useNavigate } from 'react-router-dom';
 import reserveService from '../../services/reserve.service';
 import { useSnackbar } from '../GlobalSnackbar';
 import { useAsyncLoading } from '../LoadingBar';
+import LoadingState from '../LoadingState';
 import GenericList from '../GenericList';
 
 function ReserveList() {
   const [reserves, setReserves] = useState([]);
+  const [isInitialLoading, setIsInitialLoading] = useState(true);
   const navigate = useNavigate();
   const { showSnackbar } = useSnackbar();
   const { executeWithLoading } = useAsyncLoading();
 
   const loadReserves = useCallback(async () => {
-    return executeWithLoading(async () => {
-      try {
-        const response = await reserveService.getAllReserves();
-        return response.data;
-      } catch (error) {
-        showSnackbar({ msg: 'Error al cargar las reservas.' });
-        return [];
-      }
-    });
-  }, [showSnackbar, executeWithLoading]);
+    try {
+      const response = await reserveService.getAllReserves();
+      return response.data;
+    } catch (error) {
+      showSnackbar({ msg: 'Error al cargar las reservas.' });
+      return [];
+    }
+  }, [showSnackbar]);
 
   useEffect(() => {
     const fetchReserves = async () => {
-      const reservesData = await loadReserves();
+      setIsInitialLoading(true);
+      const reservesData = await executeWithLoading(async () => {
+        return await loadReserves();
+      });
       setReserves(reservesData);
+      setIsInitialLoading(false);
     };
     fetchReserves();
-  }, [loadReserves]);
+  }, [loadReserves, executeWithLoading]);
 
   const handleAddReserve = () => {
     navigate('/reserve/add');
@@ -109,6 +113,16 @@ function ReserveList() {
       </button>
     </>
   );
+
+  if (isInitialLoading) {
+    return (
+      <LoadingState
+        title="Cargando Reservas"
+        message="Obteniendo datos del servidor..."
+        size="large"
+      />
+    );
+  }
 
   return (
     <GenericList

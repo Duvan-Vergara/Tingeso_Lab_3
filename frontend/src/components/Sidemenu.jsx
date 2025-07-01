@@ -26,7 +26,12 @@ export default function Sidemenu({ open, toggleDrawer }) {
     <Box
       role="presentation"
       onClick={toggleDrawer(false)}
-      onKeyDown={toggleDrawer(false)}
+      onKeyDown={(event) => {
+        // Mejorar el manejo del teclado para accesibilidad
+        if (event.key === 'Escape' || event.key === 'Tab') {
+          toggleDrawer(false)(event);
+        }
+      }}
       sx={{
         backgroundColor: 'rgba(30,30,47,0.9)',
         height: '100%',
@@ -121,7 +126,25 @@ export default function Sidemenu({ open, toggleDrawer }) {
 
   return (
     <div>
-      <Drawer anchor="left" open={open} onClose={toggleDrawer(false)}>
+      <Drawer 
+        anchor="left" 
+        open={open} 
+        onClose={toggleDrawer(false)}
+        ModalProps={{
+          // Mejorar accesibilidad del modal
+          keepMounted: false,
+          disablePortal: false,
+          hideBackdrop: false,
+          disableAutoFocus: false,
+          disableEnforceFocus: false,
+          disableRestoreFocus: false,
+        }}
+        PaperProps={{
+          // Asegurar que el contenido sea accesible
+          role: 'navigation',
+          'aria-label': 'Menú de navegación principal',
+        }}
+      >
         {listOptions()}
       </Drawer>
     </div>

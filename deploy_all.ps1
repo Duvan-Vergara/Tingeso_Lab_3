@@ -42,8 +42,15 @@ do {
     kubectl apply -f mysql-root-secret.yaml
     kubectl apply -f mysql-user-secret.yaml
 
-    # Bases de datos y PVCs
+    # MySQL principal primero
     kubectl apply -f mysql-deployment.yaml
+    Write-Host "Esperando a que MySQL esté listo..."
+    kubectl wait --for=condition=ready pod -l app=mysql --timeout=300s
+    if ($LASTEXITCODE -ne 0) {
+        Write-Host "Error: MySQL no está listo después de 5 minutos." -ForegroundColor Red
+    }
+
+    # Bases de datos de microservicios
     kubectl apply -f tariff-service-db-deployment-service.yaml
     kubectl apply -f discount-people-service-db-deployment-service.yaml
     kubectl apply -f discount-frequent-service-db-deployment-service.yaml
@@ -81,18 +88,32 @@ do {
     kubectl apply -f reports-service-deployment.yaml
 
     # Frontend
-    kubectl apply -f frotend-deployment.yaml
+    kubectl apply -f frontend-deployment.yaml
 
     Pop-Location
     Write-Host "Deployments aplicados." -ForegroundColor Green
 
-    # Poblar automáticamente las bases de datos m1 a m5
-    foreach ($svc in 1..5) {
-        $configMapName = "m$svc-db-sql"
-        $fromFile = "m$svc-db.mysql.sql=$PSScriptRoot/deployment/m$svc-db.mysql.sql"
-        $jobFile = "$PSScriptRoot/deployment/m$svc-db-populate-job.yaml"
-        kubectl create configmap $configMapName --from-file=$fromFile --dry-run=client -o yaml | kubectl apply -f -
-        kubectl apply -f $jobFile
+    # Poblar automáticamente las bases de datos
+    $servicesToPopulate = @(
+        'tariff-service',
+        'discount-people-service', 
+        'discount-frequent-service',
+        'special-rates-service',
+        'reserve-service'
+    )
+    
+    foreach ($svc in $servicesToPopulate) {
+        $configMapName = "$svc-db-sql"
+        $sqlFile = "$PSScriptRoot/deployment/$svc-db.mysql.sql"
+        $jobFile = "$PSScriptRoot/deployment/$svc-db-populate-job.yaml"
+        
+        if ((Test-Path $sqlFile) -and (Test-Path $jobFile)) {
+            Write-Host "Poblando base de datos para $svc..." -ForegroundColor Cyan
+            kubectl create configmap $configMapName --from-file="$svc-db.mysql.sql=$sqlFile" --dry-run=client -o yaml | kubectl apply -f -
+            kubectl apply -f $jobFile
+        } else {
+            Write-Host "[ADVERTENCIA] Archivos de poblado no encontrados para $svc" -ForegroundColor Yellow
+        }
     }
     Pause
     $exitMenu = $true

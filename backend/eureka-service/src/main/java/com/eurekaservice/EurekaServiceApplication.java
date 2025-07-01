@@ -12,7 +12,4 @@ public class EurekaServiceApplication {
 		SpringApplication.run(EurekaServiceApplication.class, args);
 	}
 
-	//esos datos se llenan al levantarse el servicio
-	// los de eureca-service.yaml (${eureka.instance.hostname}:${server.port})
-
 }

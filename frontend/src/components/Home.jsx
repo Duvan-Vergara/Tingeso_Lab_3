@@ -4,13 +4,9 @@ import {
   Container,
   Typography,
   Box,
-  Card,
-  CardContent,
-  CardActions,
   Button,
   Grid,
   Chip,
-  Paper,
 } from '@mui/material';
 import {
   Bookmark as BookmarkIcon,
@@ -20,6 +16,7 @@ import {
   CalendarToday as CalendarTodayIcon,
   AttachMoney as AttachMoneyIcon,
 } from '@mui/icons-material';
+import CardLayout from './CardLayout';
 
 function Home() {
   const navigate = useNavigate();
@@ -101,22 +98,21 @@ function Home() {
       </Box>
 
       {/* FAQ Destacado */}
-      <Paper
-        elevation={3}
-        sx={{
-          p: 3,
-          mb: 4,
-          background: 'linear-gradient(135deg, #e3f2fd 0%, #f3e5f5 100%)',
-          border: '2px solid #1976d2',
+      <CardLayout
+        className="faq-highlight"
+        style={{
+          marginBottom: '2rem',
+          background: 'linear-gradient(135deg, var(--card-bg) 0%, rgba(75, 0, 130, 0.1) 100%)',
+          border: '2px solid var(--primary-color)',
         }}
       >
         <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', mb: 2 }}>
-          <HelpOutlineIcon sx={{ color: '#1976d2', mr: 1, fontSize: 30 }} />
-          <Typography variant="h5" sx={{ fontWeight: 'bold', color: '#1976d2' }}>
+          <HelpOutlineIcon sx={{ color: 'var(--primary-color)', mr: 1, fontSize: 30 }} />
+          <Typography variant="h5" sx={{ fontWeight: 'bold', color: 'var(--primary-color)' }}>
             ¿Primera vez usando el sistema?
           </Typography>
         </Box>
-        <Typography variant="body1" textAlign="center" sx={{ mb: 2 }}>
+        <Typography variant="body1" textAlign="center" sx={{ mb: 2, color: 'var(--text-secondary)' }}>
           Consulta nuestras <strong>Preguntas Frecuentes</strong> para aprender a usar todas las funciones
         </Typography>
         <Box sx={{ textAlign: 'center' }}>
@@ -135,7 +131,7 @@ function Home() {
             Ver Guía Completa
           </Button>
         </Box>
-      </Paper>
+      </CardLayout>
 
       {/* Acciones Rápidas */}
       <Typography variant="h4" component="h2" gutterBottom sx={{ fontWeight: 'bold', mb: 3 }}>
@@ -145,43 +141,39 @@ function Home() {
       <Grid container spacing={3}>
         {quickActions.map((action, index) => (
           <Grid item xs={12} sm={6} md={4} key={index}>
-            <Card
-              sx={{
-                height: '100%',
-                display: 'flex',
-                flexDirection: 'column',
-                transition: 'transform 0.2s, box-shadow 0.2s',
-                '&:hover': {
-                  transform: 'translateY(-4px)',
-                  boxShadow: 4,
-                },
-                cursor: 'pointer',
-              }}
+            <CardLayout
+              className="action-card"
               onClick={() => navigate(action.path)}
+              style={{ cursor: 'pointer', height: '100%' }}
             >
-              <CardContent sx={{ flexGrow: 1 }}>
-                <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
-                  <Box sx={{ color: action.color, mr: 1 }}>{action.icon}</Box>
-                  <Typography variant="h6" component="h3" sx={{ fontWeight: 'bold' }}>
-                    {action.title}
-                  </Typography>
-                </Box>
-                <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
-                  {action.description}
+              <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
+                <Box sx={{ color: action.color, mr: 1 }}>{action.icon}</Box>
+                <Typography variant="h6" component="h3" sx={{ fontWeight: 'bold', color: 'var(--accent-color)' }}>
+                  {action.title}
                 </Typography>
-                {action.shortcut && (
-                  <Chip
-                    label={action.shortcut}
-                    size="small"
-                    variant="outlined"
-                    sx={{ backgroundColor: `${action.color}15`, color: action.color }}
-                  />
-                )}
-              </CardContent>
-              <CardActions>
+              </Box>
+              <Typography variant="body2" sx={{ mb: 2, color: 'var(--text-secondary)' }}>
+                {action.description}
+              </Typography>
+              {action.shortcut && (
+                <Chip
+                  label={action.shortcut}
+                  size="small"
+                  variant="outlined"
+                  sx={{
+                    backgroundColor: `${action.color}15`,
+                    color: action.color,
+                    borderColor: action.color,
+                  }}
+                />
+              )}
+              <Box sx={{ mt: 'auto', pt: 2 }}>
                 <Button
                   size="small"
-                  sx={{ color: action.color }}
+                  sx={{
+                    color: action.color,
+                    '&:hover': { backgroundColor: `${action.color}15` },
+                  }}
                   onClick={(e) => {
                     e.stopPropagation();
                     navigate(action.path);
@@ -189,8 +181,8 @@ function Home() {
                 >
                   Acceder
                 </Button>
-              </CardActions>
-            </Card>
+              </Box>
+            </CardLayout>
           </Grid>
         ))}
       </Grid>
