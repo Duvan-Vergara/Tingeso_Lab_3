@@ -701,3 +701,20 @@ Get-Content .\SONARQUBE-GITHUB-VALIDADO.md
 ---
 
 ## �📚 DOCUMENTACIÓN TÉCNICA DETALLADA
+
+## 📚 Documentación
+
+### 📋 Documentación Principal
+- **[DOCUMENTACION-CONSOLIDADA.md](DOCUMENTACION-CONSOLIDADA.md)** - Documentación técnica consolidada
+- **[ESTADO-FINAL-PROYECTO.md](ESTADO-FINAL-PROYECTO.md)** - Estado actual del proyecto
+- **[EVIDENCIA-CUMPLIMIENTO-RUBRICA.md](EVIDENCIA-CUMPLIMIENTO-RUBRICA.md)** - Evidencias de cumplimiento
+- **[JENKINS-JMETER-OFICIAL.md](JENKINS-JMETER-OFICIAL.md)** - Guía Jenkins + JMeter
+- **[PREREQUISITOS-SISTEMA.md](PREREQUISITOS-SISTEMA.md)** - Prerequisitos del sistema
+
+### 🔧 Scripts de Automatización
+- **[EJECUTOR-AUTOMATICO-COMPLETO.ps1](EJECUTOR-AUTOMATICO-COMPLETO.ps1)** - Automatización completa
+- **[BUILD-COMPLETO.ps1](BUILD-COMPLETO.ps1)** - Build y deployment
+- **[ORQUESTADOR-PRUEBAS-REALES.ps1](ORQUESTADOR-PRUEBAS-REALES.ps1)** - Orquestación de pruebas
+
+---
+*Documentación actualizada automáticamente*

@@ -51,21 +51,27 @@ echo.
 echo [7] 📊 Ver Estado y Reportes
 echo     ▶ Estado actual + Abrir reportes generados
 echo.
-echo [8] 📁 Documentación y Evidencias
-echo     ▶ Abrir todos los archivos de evidencia
+echo [1] � EJECUTAR TODO AUTOMÁTICAMENTE (RECOMENDADO)
+echo     ▶ Despliega + Pruebas + Reportes automáticos
+echo.
+echo [2] 🔧 Solo Build y Despliegue
+echo     ▶ BUILD-COMPLETO.ps1
+echo.
+echo [3] � Verificar Prerequisitos
+echo     ▶ VERIFICAR-PREREQUISITOS.ps1
+echo.
+echo [4] 🧹 Limpiar Sistema
+echo     ▶ Limpiar Docker + Kubernetes
 echo.
 echo [0] ❌ Salir
 echo.
 echo ════════════════════════════════════════════════════════════════════════════════
-set /p choice="💡 Seleccione una opción [0-7]: "
+set /p choice="💡 Seleccione una opción [0-4]: "
 
 if "%choice%"=="1" goto ejecutar_todo_automatico
-if "%choice%"=="2" goto solo_despliegue
-if "%choice%"=="3" goto solo_funcionales
-if "%choice%"=="4" goto solo_rendimiento
-if "%choice%"=="5" goto solo_calidad
-if "%choice%"=="6" goto estado_reportes
-if "%choice%"=="7" goto documentacion
+if "%choice%"=="2" goto solo_build
+if "%choice%"=="3" goto verificar_prerequisitos
+if "%choice%"=="4" goto limpiar_sistema
 if "%choice%"=="0" goto salir
 echo.
 echo ❌ Opción no válida. Presione cualquier tecla para continuar...
@@ -95,10 +101,10 @@ REM Detectar PowerShell disponible
 where pwsh >nul 2>nul
 if %errorlevel% equ 0 (
     echo ✅ Usando PowerShell 7...
-    pwsh -ExecutionPolicy Bypass -File "%~dp0EJECUTOR-AUTOMATICO-COMPLETO.ps1" -TestType "all"
+    pwsh -ExecutionPolicy Bypass -File "%~dp0EJECUTOR-AUTOMATICO-COMPLETO.ps1"
 ) else (
     echo ✅ Usando Windows PowerShell...
-    powershell -ExecutionPolicy Bypass -File "%~dp0EJECUTOR-AUTOMATICO-COMPLETO.ps1" -TestType "all"
+    powershell -ExecutionPolicy Bypass -File "%~dp0EJECUTOR-AUTOMATICO-COMPLETO.ps1"
 )
 
 echo.
@@ -118,6 +124,70 @@ echo.
 pause
 goto menu
 
+:solo_build
+echo.
+echo ================================================================================
+echo   EJECUTANDO: Solo Build y Despliegue
+echo ================================================================================
+echo.
+where pwsh >nul 2>nul
+if %ERRORLEVEL% == 0 (
+    echo Ejecutando BUILD-COMPLETO con PowerShell 7...
+    pwsh -ExecutionPolicy Bypass -File "%~dp0BUILD-COMPLETO.ps1" -TipoPrueba load
+) else (
+    echo Ejecutando BUILD-COMPLETO con Windows PowerShell...
+    powershell -ExecutionPolicy Bypass -File "%~dp0BUILD-COMPLETO.ps1" -TipoPrueba load
+)
+echo.
+echo Build y despliegue completado.
+pause
+goto menu
+
+:verificar_prerequisitos
+echo.
+echo ================================================================================
+echo   EJECUTANDO: Verificar Prerequisitos
+echo ================================================================================
+echo.
+where pwsh >nul 2>nul
+if %ERRORLEVEL% == 0 (
+    echo Verificando prerequisitos con PowerShell 7...
+    pwsh -ExecutionPolicy Bypass -File "%~dp0VERIFICAR-PREREQUISITOS.ps1"
+) else (
+    echo Verificando prerequisitos con Windows PowerShell...
+    powershell -ExecutionPolicy Bypass -File "%~dp0VERIFICAR-PREREQUISITOS.ps1"
+)
+echo.
+echo Verificación completada.
+pause
+goto menu
+
+:limpiar_sistema
+echo.
+echo ================================================================================
+echo   EJECUTANDO: Limpiar Sistema
+echo ================================================================================
+echo.
+echo [PASO 1/2] Limpiando recursos de Kubernetes...
+where pwsh >nul 2>nul
+if %ERRORLEVEL% == 0 (
+    pwsh -ExecutionPolicy Bypass -File "%~dp0clean_k8s.ps1"
+) else (
+    powershell -ExecutionPolicy Bypass -File "%~dp0clean_k8s.ps1"
+)
+echo.
+echo [PASO 2/2] Limpiando contenedores e imágenes Docker...
+where pwsh >nul 2>nul
+if %ERRORLEVEL% == 0 (
+    pwsh -ExecutionPolicy Bypass -File "%~dp0clean_docker.ps1"
+) else (
+    powershell -ExecutionPolicy Bypass -File "%~dp0clean_docker.ps1"
+)
+echo.
+echo Sistema limpiado exitosamente.
+pause
+goto menu
+
 :solo_despliegue
 cls
 echo.
@@ -125,9 +195,9 @@ echo 🔧 DESPLEGANDO SOLO EL SISTEMA...
 echo.
 where pwsh >nul 2>nul
 if %errorlevel% equ 0 (
-    pwsh -ExecutionPolicy Bypass -File "%~dp0EJECUTOR-AUTOMATICO-COMPLETO.ps1" -TestType "all" -OnlyValidate:$false | findstr /C:"DESPLEGANDO" /C:"SUCCESS" /C:"ERROR"
+    pwsh -ExecutionPolicy Bypass -File "%~dp0EJECUTOR-AUTOMATICO-COMPLETO.ps1" -SkipDeploy:$false | findstr /C:"DESPLEGANDO" /C:"SUCCESS" /C:"ERROR"
 ) else (
-    powershell -ExecutionPolicy Bypass -File "%~dp0EJECUTOR-AUTOMATICO-COMPLETO.ps1" -TestType "all" -OnlyValidate:$false
+    powershell -ExecutionPolicy Bypass -File "%~dp0EJECUTOR-AUTOMATICO-COMPLETO.ps1" -SkipDeploy:$false
 )
 pause
 goto menu
@@ -139,9 +209,9 @@ echo 🧪 EJECUTANDO SOLO PRUEBAS FUNCIONALES...
 echo.
 where pwsh >nul 2>nul
 if %errorlevel% equ 0 (
-    pwsh -ExecutionPolicy Bypass -File "%~dp0EJECUTOR-AUTOMATICO-COMPLETO.ps1" -TestType "functional" -SkipDeploy
+    pwsh -ExecutionPolicy Bypass -File "%~dp0EJECUTOR-AUTOMATICO-COMPLETO.ps1" -TestType "FUNCTIONAL" -SkipDeploy
 ) else (
-    powershell -ExecutionPolicy Bypass -File "%~dp0EJECUTOR-AUTOMATICO-COMPLETO.ps1" -TestType "functional" -SkipDeploy
+    powershell -ExecutionPolicy Bypass -File "%~dp0EJECUTOR-AUTOMATICO-COMPLETO.ps1" -TestType "FUNCTIONAL" -SkipDeploy
 )
 pause
 goto menu
@@ -153,9 +223,9 @@ echo ⚡ EJECUTANDO SOLO PRUEBAS DE RENDIMIENTO...
 echo.
 where pwsh >nul 2>nul
 if %errorlevel% equ 0 (
-    pwsh -ExecutionPolicy Bypass -File "%~dp0EJECUTOR-AUTOMATICO-COMPLETO.ps1" -TestType "performance" -SkipDeploy
+    pwsh -ExecutionPolicy Bypass -File "%~dp0EJECUTOR-AUTOMATICO-COMPLETO.ps1" -TestType "PERFORMANCE" -SkipDeploy
 ) else (
-    powershell -ExecutionPolicy Bypass -File "%~dp0EJECUTOR-AUTOMATICO-COMPLETO.ps1" -TestType "performance" -SkipDeploy
+    powershell -ExecutionPolicy Bypass -File "%~dp0EJECUTOR-AUTOMATICO-COMPLETO.ps1" -TestType "PERFORMANCE" -SkipDeploy
 )
 pause
 goto menu
@@ -167,9 +237,9 @@ echo 🔍 EJECUTANDO SOLO ANÁLISIS DE CALIDAD...
 echo.
 where pwsh >nul 2>nul
 if %errorlevel% equ 0 (
-    pwsh -ExecutionPolicy Bypass -File "%~dp0EJECUTOR-AUTOMATICO-COMPLETO.ps1" -TestType "quality"
+    pwsh -ExecutionPolicy Bypass -File "%~dp0EJECUTOR-AUTOMATICO-COMPLETO.ps1" -TestType "QUALITY"
 ) else (
-    powershell -ExecutionPolicy Bypass -File "%~dp0EJECUTOR-AUTOMATICO-COMPLETO.ps1" -TestType "quality"
+    powershell -ExecutionPolicy Bypass -File "%~dp0EJECUTOR-AUTOMATICO-COMPLETO.ps1" -TestType "QUALITY"
 )
 pause
 goto menu
@@ -622,6 +692,78 @@ echo  1. Revisar los reportes generados
 echo  2. Verificar metricas de rendimiento en reportes HTML de JMeter
 echo  3. Validar resultados de Selenium en archivos JSON
 echo.
+pause
+goto menu
+
+:orquestador_pruebas
+echo.
+echo ================================================================================
+echo   EJECUTANDO: ORQUESTADOR PRUEBAS REALES
+echo ================================================================================
+echo.
+echo Integrando Jenkins + JMeter + SonarQube + Selenium...
+where pwsh >nul 2>nul
+if %ERRORLEVEL% == 0 (
+    pwsh -ExecutionPolicy Bypass -File "%~dp0ORQUESTADOR-PRUEBAS-REALES.ps1" -Fase all -TipoPrueba load -GenerarReporte
+) else (
+    powershell -ExecutionPolicy Bypass -File "%~dp0ORQUESTADOR-PRUEBAS-REALES.ps1" -Fase all -TipoPrueba load -GenerarReporte
+)
+echo.
+echo Orquestación completada. Revisar reportes generados.
+pause
+goto menu
+
+:validador_integracion
+echo.
+echo ================================================================================
+echo   EJECUTANDO: VALIDADOR INTEGRACIÓN FINAL
+echo ================================================================================
+echo.
+echo Verificando sistema end-to-end...
+where pwsh >nul 2>nul
+if %ERRORLEVEL% == 0 (
+    pwsh -ExecutionPolicy Bypass -File "%~dp0VALIDADOR-INTEGRACION-FINAL.ps1" -Nivel full -GenerarReporte -AutoReparar
+) else (
+    powershell -ExecutionPolicy Bypass -File "%~dp0VALIDADOR-INTEGRACION-FINAL.ps1" -Nivel full -GenerarReporte -AutoReparar
+)
+echo.
+echo Validación completada. Revisar reporte de integración.
+pause
+goto menu
+
+:limpiador_documentacion
+echo.
+echo ================================================================================
+echo   EJECUTANDO: LIMPIADOR DOCUMENTACIÓN
+echo ================================================================================
+echo.
+echo Consolidando documentación redundante...
+where pwsh >nul 2>nul
+if %ERRORLEVEL% == 0 (
+    pwsh -ExecutionPolicy Bypass -File "%~dp0LIMPIADOR-DOCUMENTACION.ps1" -Solo_Analisis
+) else (
+    powershell -ExecutionPolicy Bypass -File "%~dp0LIMPIADOR-DOCUMENTACION.ps1" -Solo_Analisis
+)
+echo.
+echo Para ejecutar la limpieza real, usar el parámetro -Ejecutar
+pause
+goto menu
+
+:verificar_prerequisitos
+echo.
+echo ================================================================================
+echo   EJECUTANDO: VERIFICAR PREREQUISITOS
+echo ================================================================================
+echo.
+echo Verificando herramientas y configuración...
+where pwsh >nul 2>nul
+if %ERRORLEVEL% == 0 (
+    pwsh -ExecutionPolicy Bypass -File "%~dp0VERIFICAR-PREREQUISITOS.ps1"
+) else (
+    powershell -ExecutionPolicy Bypass -File "%~dp0VERIFICAR-PREREQUISITOS.ps1"
+)
+echo.
+echo Verificación completada.
 pause
 goto menu
 

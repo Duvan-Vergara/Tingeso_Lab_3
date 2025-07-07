@@ -1,0 +1,13 @@
+[2025-07-07 09:44:54] [INFO] 🚀 Iniciando ejecución automática completa...
+[2025-07-07 09:44:54] [INFO] Tipo de prueba: ALL
+[2025-07-07 09:44:54] [INFO] 🔍 Verificando prerequisitos...
+[2025-07-07 09:44:54] [SUCCESS] ✅ kubectl encontrado
+[2025-07-07 09:44:54] [SUCCESS] ✅ docker encontrado
+[2025-07-07 09:44:54] [SUCCESS] ✅ java encontrado
+[2025-07-07 09:44:54] [SUCCESS] ✅ mvn encontrado
+[2025-07-07 09:44:54] [SUCCESS] ✅ node encontrado (opcional)
+[2025-07-07 09:44:54] [SUCCESS] ✅ jmeter encontrado (opcional)
+[2025-07-07 09:44:54] [SUCCESS] ✅ Todos los prerequisitos disponibles
+[2025-07-07 09:44:54] [INFO] 🚀 Iniciando despliegue del sistema...
+[2025-07-07 09:44:54] [INFO] 📋 Usando contexto: docker-desktop
+[2025-07-07 09:44:54] [INFO] 🔧 Ejecutando despliegue automatizado...

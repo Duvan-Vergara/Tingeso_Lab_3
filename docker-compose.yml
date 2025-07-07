@@ -1,0 +1,88 @@
+version: '3.8'
+
+services:
+  # SonarQube para análisis de código
+  sonarqube:
+    image: sonarqube:community
+    container_name: sonarqube-karting
+    ports:
+      - "9000:9000"
+    environment:
+      - SONAR_ES_BOOTSTRAP_CHECKS_DISABLE=true
+      - SONAR_JDBC_URL=jdbc:h2:mem:sonar
+      - SONAR_JDBC_USERNAME=sonar
+      - SONAR_JDBC_PASSWORD=sonar
+    volumes:
+      - sonarqube_data:/opt/sonarqube/data
+      - sonarqube_logs:/opt/sonarqube/logs
+      - sonarqube_extensions:/opt/sonarqube/extensions
+    networks:
+      - karting-network
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:9000/api/system/health || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+
+  # Jenkins para CI/CD y ejecución de pruebas
+  jenkins:
+    image: jenkins/jenkins:lts
+    container_name: jenkins-karting
+    ports:
+      - "8080:8080"
+      - "50000:50000"
+    environment:
+      - JENKINS_OPTS=--httpPort=8080
+      - JAVA_OPTS=-Djava.awt.headless=true
+    volumes:
+      - jenkins_home:/var/jenkins_home
+      - /var/run/docker.sock:/var/run/docker.sock
+      - ./jenkins:/var/jenkins_home/workspace/karting
+      - ./Karting-Load-Testing.jmx:/var/jenkins_home/workspace/karting/Karting-Load-Testing.jmx
+      - ./Karting-Stress-Testing.jmx:/var/jenkins_home/workspace/karting/Karting-Stress-Testing.jmx
+      - ./Karting-Volume-Testing.jmx:/var/jenkins_home/workspace/karting/Karting-Volume-Testing.jmx
+    networks:
+      - karting-network
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:8080/login || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+
+  # Base de datos MySQL para testing local (opcional)
+  mysql-test:
+    image: mysql:8.0
+    container_name: mysql-karting-test
+    ports:
+      - "3307:3306"
+    environment:
+      - MYSQL_ROOT_PASSWORD=admin123
+      - MYSQL_DATABASE=karting_test_db
+      - MYSQL_USER=karting_user
+      - MYSQL_PASSWORD=karting_pass
+    volumes:
+      - mysql_test_data:/var/lib/mysql
+      - ./deployment/karting-db-populate-load.sql:/docker-entrypoint-initdb.d/init.sql
+    networks:
+      - karting-network
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+
+volumes:
+  sonarqube_data:
+    driver: local
+  sonarqube_logs:
+    driver: local
+  sonarqube_extensions:
+    driver: local
+  jenkins_home:
+    driver: local
+  mysql_test_data:
+    driver: local
+
+networks:
+  karting-network:
+    driver: bridge
