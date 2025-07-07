@@ -1,0 +1,639 @@
+{
+  "id": "karting-functional-tests",
+  "version": "2.0",
+  "name": "Karting System - Pruebas Funcionales Completas (8 tests automatizados)",
+  "url": "http://localhost:30080",
+  "tests": [
+    {
+      "id": "rf5-01-registro-reserva-exitoso",
+      "name": "RF5-01: Registro exitoso de reserva básica",
+      "commands": [
+        {
+          "id": "1",
+          "comment": "Navegar a página de registro de reservas",
+          "command": "open",
+          "target": "/reserve/add",
+          "targets": [],
+          "value": ""
+        },
+        {
+          "id": "2",
+          "comment": "Esperar que la página cargue completamente",
+          "command": "waitForElementVisible",
+          "target": "css=form, .reserve-form, [data-testid='reserve-form']",
+          "targets": [
+            ["css=form", "css:finder"],
+            ["css=.reserve-form", "css:finder"],
+            ["css=[data-testid='reserve-form']", "css:finder"]
+          ],
+          "value": "10000"
+        },
+        {
+          "id": "3",
+          "comment": "Ingresar nombre del cliente",
+          "command": "type",
+          "target": "css=input[name='clientName'], #clientName, [data-testid='client-name']",
+          "targets": [
+            ["css=input[name='clientName']", "css:finder"],
+            ["id=clientName", "id"],
+            ["css=[data-testid='client-name']", "css:finder"]
+          ],
+          "value": "Juan Pérez - Test Automatizado"
+        },
+        {
+          "id": "4",
+          "comment": "Seleccionar fecha de reserva",
+          "command": "type",
+          "target": "css=input[name='reserveDay'], #reserveDay, [type='date']",
+          "targets": [
+            ["css=input[name='reserveDay']", "css:finder"],
+            ["id=reserveDay", "id"],
+            ["css=[type='date']", "css:finder"]
+          ],
+          "value": "2025-07-15"
+        },
+        {
+          "id": "5",
+          "comment": "Seleccionar hora de inicio",
+          "command": "type",
+          "target": "css=input[name='beginTime'], #beginTime, [type='time']",
+          "targets": [
+            ["css=input[name='beginTime']", "css:finder"],
+            ["id=beginTime", "id"],
+            ["css=[type='time']", "css:finder"]
+          ],
+          "value": "14:00"
+        },
+        {
+          "id": "6",
+          "comment": "Seleccionar tarifa",
+          "command": "click",
+          "target": "css=select[name='tariffId'], #tariffId",
+          "targets": [
+            ["css=select[name='tariffId']", "css:finder"],
+            ["id=tariffId", "id"]
+          ],
+          "value": ""
+        },
+        {
+          "id": "7",
+          "comment": "Elegir primera tarifa disponible",
+          "command": "select",
+          "target": "css=select[name='tariffId'], #tariffId",
+          "targets": [
+            ["css=select[name='tariffId']", "css:finder"],
+            ["id=tariffId", "id"]
+          ],
+          "value": "index=1"
+        },
+        {
+          "id": "8",
+          "comment": "Enviar formulario",
+          "command": "click",
+          "target": "css=button[type='submit'], .submit-btn, [data-testid='submit-button']",
+          "targets": [
+            ["css=button[type='submit']", "css:finder"],
+            ["css=.submit-btn", "css:finder"],
+            ["css=[data-testid='submit-button']", "css:finder"]
+          ],
+          "value": ""
+        },
+        {
+          "id": "9",
+          "comment": "Verificar mensaje de éxito o redirección",
+          "command": "waitForElementVisible",
+          "target": "css=.success, .alert-success, .snackbar, .notification",
+          "targets": [
+            ["css=.success", "css:finder"],
+            ["css=.alert-success", "css:finder"],
+            ["css=.snackbar", "css:finder"],
+            ["css=.notification", "css:finder"]
+          ],
+          "value": "8000"
+        }
+      ]
+    },
+    {
+      "id": "rf5-02-validacion-campos-obligatorios",
+      "name": "RF5-02: Validación de campos obligatorios",
+      "commands": [
+        {
+          "id": "1",
+          "comment": "Navegar a formulario de reservas",
+          "command": "open",
+          "target": "/reserve/add",
+          "targets": [],
+          "value": ""
+        },
+        {
+          "id": "2",
+          "comment": "Esperar formulario",
+          "command": "waitForElementVisible",
+          "target": "css=form",
+          "targets": [
+            ["css=form", "css:finder"]
+          ],
+          "value": "5000"
+        },
+        {
+          "id": "3",
+          "comment": "Intentar enviar formulario vacío",
+          "command": "click",
+          "target": "css=button[type='submit']",
+          "targets": [
+            ["css=button[type='submit']", "css:finder"]
+          ],
+          "value": ""
+        },
+        {
+          "id": "4",
+          "comment": "Verificar que aparecen mensajes de validación",
+          "command": "waitForElementVisible",
+          "target": "css=.error, .field-error, .validation-error, .invalid-feedback",
+          "targets": [
+            ["css=.error", "css:finder"],
+            ["css=.field-error", "css:finder"],
+            ["css=.validation-error", "css:finder"],
+            ["css=.invalid-feedback", "css:finder"]
+          ],
+          "value": "3000"
+        },
+        {
+          "id": "5",
+          "comment": "Verificar que el formulario no se envió",
+          "command": "assertElementPresent",
+          "target": "css=form",
+          "targets": [
+            ["css=form", "css:finder"]
+          ],
+          "value": ""
+        }
+      ]
+    },
+    {
+      "id": "rf7-01-visualizacion-rack-semanal",
+      "name": "RF7-01: Visualización de rack semanal actual",
+      "commands": [
+        {
+          "id": "1",
+          "comment": "Navegar a página de rack semanal",
+          "command": "open",
+          "target": "/rack",
+          "targets": [],
+          "value": ""
+        },
+        {
+          "id": "2",
+          "comment": "Esperar que cargue la página del rack",
+          "command": "waitForElementVisible",
+          "target": "css=.rack-container, .rack-grid, table, .data-display",
+          "targets": [
+            ["css=.rack-container", "css:finder"],
+            ["css=.rack-grid", "css:finder"],
+            ["css=table", "css:finder"],
+            ["css=.data-display", "css:finder"]
+          ],
+          "value": "10000"
+        },
+        {
+          "id": "3",
+          "comment": "Verificar que se muestra información de karts",
+          "command": "assertElementPresent",
+          "target": "css=.rack-item, .kart-status, tr, .data-row",
+          "targets": [
+            ["css=.rack-item", "css:finder"],
+            ["css=.kart-status", "css:finder"],
+            ["css=tr", "css:finder"],
+            ["css=.data-row", "css:finder"]
+          ],
+          "value": ""
+        },
+        {
+          "id": "4",
+          "comment": "Verificar que hay controles de fecha",
+          "command": "assertElementPresent",
+          "target": "css=input[type='date'], .date-picker, select[name*='year'], select[name*='month']",
+          "targets": [
+            ["css=input[type='date']", "css:finder"],
+            ["css=.date-picker", "css:finder"],
+            ["css=select[name*='year']", "css:finder"],
+            ["css=select[name*='month']", "css:finder"]
+          ],
+          "value": ""
+        }
+      ]
+    },
+    {
+      "id": "rf7-02-filtrado-fecha-especifica",
+      "name": "RF7-02: Filtrado por fecha específica",
+      "commands": [
+        {
+          "id": "1",
+          "comment": "Ir a página de rack",
+          "command": "open",
+          "target": "/rack",
+          "targets": [],
+          "value": ""
+        },
+        {
+          "id": "2",
+          "comment": "Esperar controles de fecha",
+          "command": "waitForElementVisible",
+          "target": "css=select, input[type='date'], .date-controls",
+          "targets": [
+            ["css=select", "css:finder"],
+            ["css=input[type='date']", "css:finder"],
+            ["css=.date-controls", "css:finder"]
+          ],
+          "value": "5000"
+        },
+        {
+          "id": "3",
+          "comment": "Seleccionar año 2025",
+          "command": "select",
+          "target": "css=select[name*='year'], select[name='anio'], #anio",
+          "targets": [
+            ["css=select[name*='year']", "css:finder"],
+            ["css=select[name='anio']", "css:finder"],
+            ["id=anio", "id"]
+          ],
+          "value": "label=2025"
+        },
+        {
+          "id": "4",
+          "comment": "Seleccionar mes julio",
+          "command": "select",
+          "target": "css=select[name*='month'], select[name='mes'], #mes",
+          "targets": [
+            ["css=select[name*='month']", "css:finder"],
+            ["css=select[name='mes']", "css:finder"],
+            ["id=mes", "id"]
+          ],
+          "value": "label=7"
+        },
+        {
+          "id": "5",
+          "comment": "Seleccionar día 15",
+          "command": "select",
+          "target": "css=select[name*='day'], select[name='dia'], #dia",
+          "targets": [
+            ["css=select[name*='day']", "css:finder"],
+            ["css=select[name='dia']", "css:finder"],
+            ["id=dia", "id"]
+          ],
+          "value": "label=15"
+        },
+        {
+          "id": "6",
+          "comment": "Hacer clic en consultar",
+          "command": "click",
+          "target": "css=button[type='submit'], .btn-consultar, [data-testid='consult-button']",
+          "targets": [
+            ["css=button[type='submit']", "css:finder"],
+            ["css=.btn-consultar", "css:finder"],
+            ["css=[data-testid='consult-button']", "css:finder"]
+          ],
+          "value": ""
+        },
+        {
+          "id": "7",
+          "comment": "Verificar que se muestran resultados",
+          "command": "waitForElementVisible",
+          "target": "css=.rack-results, .kart-data, table tbody tr, .results-container",
+          "targets": [
+            ["css=.rack-results", "css:finder"],
+            ["css=.kart-data", "css:finder"],
+            ["css=table tbody tr", "css:finder"],
+            ["css=.results-container", "css:finder"]
+          ],
+          "value": "8000"
+        }
+      ]
+    },
+    {
+      "id": "rf8-01-reporte-por-tarifas",
+      "name": "RF8-01: Generación de reporte por tarifas",
+      "commands": [
+        {
+          "id": "1",
+          "comment": "Navegar a página de reportes",
+          "command": "open",
+          "target": "/reports",
+          "targets": [],
+          "value": ""
+        },
+        {
+          "id": "2",
+          "comment": "Esperar que cargue la página de reportes",
+          "command": "waitForElementVisible",
+          "target": "css=.reports-container, .report-generator, form",
+          "targets": [
+            ["css=.reports-container", "css:finder"],
+            ["css=.report-generator", "css:finder"],
+            ["css=form", "css:finder"]
+          ],
+          "value": "8000"
+        },
+        {
+          "id": "3",
+          "comment": "Hacer clic en generar reporte de tarifas",
+          "command": "click",
+          "target": "css=button[data-report='tariff'], .btn-tariff-report, #tariffReportBtn",
+          "targets": [
+            ["css=button[data-report='tariff']", "css:finder"],
+            ["css=.btn-tariff-report", "css:finder"],
+            ["id=tariffReportBtn", "id"]
+          ],
+          "value": ""
+        },
+        {
+          "id": "4",
+          "comment": "Esperar que se genere el reporte",
+          "command": "waitForElementVisible",
+          "target": "css=.report-results, .chart-container, .report-data, table",
+          "targets": [
+            ["css=.report-results", "css:finder"],
+            ["css=.chart-container", "css:finder"],
+            ["css=.report-data", "css:finder"],
+            ["css=table", "css:finder"]
+          ],
+          "value": "15000"
+        },
+        {
+          "id": "5",
+          "comment": "Verificar que se muestran datos del reporte",
+          "command": "assertElementPresent",
+          "target": "css=.data-row, tbody tr, .report-item",
+          "targets": [
+            ["css=.data-row", "css:finder"],
+            ["css=tbody tr", "css:finder"],
+            ["css=.report-item", "css:finder"]
+          ],
+          "value": ""
+        }
+      ]
+    },
+    {
+      "id": "rf8-02-reporte-tamano-grupo",
+      "name": "RF8-02: Reporte por tamaño de grupo",
+      "commands": [
+        {
+          "id": "1",
+          "comment": "Ir a reportes",
+          "command": "open",
+          "target": "/reports",
+          "targets": [],
+          "value": ""
+        },
+        {
+          "id": "2",
+          "comment": "Esperar página de reportes",
+          "command": "waitForElementVisible",
+          "target": "css=.reports-container, form",
+          "targets": [
+            ["css=.reports-container", "css:finder"],
+            ["css=form", "css:finder"]
+          ],
+          "value": "5000"
+        },
+        {
+          "id": "3",
+          "comment": "Generar reporte por tamaño de grupo",
+          "command": "click",
+          "target": "css=button[data-report='group'], .btn-group-report, #groupReportBtn",
+          "targets": [
+            ["css=button[data-report='group']", "css:finder"],
+            ["css=.btn-group-report", "css:finder"],
+            ["id=groupReportBtn", "id"]
+          ],
+          "value": ""
+        },
+        {
+          "id": "4",
+          "comment": "Verificar generación del reporte",
+          "command": "waitForElementVisible",
+          "target": "css=.report-results, .group-stats, table",
+          "targets": [
+            ["css=.report-results", "css:finder"],
+            ["css=.group-stats", "css:finder"],
+            ["css=table", "css:finder"]
+          ],
+          "value": "10000"
+        }
+      ]
+    },
+    {
+      "id": "rf5-04-edicion-reserva-existente",
+      "name": "RF5-04: Edición de reserva existente",
+      "commands": [
+        {
+          "id": "1",
+          "comment": "Ir a lista de reservas",
+          "command": "open",
+          "target": "/reserve",
+          "targets": [],
+          "value": ""
+        },
+        {
+          "id": "2",
+          "comment": "Esperar lista de reservas",
+          "command": "waitForElementVisible",
+          "target": "css=.reserves-list, table, .data-table",
+          "targets": [
+            ["css=.reserves-list", "css:finder"],
+            ["css=table", "css:finder"],
+            ["css=.data-table", "css:finder"]
+          ],
+          "value": "8000"
+        },
+        {
+          "id": "3",
+          "comment": "Hacer clic en primer botón de editar",
+          "command": "click",
+          "target": "css=button[data-action='edit']:first-of-type, .btn-edit:first, .edit-button:first",
+          "targets": [
+            ["css=button[data-action='edit']:first-of-type", "css:finder"],
+            ["css=.btn-edit:first", "css:finder"],
+            ["css=.edit-button:first", "css:finder"]
+          ],
+          "value": ""
+        },
+        {
+          "id": "4",
+          "comment": "Esperar formulario de edición",
+          "command": "waitForElementVisible",
+          "target": "css=form, .edit-form, .reserve-form",
+          "targets": [
+            ["css=form", "css:finder"],
+            ["css=.edit-form", "css:finder"],
+            ["css=.reserve-form", "css:finder"]
+          ],
+          "value": "5000"
+        },
+        {
+          "id": "5",
+          "comment": "Modificar nombre del cliente",
+          "command": "clear",
+          "target": "css=input[name='clientName'], #clientName",
+          "targets": [
+            ["css=input[name='clientName']", "css:finder"],
+            ["id=clientName", "id"]
+          ],
+          "value": ""
+        },
+        {
+          "id": "6",
+          "command": "type",
+          "target": "css=input[name='clientName'], #clientName",
+          "targets": [
+            ["css=input[name='clientName']", "css:finder"],
+            ["id=clientName", "id"]
+          ],
+          "value": "Cliente Editado - Test"
+        },
+        {
+          "id": "7",
+          "comment": "Guardar cambios",
+          "command": "click",
+          "target": "css=button[type='submit'], .save-button",
+          "targets": [
+            ["css=button[type='submit']", "css:finder"],
+            ["css=.save-button", "css:finder"]
+          ],
+          "value": ""
+        },
+        {
+          "id": "8",
+          "comment": "Verificar éxito de actualización",
+          "command": "waitForElementVisible",
+          "target": "css=.success, .alert-success, .notification",
+          "targets": [
+            ["css=.success", "css:finder"],
+            ["css=.alert-success", "css:finder"],
+            ["css=.notification", "css:finder"]
+          ],
+          "value": "5000"
+        }
+      ]
+    },
+    {
+      "id": "rf7-03-cambio-estado-kart",
+      "name": "RF7-03: Cambio de estado de kart",
+      "commands": [
+        {
+          "id": "1",
+          "comment": "Navegar a rack",
+          "command": "open",
+          "target": "/rack",
+          "targets": [],
+          "value": ""
+        },
+        {
+          "id": "2",
+          "comment": "Esperar datos del rack",
+          "command": "waitForElementVisible",
+          "target": "css=.rack-data, table, .kart-list",
+          "targets": [
+            ["css=.rack-data", "css:finder"],
+            ["css=table", "css:finder"],
+            ["css=.kart-list", "css:finder"]
+          ],
+          "value": "8000"
+        },
+        {
+          "id": "3",
+          "comment": "Consultar fecha actual para mostrar datos",
+          "command": "click",
+          "target": "css=button[type='submit'], .btn-consultar",
+          "targets": [
+            ["css=button[type='submit']", "css:finder"],
+            ["css=.btn-consultar", "css:finder"]
+          ],
+          "value": ""
+        },
+        {
+          "id": "4",
+          "comment": "Esperar resultados de la consulta",
+          "command": "waitForElementVisible",
+          "target": "css=.rack-results, tbody tr, .kart-item",
+          "targets": [
+            ["css=.rack-results", "css:finder"],
+            ["css=tbody tr", "css:finder"],
+            ["css=.kart-item", "css:finder"]
+          ],
+          "value": "10000"
+        },
+        {
+          "id": "5",
+          "comment": "Verificar que se muestran karts con diferentes estados",
+          "command": "assertElementPresent",
+          "target": "css=.kart-status, .status-indicator, td",
+          "targets": [
+            ["css=.kart-status", "css:finder"],
+            ["css=.status-indicator", "css:finder"],
+            ["css=td", "css:finder"]
+          ],
+          "value": ""
+        }
+      ]
+    }
+  ],
+  "suites": [
+    {
+      "id": "rf5-reservas-suite",
+      "name": "RF5 - Suite Reservas (4 tests)",
+      "persistSession": false,
+      "parallel": false,
+      "timeout": 300,
+      "tests": [
+        "rf5-01-registro-reserva-exitoso",
+        "rf5-02-validacion-campos-obligatorios",
+        "rf5-04-edicion-reserva-existente"
+      ]
+    },
+    {
+      "id": "rf7-rack-suite",
+      "name": "RF7 - Suite Rack Semanal (3 tests)",
+      "persistSession": false,
+      "parallel": false,
+      "timeout": 300,
+      "tests": [
+        "rf7-01-visualizacion-rack-semanal",
+        "rf7-02-filtrado-fecha-especifica",
+        "rf7-03-cambio-estado-kart"
+      ]
+    },
+    {
+      "id": "rf8-reportes-suite",
+      "name": "RF8 - Suite Reportes (2 tests)",
+      "persistSession": false,
+      "parallel": false,
+      "timeout": 300,
+      "tests": [
+        "rf8-01-reporte-por-tarifas",
+        "rf8-02-reporte-tamano-grupo"
+      ]
+    },
+    {
+      "id": "full-functional-suite",
+      "name": "Suite Completa - 8 Pruebas Funcionales Automatizadas",
+      "persistSession": false,
+      "parallel": false,
+      "timeout": 600,
+      "tests": [
+        "rf5-01-registro-reserva-exitoso",
+        "rf5-02-validacion-campos-obligatorios",
+        "rf7-01-visualizacion-rack-semanal",
+        "rf7-02-filtrado-fecha-especifica",
+        "rf8-01-reporte-por-tarifas",
+        "rf8-02-reporte-tamano-grupo",
+        "rf5-04-edicion-reserva-existente",
+        "rf7-03-cambio-estado-kart"
+      ]
+    }
+  ],
+  "urls": [
+    "http://localhost:30080"
+  ],
+  "plugins": []
+}

@@ -1,0 +1,304 @@
+{
+  "id": "karting-historias-usuario",
+  "version": "2.0",
+  "name": "Sistema Karting - Historias de Usuario Automatizadas",
+  "url": "http://localhost:30080",
+  "tests": [
+    {
+      "id": "hu001-registro-reserva-exitoso",
+      "name": "HU001 - Como cliente quiero registrar una reserva para usar las instalaciones",
+      "commands": [
+        {
+          "command": "open",
+          "target": "/reserve/add",
+          "value": ""
+        },
+        {
+          "command": "waitForElementVisible",
+          "target": "css=form",
+          "value": "10000"
+        },
+        {
+          "command": "type",
+          "target": "css=input[name='clientName']",
+          "value": "Juan Pérez"
+        },
+        {
+          "command": "type",
+          "target": "css=input[name='reserveDay']",
+          "value": "2025-07-15"
+        },
+        {
+          "command": "type",
+          "target": "css=input[name='beginTime']",
+          "value": "14:00"
+        },
+        {
+          "command": "click",
+          "target": "css=button[type='submit']",
+          "value": ""
+        },
+        {
+          "command": "waitForElementVisible",
+          "target": "css=.success-message, .snackbar-success",
+          "value": "5000"
+        }
+      ]
+    },
+    {
+      "id": "hu002-validacion-campos-obligatorios",
+      "name": "HU002 - Como administrador quiero validar datos para garantizar información correcta",
+      "commands": [
+        {
+          "command": "open",
+          "target": "/reserve/add",
+          "value": ""
+        },
+        {
+          "command": "waitForElementVisible",
+          "target": "css=form",
+          "value": "10000"
+        },
+        {
+          "command": "click",
+          "target": "css=button[type='submit']",
+          "value": ""
+        },
+        {
+          "command": "waitForElementVisible",
+          "target": "css=.error-message, .field-error",
+          "value": "3000"
+        },
+        {
+          "command": "assertElementPresent",
+          "target": "css=.validation-error",
+          "value": ""
+        }
+      ]
+    },
+    {
+      "id": "hu003-calculo-automatico-precios",
+      "name": "HU003 - Como cliente quiero ver el cálculo automático de precios",
+      "commands": [
+        {
+          "command": "open",
+          "target": "/reserve/add",
+          "value": ""
+        },
+        {
+          "command": "waitForElementVisible",
+          "target": "css=form",
+          "value": "10000"
+        },
+        {
+          "command": "select",
+          "target": "css=select[name='tariffId']",
+          "value": "index=1"
+        },
+        {
+          "command": "waitForElementVisible",
+          "target": "css=.price-display, .final-price",
+          "value": "3000"
+        },
+        {
+          "command": "assertElementPresent",
+          "target": "css=.calculated-price",
+          "value": ""
+        }
+      ]
+    },
+    {
+      "id": "hu006-rack-semanal-visualizacion",
+      "name": "HU006 - Como administrador quiero visualizar el rack semanal",
+      "commands": [
+        {
+          "command": "open",
+          "target": "/rack",
+          "value": ""
+        },
+        {
+          "command": "waitForElementVisible",
+          "target": "css=.rack-container, table",
+          "value": "10000"
+        },
+        {
+          "command": "assertElementPresent",
+          "target": "css=.rack-data, .kart-status",
+          "value": ""
+        },
+        {
+          "command": "assertElementPresent",
+          "target": "css=.date-selector",
+          "value": ""
+        }
+      ]
+    },
+    {
+      "id": "hu007-consulta-rack-por-fecha",
+      "name": "HU007 - Como operador quiero consultar estado por fecha",
+      "commands": [
+        {
+          "command": "open",
+          "target": "/rack",
+          "value": ""
+        },
+        {
+          "command": "waitForElementVisible",
+          "target": "css=form, .date-form",
+          "value": "10000"
+        },
+        {
+          "command": "type",
+          "target": "css=input[name='anio'], input[type='number']",
+          "value": "2025"
+        },
+        {
+          "command": "type",
+          "target": "css=input[name='mes']",
+          "value": "7"
+        },
+        {
+          "command": "type",
+          "target": "css=input[name='dia']",
+          "value": "15"
+        },
+        {
+          "command": "click",
+          "target": "css=button[type='submit'], .btn-consultar",
+          "value": ""
+        },
+        {
+          "command": "waitForElementVisible",
+          "target": "css=.rack-results, table",
+          "value": "5000"
+        }
+      ]
+    },
+    {
+      "id": "hu011-generacion-reporte-ingresos",
+      "name": "HU011 - Como administrador quiero generar reportes de ingresos",
+      "commands": [
+        {
+          "command": "open",
+          "target": "/reports",
+          "value": ""
+        },
+        {
+          "command": "waitForElementVisible",
+          "target": "css=.report-generator, form",
+          "value": "10000"
+        },
+        {
+          "command": "click",
+          "target": "css=button[data-report='tariff'], .btn-tariff-report",
+          "value": ""
+        },
+        {
+          "command": "waitForElementVisible",
+          "target": "css=.report-results, .report-data",
+          "value": "8000"
+        },
+        {
+          "command": "assertElementPresent",
+          "target": "css=.income-data, .report-table",
+          "value": ""
+        }
+      ]
+    },
+    {
+      "id": "hu012-filtrado-reportes-por-periodo",
+      "name": "HU012 - Como gerente quiero filtrar reportes por período",
+      "commands": [
+        {
+          "command": "open",
+          "target": "/reports",
+          "value": ""
+        },
+        {
+          "command": "waitForElementVisible",
+          "target": "css=.date-filters, form",
+          "value": "10000"
+        },
+        {
+          "command": "select",
+          "target": "css=select[name='startMonth']",
+          "value": "label=Julio"
+        },
+        {
+          "command": "select",
+          "target": "css=select[name='startYear']",
+          "value": "value=2025"
+        },
+        {
+          "command": "click",
+          "target": "css=button[data-report='group'], .btn-group-report",
+          "value": ""
+        },
+        {
+          "command": "waitForElementVisible",
+          "target": "css=.filtered-results",
+          "value": "5000"
+        }
+      ]
+    },
+    {
+      "id": "hu013-exportacion-datos-excel",
+      "name": "HU013 - Como contador quiero exportar datos para procesos contables",
+      "commands": [
+        {
+          "command": "open",
+          "target": "/reports",
+          "value": ""
+        },
+        {
+          "command": "waitForElementVisible",
+          "target": "css=.report-generator",
+          "value": "10000"
+        },
+        {
+          "command": "click",
+          "target": "css=button[data-report='tariff']",
+          "value": ""
+        },
+        {
+          "command": "waitForElementVisible",
+          "target": "css=.report-results",
+          "value": "8000"
+        },
+        {
+          "command": "click",
+          "target": "css=.export-btn, button[data-action='export']",
+          "value": ""
+        },
+        {
+          "command": "pause",
+          "target": "2000",
+          "value": ""
+        }
+      ]
+    }
+  ],
+  "suites": [
+    {
+      "id": "historias-usuario-rf5-rf7-rf8",
+      "name": "Suite Completa: Historias de Usuario RF5, RF7, RF8",
+      "persistSession": false,
+      "parallel": false,
+      "timeout": 300,
+      "tests": [
+        "hu001-registro-reserva-exitoso",
+        "hu002-validacion-campos-obligatorios",
+        "hu003-calculo-automatico-precios",
+        "hu006-rack-semanal-visualizacion",
+        "hu007-consulta-rack-por-fecha",
+        "hu011-generacion-reporte-ingresos",
+        "hu012-filtrado-reportes-por-periodo",
+        "hu013-exportacion-datos-excel"
+      ]
+    }
+  ],
+  "urls": [
+    "http://localhost:30080"
+  ],
+  "plugins": []
+}

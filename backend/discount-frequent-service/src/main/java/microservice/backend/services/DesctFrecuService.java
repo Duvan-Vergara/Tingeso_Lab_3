@@ -40,7 +40,7 @@ public class DesctFrecuService {
             entity.setPorcentajedesct(desctDTO.getPorcentajedesct());
         } else {
             entity = new DesctFrecuEntity(
-                    null, // ID will be generated automatically
+                    null,
                     desctDTO.getMinveces(),
                     desctDTO.getMaxveces(),
                     desctDTO.getPorcentajedesct()

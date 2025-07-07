@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, useEffect } from 'react';
+import React, { createContext, useContext, useState, useEffect, useRef } from 'react';
 import { LinearProgress, Box } from '@mui/material';
 import PropTypes from 'prop-types';
 
@@ -17,35 +17,30 @@ export const useLoading = () => {
 // Proveedor del contexto de carga
 export const LoadingProvider = ({ children }) => {
   const [isLoading, setIsLoading] = useState(false);
-  const [loadingCount, setLoadingCount] = useState(0);
   const [progress, setProgress] = useState(0);
+  // Usar useRef para el contador de operaciones activas
+  const loadingCountRef = useRef(0);
 
   // Función para iniciar la carga
   const startLoading = () => {
-    setLoadingCount(prev => {
-      const newCount = prev + 1;
-      if (newCount === 1) {
-        setIsLoading(true);
-        setProgress(0);
-      }
-      return newCount;
-    });
+    loadingCountRef.current += 1;
+    if (loadingCountRef.current === 1) {
+      setIsLoading(true);
+      setProgress(0);
+    }
   };
 
   // Función para terminar la carga
   const stopLoading = () => {
-    setLoadingCount(prev => {
-      const newCount = Math.max(0, prev - 1);
-      if (newCount === 0) {
-        // Completar la barra al 100% antes de ocultarla
-        setProgress(100);
-        setTimeout(() => {
-          setIsLoading(false);
-          setProgress(0);
-        }, 300);
-      }
-      return newCount;
-    });
+    loadingCountRef.current = Math.max(0, loadingCountRef.current - 1);
+    if (loadingCountRef.current === 0) {
+      // Completar la barra al 100% antes de ocultarla
+      setProgress(100);
+      setTimeout(() => {
+        setIsLoading(false);
+        setProgress(0);
+      }, 300);
+    }
   };
 
   // Simular progreso mientras está cargando

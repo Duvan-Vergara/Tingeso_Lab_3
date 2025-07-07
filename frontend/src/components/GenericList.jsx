@@ -14,6 +14,7 @@ import CardLayout from './CardLayout';
 import EmptyState from './EmptyState';
 
 function GenericList({
+  title = 'Lista',
   columns,
   data,
   service,
@@ -35,7 +36,7 @@ function GenericList({
   } = useListOperations(service, loadItems);
 
   return (
-    <CardLayout title="Lista" className="table-container">
+    <CardLayout title={title} className="table-container">
       <Button
         variant="contained"
         className="list-add-button"
@@ -86,12 +87,31 @@ function GenericList({
             </TableHead>
             <TableBody>
               {data.map((item) => (
-                <TableRow key={item.id}>
+                <TableRow
+                  key={item.id}
+                  className="animated-list-row hover-highlight"
+                  sx={{
+                    cursor: 'pointer',
+                    transition: 'all 0.3s ease',
+                    '&:hover': {
+                      transform: 'translateX(4px)',
+                      backgroundColor: 'rgba(76, 175, 80, 0.1)',
+                      boxShadow: '0 4px 12px rgba(76, 175, 80, 0.3)',
+                      '& .MuiTableCell-root': {
+                        color: '#4CAF50',
+                        fontWeight: '500',
+                      },
+                    },
+                  }}
+                >
                   {columns.map((col) => (
                     <TableCell
                       key={col.field}
                       align={col.align || 'left'}
-                      sx={{ color: 'var(--text-color)' }}
+                      sx={{
+                        color: 'var(--text-color)',
+                        transition: 'all 0.3s ease',
+                      }}
                     >
                       {col.render ? col.render(item[col.field], item) : item[col.field]}
                     </TableCell>
@@ -145,6 +165,7 @@ function GenericList({
 }
 
 GenericList.propTypes = {
+  title: PropTypes.string,
   columns: PropTypes.arrayOf(
     PropTypes.shape({
       field: PropTypes.string.isRequired,
@@ -173,6 +194,7 @@ GenericList.propTypes = {
 };
 
 GenericList.defaultProps = {
+  title: 'Lista',
   extraActions: null,
   confirmText: 'Confirmar',
   cancelText: 'Cancelar',

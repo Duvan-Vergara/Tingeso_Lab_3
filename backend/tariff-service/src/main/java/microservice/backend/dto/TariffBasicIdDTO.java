@@ -11,5 +11,5 @@ import lombok.NoArgsConstructor;
 public class TariffBasicIdDTO {
     private long id;
     private int laps;
-    private int max_minutes;
+    private int maxMinutes;
 }

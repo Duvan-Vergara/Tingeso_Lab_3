@@ -49,7 +49,6 @@ function SpecialDayList() {
       onAdd={handleAddDay}
       onEdit={handleEditDay}
       columns={columns}
-      showSnackbar={showSnackbar}
       confirmTitle="¿Eliminar Día Especial?"
       confirmMessage="¿Estás seguro de que deseas eliminar este día especial?"
       confirmText="Eliminar"

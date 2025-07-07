@@ -30,7 +30,7 @@ public class ReporteService {
 
     private final DesctNumberClient desctNumberClient;
 
-    private static final String TOTAL_LABEL = "TOTAL"; // Constante para "TOTAL"
+    private static final String TOTAL_LABEL = "TOTAL";
 
 
     private List<YearMonth> getMonthsBetween(LocalDate startDate, LocalDate endDate) {
@@ -129,7 +129,6 @@ public class ReporteService {
 
     public byte[] generateTariffReport(LocalDate startDate, LocalDate endDate) throws IOException {
 
-        // Agregar esta validación al inicio del metodo
         if (startDate.isAfter(endDate)) {
             throw new IllegalArgumentException("La fecha de inicio no puede ser posterior a la fecha fin.");
         }
@@ -146,14 +145,11 @@ public class ReporteService {
             CellStyle headerStyle = createHeaderStyle(workbook);
             CellStyle moneyStyle = createMoneyStyle(workbook);
 
-            // Crear encabezados (fragmento duplicado extraído)
             List<YearMonth> months = getMonthsBetween(startDate, endDate);
             createHeaderRow(sheet, headerStyle, months, "Número de vueltas o tiempo máximo permitido");
 
-            // Obtener todas las reservas entre las fechas
             List<ReserveBasicDTO> allReserves = reserveClient.getAll(new StarEndDTO(startDate, endDate.plusDays(1)));
 
-            // Procesar datos para cada tarifa
             int rowIndex = 1;
             double[] columnTotals = new double[months.size() + 1]; // +1 para el total general
 
@@ -164,7 +160,6 @@ public class ReporteService {
 
                 double rowTotal = 0;
 
-                // Calcular ingresos por mes para esta tarifa
                 for (int i = 0; i < months.size(); i++) {
                     YearMonth month = months.get(i);
                     double monthlyIncome = calculateIncome(allReserves, tariff, month);
@@ -177,17 +172,14 @@ public class ReporteService {
                     columnTotals[i] += monthlyIncome;
                 }
 
-                // Total por tarifa
                 Cell rowTotalCell = dataRow.createCell(months.size() + 1);
                 rowTotalCell.setCellValue(rowTotal);
                 rowTotalCell.setCellStyle(moneyStyle);
                 columnTotals[months.size()] += rowTotal;
             }
 
-            // Fila de totales (fragmento duplicado extraído)
             createTotalRow(sheet, rowIndex, headerStyle, moneyStyle, columnTotals, months.size());
 
-            // Ajustar anchos de columna
             autoSizeColumns(sheet, months.size() + 1);
 
             ByteArrayOutputStream bos = new ByteArrayOutputStream();
@@ -197,12 +189,10 @@ public class ReporteService {
     }
 
     public byte[] generateGroupSizeReport(LocalDate startDate, LocalDate endDate) throws IOException {
-        // Definir las categorías de tamaño de grupo
         if (startDate.isAfter(endDate)) {
             throw new IllegalArgumentException("La fecha de inicio no puede ser posterior a la fecha fin.");
         }
 
-        // Obtener las categorías dinámicamente desde el microservicio 2
         List<DesctNumberDTO> categories = desctNumberClient.getAllDesctNumbers();
         if (categories.isEmpty()) {
             throw new IllegalArgumentException("No se encontraron categorías de descuentos por número de personas.");
@@ -224,14 +214,11 @@ public class ReporteService {
             CellStyle headerStyle = createHeaderStyle(workbook);
             CellStyle moneyStyle = createMoneyStyle(workbook);
 
-            // Crear encabezados (fragmento duplicado extraído)
             List<YearMonth> months = getMonthsBetween(startDate, endDate);
             createHeaderRow(sheet, headerStyle, months, "Número de personas");
 
-            // Obtener todas las reservas entre las fechas
             List<ReserveBasicDTO> allReserves = reserveClient.getAll(new StarEndDTO(startDate, endDate.plusDays(1)));
 
-            // Procesar datos para cada categoría de tamaño
             int rowIndex = 1;
             double[] columnTotals = new double[months.size() + 1];
 
@@ -244,7 +231,6 @@ public class ReporteService {
 
                 double rowTotal = 0;
 
-                // Calcular ingresos por mes para esta categoría de tamaño
                 for (int j = 0; j < months.size(); j++) {
                     YearMonth month = months.get(j);
                     double monthlyIncome = calculateGroupSizeIncome(allReserves, range[0], range[1], month);
@@ -257,17 +243,14 @@ public class ReporteService {
                     columnTotals[j] += monthlyIncome;
                 }
 
-                // Total por categoría
                 Cell rowTotalCell = dataRow.createCell(months.size() + 1);
                 rowTotalCell.setCellValue(rowTotal);
                 rowTotalCell.setCellStyle(moneyStyle);
                 columnTotals[months.size()] += rowTotal;
             }
 
-            // Fila de totales (fragmento duplicado extraído)
             createTotalRow(sheet, rowIndex, headerStyle, moneyStyle, columnTotals, months.size());
 
-            // Ajustar anchos de columna
             autoSizeColumns(sheet, months.size() + 1);
 
             ByteArrayOutputStream bos = new ByteArrayOutputStream();

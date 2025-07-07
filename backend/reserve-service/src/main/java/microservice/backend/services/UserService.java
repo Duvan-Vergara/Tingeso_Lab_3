@@ -3,6 +3,10 @@ package microservice.backend.services;
 import lombok.RequiredArgsConstructor;
 import microservice.backend.entities.UserEntity;
 import microservice.backend.repositories.UserRepository;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.ArrayList;
@@ -15,6 +19,29 @@ public class UserService {
 
     public List<UserEntity> getUsers(){
         return new ArrayList<>(userRepository.findAll());
+    }
+
+    public Page<UserEntity> getUsersPaginated(int page, int size, String sortBy, String sortDir) {
+        Sort sort = sortDir.equalsIgnoreCase("desc") ? 
+            Sort.by(sortBy).descending() : 
+            Sort.by(sortBy).ascending();
+        
+        Pageable pageable = PageRequest.of(page, size, sort);
+        return userRepository.findAll(pageable);
+    }
+
+    public Page<UserEntity> searchUsers(String searchTerm, int page, int size, String sortBy, String sortDir) {
+        Sort sort = sortDir.equalsIgnoreCase("desc") ? 
+            Sort.by(sortBy).descending() : 
+            Sort.by(sortBy).ascending();
+        
+        Pageable pageable = PageRequest.of(page, size, sort);
+        
+        if (searchTerm == null || searchTerm.trim().isEmpty()) {
+            return userRepository.findAll(pageable);
+        }
+        
+        return userRepository.findBySearchTerm(searchTerm.trim(), pageable);
     }
 
     public UserEntity saveUser(UserEntity user){

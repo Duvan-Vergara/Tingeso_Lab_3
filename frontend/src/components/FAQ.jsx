@@ -16,8 +16,8 @@ import BookmarkIcon from '@mui/icons-material/Bookmark';
 import PeopleIcon from '@mui/icons-material/People';
 import AssessmentIcon from '@mui/icons-material/Assessment';
 import AttachMoneyIcon from '@mui/icons-material/AttachMoney';
-import CalendarTodayIcon from '@mui/icons-material/CalendarToday';
 import { useNavigate } from 'react-router-dom';
+import AnimatedTitle from './AnimatedTitle';
 
 function FAQ() {
   const [expanded, setExpanded] = useState(false);
@@ -59,9 +59,9 @@ function FAQ() {
                   </Link>{' '}
                   o usa el atajo de teclado <Chip label="Ctrl + R" size="small" variant="outlined" />
                 </li>
-                <li>Presiona el botón <strong>"Añadir"</strong></li>
+                <li>Presiona el botón <strong>&quot;Añadir&quot;</strong></li>
                 <li>Completa todos los campos requeridos (Cliente, Fecha, Número de personas, etc.)</li>
-                <li>Presiona <strong>"Guardar"</strong></li>
+                <li>Presiona <strong>&quot;Guardar&quot;</strong></li>
                 <li>Tendrás <strong>5 segundos</strong> para deshacer la acción si cometiste algún error</li>
               </Typography>
               <Typography variant="body2" sx={{ mt: 1, fontStyle: 'italic', color: '#666' }}>
@@ -88,7 +88,7 @@ function FAQ() {
                   </Link>
                 </li>
                 <li>Busca la reserva que deseas modificar</li>
-                <li>Presiona el botón <strong>"Editar"</strong> en la fila correspondiente</li>
+                <li>Presiona el botón <strong>&quot;Editar&quot;</strong> en la fila correspondiente</li>
                 <li>Modifica los campos necesarios</li>
                 <li>Guarda los cambios</li>
               </Typography>
@@ -105,7 +105,7 @@ function FAQ() {
             <Box>
               <Typography variant="body2" component="ol" sx={{ paddingLeft: 2 }}>
                 <li>En la Lista de Reservas, localiza la reserva a eliminar</li>
-                <li>Presiona el botón <strong>"Eliminar"</strong></li>
+                <li>Presiona el botón <strong>&quot;Eliminar&quot;</strong></li>
                 <li>Confirma la eliminación en el diálogo que aparece</li>
                 <li>La reserva será marcada para eliminación y tendrás <strong>5 segundos</strong> para deshacer</li>
               </Typography>
@@ -133,7 +133,7 @@ function FAQ() {
                   </Link>
                 </li>
                 <li>Selecciona el año, mes y día de inicio</li>
-                <li>Presiona <strong>"Consultar"</strong></li>
+                <li>Presiona <strong>&quot;Consultar&quot;</strong></li>
                 <li>Se mostrará la ocupación de la semana completa</li>
               </Typography>
               <Typography variant="body2" sx={{ mt: 1, fontStyle: 'italic', color: '#666' }}>
@@ -168,9 +168,9 @@ function FAQ() {
                   </Link>{' '}
                   o usa <Chip label="Ctrl + U" size="small" variant="outlined" />
                 </li>
-                <li>Presiona <strong>"Añadir"</strong></li>
+                <li>Presiona <strong>&quot;Añadir&quot;</strong></li>
                 <li>Completa todos los campos: RUT, Nombre, Apellido, Email, Fecha de nacimiento</li>
-                <li>Presiona <strong>"Guardar"</strong></li>
+                <li>Presiona <strong>&quot;Guardar&quot;</strong></li>
               </Typography>
               <Typography variant="body2" sx={{ mt: 1, fontStyle: 'italic', color: '#666' }}>
                 📝 Nota: El RUT debe ser válido y único en el sistema.
@@ -382,7 +382,7 @@ function FAQ() {
               </Typography>
               <Typography variant="body2" component="ul" sx={{ paddingLeft: 2 }}>
                 <li>Después de crear, editar o eliminar elementos, aparece una notificación</li>
-                <li>Tienes <strong>5 segundos</strong> para presionar "Deshacer"</li>
+                <li>Tienes <strong>5 segundos</strong> para presionar &quot;Deshacer&quot;</li>
                 <li>Si no deshaces, la operación se confirma permanentemente</li>
                 <li>La función está disponible para: reservas, usuarios, tarifas y descuentos</li>
               </Typography>
@@ -425,7 +425,7 @@ function FAQ() {
                 <li><strong>Menú lateral:</strong> Navegación rápida por categorías</li>
                 <li><strong>Enlaces directos:</strong> Presiona en esta FAQ para ir directamente</li>
                 <li><strong>Atajos de teclado:</strong> Para acceso rápido a secciones frecuentes</li>
-                <li><strong>Botón "Volver":</strong> Regresa a la página anterior</li>
+                <li><strong>Botón &quot;Volver&quot;:</strong> Regresa a la página anterior</li>
               </Typography>
             </Box>
           ),
@@ -437,13 +437,30 @@ function FAQ() {
   return (
     <Container maxWidth="lg" sx={{ py: 4 }}>
       <Box sx={{ textAlign: 'center', mb: 4 }}>
-        <Typography variant="h3" component="h1" gutterBottom sx={{ fontWeight: 'bold', color: '#1976d2' }}>
+        <AnimatedTitle
+          variant="h3"
+          component="h1"
+          animationType="pulse"
+          gutterBottom
+          sx={{
+            fontWeight: 'bold',
+            color: 'var(--primary-color)',
+            textShadow: '0 2px 4px rgba(0,0,0,0.3)',
+          }}
+        >
           📚 Preguntas Frecuentes
-        </Typography>
-        <Typography variant="h6" color="text.secondary" sx={{ mb: 3 }}>
+        </AnimatedTitle>
+        <Typography
+          variant="h6"
+          sx={{
+            mb: 3,
+            color: 'var(--text-optional-color)',
+            fontWeight: 500,
+          }}
+        >
           Encuentra respuestas rápidas a las preguntas más comunes sobre el sistema
         </Typography>
-        <Divider sx={{ my: 3 }} />
+        <Divider sx={{ my: 3, borderColor: 'var(--border-color)' }} />
       </Box>
 
       {faqData.map((category) => (
@@ -462,24 +479,49 @@ function FAQ() {
               onChange={handleChange(faq.id)}
               sx={{
                 mb: 1,
-                boxShadow: 2,
+                backgroundColor: 'var(--card-bg)',
+                color: 'var(--text-color)',
+                boxShadow: 'var(--shadow-md)',
                 '&:before': { display: 'none' },
                 borderRadius: 1,
                 overflow: 'hidden',
+                border: '1px solid var(--border-color)',
               }}
             >
               <AccordionSummary
-                expandIcon={<ExpandMoreIcon />}
+                expandIcon={<ExpandMoreIcon sx={{ color: category.color }} />}
                 sx={{
                   backgroundColor: `${category.color}15`,
-                  '&:hover': { backgroundColor: `${category.color}25` },
+                  '&:hover': {
+                    backgroundColor: `${category.color}25`,
+                    '& .MuiTypography-root': { color: category.color },
+                  },
                 }}
               >
-                <Typography variant="h6" sx={{ fontWeight: 500 }}>
+                <Typography
+                  variant="h6"
+                  sx={{
+                    fontWeight: 500,
+                    color: 'var(--text-color)',
+                    transition: 'color 0.2s ease',
+                  }}
+                >
                   {faq.question}
                 </Typography>
               </AccordionSummary>
-              <AccordionDetails sx={{ backgroundColor: '#fafafa', p: 3 }}>
+              <AccordionDetails
+                sx={{
+                  backgroundColor: 'var(--background-secondary)',
+                  p: 3,
+                  color: 'var(--text-secondary)',
+                  '& .MuiTypography-root': { color: 'var(--text-secondary)' },
+                  '& strong': { color: 'var(--text-color)' },
+                  '& .MuiChip-root': {
+                    backgroundColor: 'var(--primary-color)',
+                    color: 'var(--text-color)',
+                  },
+                }}
+              >
                 {faq.answer}
               </AccordionDetails>
             </Accordion>
@@ -487,11 +529,27 @@ function FAQ() {
         </Box>
       ))}
 
-      <Box sx={{ mt: 6, p: 3, backgroundColor: '#e3f2fd', borderRadius: 2, textAlign: 'center' }}>
-        <Typography variant="h6" gutterBottom color="primary">
+      <Box
+        sx={{
+          mt: 6,
+          p: 3,
+          backgroundColor: 'var(--background-accent)',
+          borderRadius: 2,
+          textAlign: 'center',
+          border: '1px solid var(--border-color)',
+        }}
+      >
+        <Typography
+          variant="h6"
+          gutterBottom
+          sx={{ color: 'var(--primary-color)', fontWeight: 'bold' }}
+        >
           ¿No encontraste lo que buscabas?
         </Typography>
-        <Typography variant="body1" color="text.secondary">
+        <Typography
+          variant="body1"
+          sx={{ color: 'var(--text-secondary)' }}
+        >
           Si tienes alguna pregunta que no está aquí, contacta al administrador del sistema
           o revisa la documentación técnica del proyecto.
         </Typography>

@@ -17,6 +17,7 @@ import {
   AttachMoney as AttachMoneyIcon,
 } from '@mui/icons-material';
 import CardLayout from './CardLayout';
+import AnimatedTitle from './AnimatedTitle';
 
 function Home() {
   const navigate = useNavigate();
@@ -76,22 +77,32 @@ function Home() {
     <Container maxWidth="lg" sx={{ py: 4 }}>
       {/* Header */}
       <Box sx={{ textAlign: 'center', mb: 5 }}>
-        <Typography
+        <AnimatedTitle
           variant="h3"
           component="h1"
+          animationType="pulse"
           gutterBottom
-          sx={{ fontWeight: 'bold', color: '#1976d2' }}
-        >
-          🏎️ KartingRM
-        </Typography>
+        />
         <Typography
           variant="h5"
-          color="text.secondary"
-          sx={{ mb: 2 }}
+          sx={{
+            mb: 2,
+            color: 'var(--text-optional-color)', // Color limón más visible
+            fontWeight: 500,
+          }}
         >
           Negocio líder en la industria del karting
         </Typography>
-        <Typography variant="body1" color="text.secondary" sx={{ maxWidth: 800, mx: 'auto' }}>
+        <Typography
+          variant="body1"
+          sx={{
+            maxWidth: 800,
+            mx: 'auto',
+            color: 'var(--text-secondary)',
+            fontSize: '1.1rem',
+            lineHeight: 1.7,
+          }}
+        >
           SisGR es una aplicación web completa para gestionar reservas, horarios y
           administrar recursos de forma eficiente relacionado al negocio del karting.
         </Typography>
@@ -112,8 +123,16 @@ function Home() {
             ¿Primera vez usando el sistema?
           </Typography>
         </Box>
-        <Typography variant="body1" textAlign="center" sx={{ mb: 2, color: 'var(--text-secondary)' }}>
-          Consulta nuestras <strong>Preguntas Frecuentes</strong> para aprender a usar todas las funciones
+        <Typography
+          variant="body1"
+          textAlign="center"
+          sx={{
+            mb: 2,
+            color: 'var(--text-secondary)',
+            fontSize: '1.1rem',
+          }}
+        >
+          Consulta nuestras <strong style={{ color: 'var(--text-optional-color)' }}>Preguntas Frecuentes</strong> para aprender a usar todas las funciones
         </Typography>
         <Box sx={{ textAlign: 'center' }}>
           <Button
@@ -152,7 +171,14 @@ function Home() {
                   {action.title}
                 </Typography>
               </Box>
-              <Typography variant="body2" sx={{ mb: 2, color: 'var(--text-secondary)' }}>
+              <Typography
+                variant="body2"
+                sx={{
+                  mb: 2,
+                  color: 'var(--text-secondary)',
+                  fontSize: '0.95rem',
+                }}
+              >
                 {action.description}
               </Typography>
               {action.shortcut && (
@@ -188,26 +214,60 @@ function Home() {
       </Grid>
 
       {/* Información Técnica */}
-      <Box sx={{ mt: 5, p: 3, backgroundColor: '#f5f5f5', borderRadius: 2 }}>
-        <Typography variant="h6" gutterBottom sx={{ fontWeight: 'bold' }}>
+      <Box
+        className="tech-info"
+        sx={{
+          mt: 5,
+          p: 3,
+          backgroundColor: 'var(--background-accent)',
+          borderRadius: 2,
+          border: '1px solid var(--border-color)',
+        }}
+      >
+        <Typography
+          variant="h6"
+          gutterBottom
+          sx={{
+            fontWeight: 'bold',
+            color: 'var(--text-optional-color)',
+          }}
+        >
           🛠️ Tecnologías
         </Typography>
-        <Typography variant="body2" color="text.secondary">
+        <Typography
+          variant="body2"
+          sx={{ color: 'var(--text-secondary)' }}
+        >
           Desarrollado con{' '}
           <strong>
-            <a href="https://spring.io/projects/spring-boot" target="_blank" rel="noopener noreferrer">
+            <a
+              href="https://spring.io/projects/spring-boot"
+              target="_blank"
+              rel="noopener noreferrer"
+              style={{ color: 'var(--text-optional-color)' }}
+            >
               Spring Boot
             </a>
           </strong>{' '}
           (backend),{' '}
           <strong>
-            <a href="https://reactjs.org/" target="_blank" rel="noopener noreferrer">
+            <a
+              href="https://reactjs.org/"
+              target="_blank"
+              rel="noopener noreferrer"
+              style={{ color: 'var(--text-optional-color)' }}
+            >
               React
             </a>
           </strong>{' '}
           (frontend) y{' '}
           <strong>
-            <a href="https://www.mysql.com/products/community/" target="_blank" rel="noopener noreferrer">
+            <a
+              href="https://www.mysql.com/products/community/"
+              target="_blank"
+              rel="noopener noreferrer"
+              style={{ color: 'var(--text-optional-color)' }}
+            >
               MySQL
             </a>
           </strong>{' '}

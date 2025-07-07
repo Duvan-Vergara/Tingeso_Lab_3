@@ -63,7 +63,7 @@ function AddEditDesctNumber() {
     submitWithUndo(
       desct,
       (data) => {
-        // Guardar en backend solo si no se deshace
+
         const savePromise = id
           ? desctNumberService.createDesctNumber({ ...data, id })
           : desctNumberService.createDesctNumber(data);
@@ -78,7 +78,7 @@ function AddEditDesctNumber() {
           });
       },
       (data) => {
-        // Restaurar el formulario si se deshace
+
         setMinpersonas(data.minpersonas || '');
         setMaxpersonas(data.maxpersonas || '');
         setPorcentajedesct(data.porcentajedesct || '');

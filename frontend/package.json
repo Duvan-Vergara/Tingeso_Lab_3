@@ -6,8 +6,10 @@
   "scripts": {
     "dev": "vite",
     "build": "vite build",
-    "lint": "eslint . --ext .js,.jsx",
-    "lint:fix": "eslint . --ext .js,.jsx --fix",
+    "lint": "eslint src --ext .js,.jsx",
+    "lint:fix": "eslint src --ext .js,.jsx --fix",
+    "lint:all": "eslint . --ext .js,.jsx",
+    "lint:all:fix": "eslint . --ext .js,.jsx --fix",
     "preview": "vite preview"
   },
   "dependencies": {

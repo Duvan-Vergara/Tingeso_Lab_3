@@ -10,12 +10,41 @@ spring:
     username: ${DB_USER:root}
     password: ${DB_PASSWORD:root}
     driver-class-name: com.mysql.cj.jdbc.Driver
+    hikari:
+      maximum-pool-size: 50
+      minimum-idle: 15
+      idle-timeout: 600000
+      connection-timeout: 30000
+      leak-detection-threshold: 120000
+      pool-name: ReserveServiceHikariCP
+      auto-commit: false
   jpa:
     hibernate:
       ddl-auto: update
+      jdbc:
+        batch_size: 50
+        batch_versioned_data: true
     properties:
       hibernate:
         dialect: org.hibernate.dialect.MySQLDialect
+        order_inserts: true
+        order_updates: true
+        generate_statistics: false
+        format_sql: false
+        show_sql: false
+        cache:
+          use_second_level_cache: false
+          use_query_cache: false
+        connection:
+          provider_disables_autocommit: true
+          autocommit: false
+        jdbc:
+          fetch_size: 100
+        temp:
+          use_jdbc_metadata_defaults: false
+  transaction:
+    default-timeout: 30
+    rollback-on-commit-failure: true
   mail:
     host: smtp.gmail.com
     port: 587

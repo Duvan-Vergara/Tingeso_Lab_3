@@ -16,16 +16,19 @@
   --primary-hover: #a50000;
   --primary-light: rgba(139, 0, 0, 0.1);
   --primary-dark: #6d0000;
+  --primary-color-rgb: 139, 0, 0;
   
   /* Colores secundarios */
   --secondary-color: #4b0082;
   --secondary-hover: #5d009e;
   --secondary-light: rgba(75, 0, 130, 0.1);
+  --secondary-color-rgb: 75, 0, 130;
   
   /* Color de acento */
   --accent-color: #ff4500;
   --accent-hover: #ff6347;
   --accent-light: rgba(255, 69, 0, 0.1);
+  --accent-color-rgb: 255, 69, 0;
   
   /* Colores de estado */
   --success-color: #28a745;
@@ -837,7 +840,6 @@ textarea:focus-visible {
   border-radius: 50%;
   transform: translate(-50%, -50%);
   animation: ripple 0.6s ease-out;
-  pointer-events: none;
 }
 
 /* Animación de entrada para modales y diálogos */
@@ -884,4 +886,1267 @@ textarea:focus-visible {
     --text-secondary: #e2e2e2;
     --text-muted: #b0b0b0;
   }
+}
+
+/* Mejoras específicas para contraste de texto */
+
+/* Estilo para descripciones importantes */
+.description-highlight {
+  color: var(--text-optional-color) !important;
+  font-weight: 500;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+}
+
+/* Estilo para subtítulos con mejor contraste */
+.subtitle-contrast {
+  color: var(--text-optional-color) !important;
+  background: linear-gradient(135deg, var(--text-optional-color), var(--accent-color));
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  font-weight: 600;
+}
+
+/* Mejoras para componentes de Material-UI con tema oscuro */
+.MuiTypography-root.description-text {
+  color: var(--text-secondary) !important;
+}
+
+.MuiTypography-root.highlight-text {
+  color: var(--text-optional-color) !important;
+}
+
+/* FAQ específicos */
+.faq-highlight {
+  background: linear-gradient(135deg, var(--card-bg) 0%, rgba(193, 217, 107, 0.1) 100%) !important;
+  border: 2px solid var(--primary-color) !important;
+}
+
+/* Mejoras en la sección de información técnica del Home */
+.tech-info {
+  background: var(--background-accent) !important;
+  border: 1px solid var(--border-color) !important;
+  color: var(--text-secondary) !important;
+}
+
+.tech-info .MuiTypography-root {
+  color: var(--text-secondary) !important;
+}
+
+.tech-info strong,
+.tech-info a {
+  color: var(--text-optional-color) !important;
+}
+
+/* Mejoras en cards de acciones */
+.action-card .MuiTypography-body2 {
+  color: var(--text-secondary) !important;
+  font-size: 0.95rem;
+}
+
+/* Animaciones especiales para el título principal */
+
+/*
+ * ANIMACIONES DEL TÍTULO PRINCIPAL KARTINGRM
+ * 
+ * Tipos de animación disponibles:
+ * 
+ * 1. "gradient" - Efecto de gradiente con cambio de colores, pulso y onda de energía
+ * 2. "glow" - Efecto de brillo con gradiente y onda de energía sin pulso
+ * 3. "sweep" - Efecto de barrido estilo anime que solo afecta las letras (NUEVO)
+ * 4. "neon" - Efecto de neón con parpadeo y brillos intensos
+ * 5. "letters" - Cada letra se anima individualmente con rebote y cambio de color
+ * 6. "pulse" - Efecto de pulso básico con gradiente
+ * 
+ * Para cambiar la animación, modificar la prop 'animationType' en el componente AnimatedTitle
+ * Ejemplo: <AnimatedTitle animationType="sweep" />
+ */
+
+/* Efecto de gradiente animado con brillo */
+.karting-title {
+  background: linear-gradient(
+    45deg,
+    var(--primary-color),
+    var(--accent-color),
+    #ffd700,
+    var(--primary-color),
+    var(--secondary-color)
+  );
+  background-size: 400% 400%;
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: karting-glow 3s ease-in-out infinite;
+  position: relative;
+  font-weight: 900;
+  text-shadow: 0 0 30px rgba(255, 215, 0, 0.3);
+}
+
+/* Animación principal del título con brillo y cambio de color */
+@keyframes karting-glow {
+  0% {
+    background-position: 0% 50%;
+    filter: brightness(1) saturate(1);
+    transform: scale(1);
+  }
+  25% {
+    background-position: 100% 50%;
+    filter: brightness(1.2) saturate(1.3);
+    transform: scale(1.02);
+  }
+  50% {
+    background-position: 0% 100%;
+    filter: brightness(1.4) saturate(1.5);
+    transform: scale(1.05);
+    text-shadow: 
+      0 0 20px rgba(255, 215, 0, 0.8),
+      0 0 40px rgba(255, 69, 0, 0.6),
+      0 0 60px rgba(138, 43, 226, 0.4);
+  }
+  75% {
+    background-position: 100% 100%;
+    filter: brightness(1.2) saturate(1.3);
+    transform: scale(1.02);
+  }
+  100% {
+    background-position: 0% 50%;
+    filter: brightness(1) saturate(1);
+    transform: scale(1);
+  }
+}
+
+/* Efecto de pulso mejorado para el título */
+.karting-title-pulse {
+  animation: karting-glow 3s ease-in-out infinite, enhanced-pulse 2.5s ease-in-out infinite;
+  position: relative;
+}
+
+@keyframes enhanced-pulse {
+  0%, 100% {
+    opacity: 1;
+    transform: scale(1);
+    filter: brightness(1) saturate(1);
+    text-shadow: 
+      0 0 10px rgba(255, 215, 0, 0.4),
+      0 0 20px rgba(255, 69, 0, 0.3),
+      0 0 30px rgba(138, 43, 226, 0.2);
+  }
+  25% {
+    opacity: 0.9;
+    transform: scale(1.02);
+    filter: brightness(1.1) saturate(1.2);
+  }
+  50% {
+    opacity: 0.85;
+    transform: scale(1.05);
+    filter: brightness(1.3) saturate(1.4);
+    text-shadow: 
+      0 0 15px rgba(255, 215, 0, 0.7),
+      0 0 30px rgba(255, 69, 0, 0.5),
+      0 0 45px rgba(138, 43, 226, 0.4),
+      0 0 60px rgba(0, 191, 255, 0.3);
+  }
+  75% {
+    opacity: 0.9;
+    transform: scale(1.02);
+    filter: brightness(1.1) saturate(1.2);
+  }
+}
+
+/* Efecto neón para el título */
+.karting-title-neon {
+  color: var(--text-optional-color);
+  text-shadow: 
+    0 0 5px var(--text-optional-color),
+    0 0 10px var(--text-optional-color),
+    0 0 15px var(--text-optional-color),
+    0 0 20px var(--accent-color),
+    0 0 35px var(--accent-color),
+    0 0 40px var(--accent-color);
+  animation: neon-flicker 1.5s infinite alternate;
+}
+
+@keyframes neon-flicker {
+  0%, 100% {
+    text-shadow: 
+      0 0 5px var(--text-optional-color),
+      0 0 10px var(--text-optional-color),
+      0 0 15px var(--text-optional-color),
+      0 0 20px var(--accent-color),
+      0 0 35px var(--accent-color),
+      0 0 40px var(--accent-color);
+  }
+  50% {
+    text-shadow: 
+      0 0 2px var(--text-optional-color),
+      0 0 5px var(--text-optional-color),
+      0 0 8px var(--text-optional-color),
+      0 0 12px var(--accent-color),
+      0 0 18px var(--accent-color),
+      0 0 22px var(--accent-color);
+  }
+}
+
+/* Efecto de letras animadas individualmente */
+.karting-title-letters span {
+  display: inline-block;
+  animation: letter-bounce 2s infinite;
+}
+
+.karting-title-letters span:nth-child(1) { animation-delay: 0s; }
+.karting-title-letters span:nth-child(2) { animation-delay: 0.1s; }
+.karting-title-letters span:nth-child(3) { animation-delay: 0.2s; }
+.karting-title-letters span:nth-child(4) { animation-delay: 0.3s; }
+.karting-title-letters span:nth-child(5) { animation-delay: 0.4s; }
+.karting-title-letters span:nth-child(6) { animation-delay: 0.5s; }
+.karting-title-letters span:nth-child(7) { animation-delay: 0.6s; }
+.karting-title-letters span:nth-child(8) { animation-delay: 0.7s; }
+.karting-title-letters span:nth-child(9) { animation-delay: 0.8s; }
+.karting-title-letters span:nth-child(10) { animation-delay: 0.9s; }
+
+@keyframes letter-bounce {
+  0%, 20%, 50%, 80%, 100% {
+    transform: translateY(0) scale(1);
+    color: var(--primary-color);
+  }
+  40% {
+    transform: translateY(-10px) scale(1.1);
+    color: var(--accent-color);
+  }
+  60% {
+    transform: translateY(-5px) scale(1.05);
+    color: var(--text-optional-color);
+  }
+}
+
+.karting-title-container {
+  position: relative;
+  display: inline-block;
+}
+
+.karting-title-container::after {
+  content: '';
+  position: absolute;
+  top: -10px;
+  left: -10px;
+  right: -10px;
+  bottom: -10px;
+  background: radial-gradient(circle, var(--accent-color) 1px, transparent 1px);
+  background-size: 20px 20px;
+  opacity: 0.3;
+  animation: sparkle 3s infinite;
+  pointer-events: none;
+  z-index: -1;
+}
+
+@keyframes sparkle {
+  0%, 100% {
+    opacity: 0.1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.4;
+    transform: scale(1.1);
+  }
+}
+
+/* Efecto de onda de energía que solo se ve en las letras */
+.karting-title-energy {
+  position: relative;
+  overflow: hidden;
+}
+
+/* Capa base del texto con gradiente */
+.karting-title-energy .title-base {
+  position: relative;
+  z-index: 1;
+  background: linear-gradient(
+    45deg,
+    var(--primary-color),
+    var(--accent-color),
+    #ffd700,
+    var(--primary-color),
+    var(--secondary-color)
+  );
+  background-size: 400% 400%;
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: karting-glow 3s ease-in-out infinite;
+}
+
+/* Capa de la onda que se superpone y solo afecta al texto */
+.karting-title-energy .title-wave {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    transparent 30%,
+    rgba(255, 255, 255, 0.9) 45%,
+    rgba(255, 215, 0, 1) 50%,
+    rgba(255, 255, 255, 0.9) 55%,
+    transparent 70%,
+    transparent 100%
+  );
+  background-size: 200% 100%;
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: energy-wave-text 3s infinite;
+  z-index: 2;
+  font-weight: inherit;
+  font-size: inherit;
+  line-height: inherit;
+  pointer-events: none;
+  /* Hacer que la onda sea más brillante */
+  filter: brightness(1.5);
+}
+
+@keyframes energy-wave-text {
+  0% {
+    background-position: -200% 0;
+    opacity: 0;
+  }
+  10% {
+    opacity: 1;
+  }
+  90% {
+    opacity: 1;
+  }
+  100% {
+    background-position: 200% 0;
+    opacity: 0;
+  }
+}
+
+@keyframes energy-wave {
+  0% {
+    left: -100%;
+    opacity: 0;
+  }
+  50% {
+    opacity: 1;
+  }
+  100% {
+    left: 100%;
+    opacity: 0;
+  }
+}
+
+/* Efecto hover para interactividad */
+.karting-title:hover {
+  animation-duration: 1.5s;
+  transform: scale(1.02);
+  transition: transform 0.3s ease;
+}
+
+.karting-title-neon:hover {
+  animation-duration: 0.5s;
+  text-shadow: 
+    0 0 10px var(--text-optional-color),
+    0 0 20px var(--text-optional-color),
+    0 0 30px var(--text-optional-color),
+    0 0 40px var(--accent-color),
+    0 0 70px var(--accent-color),
+    0 0 80px var(--accent-color);
+}
+
+/* Efecto de barrido estilo anime - solo en las letras */
+.karting-title-sweep {
+  position: relative;
+  overflow: hidden;
+  background: linear-gradient(
+    45deg,
+    var(--primary-color),
+    var(--accent-color),
+    var(--primary-color)
+  );
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  text-shadow: 0 0 20px rgba(255, 69, 0, 0.3);
+}
+
+.karting-title-sweep::before {
+  content: '🏎️ KartingRM';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    120deg,
+    transparent 0%,
+    transparent 35%,
+    rgba(255, 255, 255, 0.1) 40%,
+    rgba(255, 255, 255, 0.8) 48%,
+    rgba(255, 215, 0, 1) 50%,
+    rgba(255, 255, 255, 0.8) 52%,
+    rgba(255, 255, 255, 0.1) 60%,
+    transparent 65%,
+    transparent 100%
+  );
+  background-size: 400% 100%;
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: anime-sweep 4s infinite;
+  z-index: 2;
+  font-weight: inherit;
+  font-size: inherit;
+  line-height: inherit;
+  pointer-events: none;
+  /* Hacer la línea más brillante y nítida */
+  filter: brightness(2) saturate(1.5) contrast(1.2);
+}
+
+@keyframes anime-sweep {
+  0% {
+    background-position: -400% 0;
+  }
+  15% {
+    background-position: 400% 0;
+  }
+  100% {
+    background-position: 400% 0;
+  }
+}
+
+/* Nuevas animaciones sutiles para títulos */
+
+/* Brillo sutil constante */
+.karting-title-subtle-glow {
+  background: linear-gradient(135deg, 
+    var(--primary-color) 0%, 
+    var(--accent-color) 50%, 
+    var(--primary-color) 100%);
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  text-shadow: 0 0 10px rgba(var(--primary-color-rgb), 0.3);
+  position: relative;
+}
+
+/* Pulso gentil - muy sutil */
+.karting-title-gentle-pulse {
+  background: linear-gradient(135deg, 
+    var(--primary-color) 0%, 
+    var(--accent-color) 100%);
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: gentle-pulse 4s ease-in-out infinite;
+}
+
+@keyframes gentle-pulse {
+  0%, 100% {
+    text-shadow: 0 0 8px rgba(var(--primary-color-rgb), 0.2);
+  }
+  50% {
+    text-shadow: 0 0 12px rgba(var(--primary-color-rgb), 0.3);
+  }
+}
+
+/* Respiración suave */
+.karting-title-soft-breathe {
+  background: linear-gradient(135deg, 
+    var(--primary-color) 0%, 
+    var(--accent-color) 100%);
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: soft-breathe 5s ease-in-out infinite;
+}
+
+@keyframes soft-breathe {
+  0%, 100% {
+    opacity: 0.9;
+    text-shadow: 0 0 5px rgba(var(--primary-color-rgb), 0.1);
+  }
+  50% {
+    opacity: 1;
+    text-shadow: 0 0 8px rgba(var(--primary-color-rgb), 0.2);
+  }
+}
+
+/* Onda mínima */
+.karting-title-minimal-wave {
+  background: linear-gradient(135deg, 
+    var(--primary-color) 0%, 
+    var(--accent-color) 100%);
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: minimal-wave 6s ease-in-out infinite;
+}
+
+@keyframes minimal-wave {
+  0%, 100% {
+    transform: translateY(0px);
+  }
+  25% {
+    transform: translateY(-1px);
+  }
+  75% {
+    transform: translateY(1px);
+  }
+}
+
+/* Destello silencioso */
+.karting-title-quiet-shimmer {
+  background: linear-gradient(135deg, 
+    var(--primary-color) 0%, 
+    var(--accent-color) 50%, 
+    var(--primary-color) 100%);
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  position: relative;
+  overflow: hidden;
+}
+
+.karting-title-quiet-shimmer::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, 
+    transparent, 
+    rgba(255, 255, 255, 0.1), 
+    transparent);
+  animation: quiet-shimmer 8s ease-in-out infinite;
+}
+
+@keyframes quiet-shimmer {
+  0% {
+    left: -100%;
+  }
+  50% {
+    left: 100%;
+  }
+  100% {
+    left: -100%;
+  }
+}
+
+/* Estilos específicos para la página de demostración de animaciones */
+.animation-demo {
+  background: linear-gradient(135deg, var(--background-color) 0%, var(--background-secondary) 100%);
+  min-height: 100vh;
+}
+
+.preview-card {
+  background: linear-gradient(135deg, var(--card-bg) 0%, rgba(75, 0, 130, 0.1) 100%) !important;
+  border: 2px solid var(--accent-color) !important;
+  position: relative;
+  overflow: hidden;
+}
+
+.preview-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: radial-gradient(circle at 30% 20%, rgba(255, 69, 0, 0.1) 0%, transparent 50%),
+              radial-gradient(circle at 70% 80%, rgba(139, 0, 0, 0.1) 0%, transparent 50%);
+  pointer-events: none;
+  z-index: 0;
+}
+
+.preview-card > * {
+  position: relative;
+  z-index: 1;
+}
+
+.animation-card {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  overflow: hidden;
+}
+
+.animation-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 69, 0, 0.1), transparent);
+  transition: left 0.5s ease;
+  z-index: 0;
+}
+
+.animation-card:hover::before {
+  left: 100%;
+}
+
+.animation-card:hover {
+  transform: translateY(-8px) scale(1.02);
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+}
+
+.animation-preview-box {
+  background: rgba(0, 0, 0, 0.3);
+  border: 1px solid var(--border-color);
+  position: relative;
+  overflow: hidden;
+}
+
+.animation-preview-box::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: radial-gradient(circle, var(--accent-color) 1px, transparent 1px);
+  background-size: 15px 15px;
+  opacity: 0.1;
+  animation: sparkle 3s infinite;
+  pointer-events: none;
+}
+
+/* Efectos especiales para la comparación */
+.comparison-grid {
+  background: linear-gradient(135deg, transparent 0%, rgba(139, 0, 0, 0.05) 50%, transparent 100%);
+  border-radius: 16px;
+  padding: 2rem;
+  margin: 2rem 0;
+}
+
+/* ===== ANIMACIONES PARA TARJETAS ===== */
+
+/* Tarjeta base */
+.animated-card {
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+/* Efecto de elevación al hover */
+.animated-card-lift:hover {
+  transform: translateY(-8px) scale(1.02);
+  box-shadow: 
+    0 12px 24px rgba(0, 0, 0, 0.15),
+    0 0 20px rgba(var(--primary-color-rgb), 0.3);
+  z-index: 10;
+}
+
+/* Efecto de borde brillante */
+.animated-card-glow {
+  border: 2px solid transparent;
+  background: linear-gradient(var(--background-color), var(--background-color)) padding-box,
+              linear-gradient(45deg, var(--primary-color), var(--accent-color)) border-box;
+  animation: border-glow 3s infinite;
+}
+
+@keyframes border-glow {
+  0%, 100% { box-shadow: 0 0 10px rgba(var(--primary-color-rgb), 0.5); }
+  50% { box-shadow: 0 0 20px rgba(var(--accent-color-rgb), 0.8); }
+}
+
+/* Efecto de pulso en el borde */
+.animated-card-pulse {
+  position: relative;
+  animation: card-pulse 2s infinite;
+}
+
+@keyframes card-pulse {
+  0%, 100% {
+    box-shadow: 0 0 5px rgba(var(--primary-color-rgb), 0.5);
+  }
+  50% {
+    box-shadow: 0 0 20px rgba(var(--primary-color-rgb), 0.8);
+  }
+}
+
+/* Efecto de gradiente cambiante */
+.animated-card-gradient {
+  background: linear-gradient(45deg, var(--background-color), var(--surface-color));
+  background-size: 400% 400%;
+  animation: gradient-shift 4s ease infinite;
+}
+
+@keyframes gradient-shift {
+  0%, 100% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+}
+
+/* Efecto de escala y rotación */
+.animated-card-scale-rotate:hover {
+  transform: scale(1.05) rotateY(5deg);
+  transition: transform 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+/* Efecto de sombra danzante */
+.animated-card-shadow {
+  animation: shadow-dance 3s ease-in-out infinite;
+}
+
+@keyframes shadow-dance {
+  0%, 100% {
+    box-shadow: 5px 5px 15px rgba(0, 0, 0, 0.2);
+  }
+  25% {
+    box-shadow: -5px 5px 15px rgba(var(--primary-color-rgb), 0.3);
+  }
+  50% {
+    box-shadow: -5px -5px 15px rgba(var(--accent-color-rgb), 0.3);
+  }
+  75% {
+    box-shadow: 5px -5px 15px rgba(var(--secondary-color-rgb), 0.3);
+  }
+}
+
+/* Efecto neón en los bordes */
+.animated-card-neon {
+  border: 2px solid var(--accent-color);
+  box-shadow: 
+    0 0 5px var(--accent-color),
+    inset 0 0 5px var(--accent-color);
+  animation: neon-edge 2s infinite alternate;
+}
+
+@keyframes neon-edge {
+  0% {
+    box-shadow: 
+      0 0 5px var(--accent-color),
+      inset 0 0 5px var(--accent-color);
+  }
+  100% {
+    box-shadow: 
+      0 0 20px var(--accent-color),
+      0 0 40px var(--accent-color),
+      inset 0 0 10px var(--accent-color);
+  }
+}
+
+/* Efecto de respiración */
+.animated-card-breathing {
+  animation: breathing 3s ease-in-out infinite;
+}
+
+@keyframes breathing {
+  0%, 100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  50% {
+    transform: scale(1.02);
+    opacity: 0.9;
+  }
+}
+
+/* ===== ANIMACIONES PARA LISTAS - VERSIÓN MEJORADA ===== */
+
+.animated-list-container {
+  position: relative;
+  overflow: hidden;
+}
+
+.animated-list {
+  padding: 0;
+}
+
+.animated-list-item {
+  opacity: 0;
+  transform: translateX(-50px);
+  animation-fill-mode: forwards;
+  transition: all 0.3s ease;
+}
+
+/* Efecto de deslizamiento dramático */
+.animated-list-slide-up .animated-list-item {
+  animation: dramatic-slide-up 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+}
+
+@keyframes dramatic-slide-up {
+  from {
+    opacity: 0;
+    transform: translateY(80px) scale(0.9);
+  }
+  60% {
+    opacity: 0.8;
+    transform: translateY(-10px) scale(1.02);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+/* Efecto de desvanecimiento con escala */
+.animated-list-fade-in .animated-list-item {
+  animation: dramatic-fade-in 1s ease forwards;
+}
+
+@keyframes dramatic-fade-in {
+  from {
+    opacity: 0;
+    transform: scale(0.8) rotate(-5deg);
+  }
+  50% {
+    opacity: 0.5;
+    transform: scale(1.05) rotate(2deg);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) rotate(0deg);
+  }
+}
+
+/* Efecto de escala explosiva */
+.animated-list-scale-in .animated-list-item {
+  animation: explosive-scale 0.8s cubic-bezier(0.68, -0.55, 0.265, 1.55) forwards;
+}
+
+@keyframes explosive-scale {
+  from {
+    opacity: 0;
+    transform: scale(0.3) rotate(-180deg);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.3) rotate(-90deg);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) rotate(0deg);
+  }
+}
+
+/* Efecto de rebote súper dramático */
+.animated-list-bounce-in .animated-list-item {
+  animation: super-bounce 1.2s cubic-bezier(0.68, -0.55, 0.265, 1.55) forwards;
+}
+
+@keyframes super-bounce {
+  from {
+    opacity: 0;
+    transform: scale(0.1) translateY(-100px);
+  }
+  30% {
+    opacity: 1;
+    transform: scale(1.4) translateY(20px);
+  }
+  60% {
+    transform: scale(0.9) translateY(-10px);
+  }
+  80% {
+    transform: scale(1.1) translateY(5px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+/* Efecto de rotación 3D dramática */
+.animated-list-rotate-in .animated-list-item {
+  animation: dramatic-rotate 1s ease forwards;
+  transform-style: preserve-3d;
+}
+
+@keyframes dramatic-rotate {
+  from {
+    opacity: 0;
+    transform: rotateY(-90deg) rotateX(-90deg);
+  }
+  50% {
+    opacity: 0.8;
+    transform: rotateY(-20deg) rotateX(20deg);
+  }
+  to {
+    opacity: 1;
+    transform: rotateY(0deg) rotateX(0deg);
+  }
+}
+
+/* Efecto de onda líquida */
+.animated-list-wave .animated-list-item {
+  animation: liquid-wave 1s ease forwards;
+}
+
+@keyframes liquid-wave {
+  from {
+    opacity: 0;
+    transform: translateX(-100px) skewX(-30deg) scale(0.7);
+  }
+  30% {
+    opacity: 0.7;
+    transform: translateX(20px) skewX(15deg) scale(1.1);
+  }
+  60% {
+    transform: translateX(-5px) skewX(-5deg) scale(1.05);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0) skewX(0deg) scale(1);
+  }
+}
+
+/* Efecto de brillo intenso */
+.animated-list-glow .animated-list-item {
+  animation: intense-glow 1s ease forwards;
+  transition: all 0.4s ease;
+  border-radius: 8px;
+}
+
+.animated-list-glow .animated-list-item:hover {
+  background: linear-gradient(45deg, 
+    rgba(var(--primary-color-rgb), 0.2), 
+    rgba(var(--accent-color-rgb), 0.2),
+    rgba(var(--primary-color-rgb), 0.2));
+  box-shadow: 
+    0 0 20px rgba(var(--primary-color-rgb), 0.5),
+    0 0 40px rgba(var(--accent-color-rgb), 0.3),
+    inset 0 0 20px rgba(255, 255, 255, 0.1);
+  transform: translateY(-5px) scale(1.02);
+}
+
+@keyframes intense-glow {
+  from {
+    opacity: 0;
+    box-shadow: 0 0 0 rgba(var(--primary-color-rgb), 0);
+    transform: scale(0.9);
+  }
+  50% {
+    opacity: 0.8;
+    box-shadow: 0 0 30px rgba(var(--primary-color-rgb), 0.4);
+    transform: scale(1.05);
+  }
+  to {
+    opacity: 1;
+    box-shadow: 0 0 10px rgba(var(--primary-color-rgb), 0.2);
+    transform: scale(1);
+  }
+}
+
+/* Efecto de resaltado con transformaciones múltiples */
+.animated-list-highlight .animated-list-item {
+  animation: multi-highlight 0.8s ease forwards;
+  transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  position: relative;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.animated-list-highlight .animated-list-item::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, 
+    transparent, 
+    rgba(var(--primary-color-rgb), 0.3), 
+    transparent);
+  transition: left 0.5s ease;
+  z-index: 1;
+}
+
+.animated-list-highlight .animated-list-item:hover::before {
+  left: 100%;
+}
+
+.animated-list-highlight .animated-list-item:hover {
+  background: linear-gradient(135deg, 
+    rgba(var(--primary-color-rgb), 0.15), 
+    rgba(var(--accent-color-rgb), 0.15),
+    rgba(var(--primary-color-rgb), 0.1));
+  transform: translateX(20px) scale(1.05);
+  border-left: 6px solid var(--primary-color);
+  box-shadow: 
+    0 8px 25px rgba(var(--primary-color-rgb), 0.2),
+    0 0 20px rgba(var(--accent-color-rgb), 0.1);
+}
+
+@keyframes multi-highlight {
+  from {
+    opacity: 0;
+    transform: translateX(-60px) rotateZ(-5deg) scale(0.8);
+  }
+  40% {
+    opacity: 0.8;
+    transform: translateX(10px) rotateZ(2deg) scale(1.1);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0) rotateZ(0deg) scale(1);
+  }
+}
+
+/* Nuevos efectos súper llamativos para listas */
+
+/* Efecto Matrix (aparición de código) */
+.animated-list-matrix .animated-list-item {
+  animation: matrix-reveal 1.2s ease forwards;
+  font-family: 'Courier New', monospace;
+  position: relative;
+  overflow: hidden;
+}
+
+.animated-list-matrix .animated-list-item::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(180deg, 
+    rgba(0, 255, 0, 0.1) 0%, 
+    rgba(0, 255, 0, 0.05) 50%, 
+    transparent 100%);
+  opacity: 0;
+  animation: matrix-glow 1.2s ease forwards;
+}
+
+@keyframes matrix-reveal {
+  from {
+    opacity: 0;
+    transform: scaleY(0.1) skewX(-20deg);
+    filter: blur(10px);
+  }
+  30% {
+    opacity: 0.3;
+    transform: scaleY(0.5) skewX(-10deg);
+    filter: blur(5px);
+  }
+  60% {
+    opacity: 0.7;
+    transform: scaleY(1.1) skewX(5deg);
+    filter: blur(2px);
+  }
+  to {
+    opacity: 1;
+    transform: scaleY(1) skewX(0deg);
+    filter: blur(0px);
+  }
+}
+
+@keyframes matrix-glow {
+  from {
+    opacity: 0;
+  }
+  50% {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
+}
+
+/* Efecto de explosión de partículas */
+.animated-list-particle .animated-list-item {
+  animation: particle-explosion 1.5s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+  position: relative;
+  overflow: visible;
+}
+
+.animated-list-particle .animated-list-item::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 0;
+  height: 0;
+  background: radial-gradient(circle, 
+    rgba(var(--primary-color-rgb), 0.8) 0%, 
+    rgba(var(--accent-color-rgb), 0.4) 50%, 
+    transparent 100%);
+  border-radius: 50%;
+  animation: particle-expand 1.5s ease forwards;
+  z-index: -1;
+}
+
+@keyframes particle-explosion {
+  from {
+    opacity: 0;
+    transform: scale(0.1) rotate(-360deg);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.3) rotate(-180deg);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) rotate(0deg);
+  }
+}
+
+@keyframes particle-expand {
+  from {
+    width: 0;
+    height: 0;
+    transform: translate(-50%, -50%) scale(0);
+  }
+  50% {
+    width: 200%;
+    height: 200%;
+    transform: translate(-50%, -50%) scale(1);
+  }
+  to {
+    width: 0;
+    height: 0;
+    transform: translate(-50%, -50%) scale(0);
+  }
+}
+
+/* Efecto de teletransporte */
+.animated-list-teleport .animated-list-item {
+  animation: teleport-in 1s ease forwards;
+}
+
+@keyframes teleport-in {
+  from {
+    opacity: 0;
+    transform: scale(0) rotate(720deg);
+    filter: brightness(3) blur(10px);
+  }
+  30% {
+    opacity: 0.5;
+    transform: scale(0.5) rotate(360deg);
+    filter: brightness(2) blur(5px);
+  }
+  60% {
+    opacity: 0.8;
+    transform: scale(1.2) rotate(180deg);
+    filter: brightness(1.5) blur(2px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) rotate(0deg);
+    filter: brightness(1) blur(0px);
+  }
+}
+
+/* Efecto de deslizamiento elástico */
+.animated-list-elastic .animated-list-item {
+  animation: elastic-slide 1.2s cubic-bezier(0.68, -0.55, 0.265, 1.55) forwards;
+}
+
+@keyframes elastic-slide {
+  from {
+    opacity: 0;
+    transform: translateX(-200px) scaleX(0.3);
+  }
+  40% {
+    opacity: 0.8;
+    transform: translateX(30px) scaleX(1.2);
+  }
+  60% {
+    transform: translateX(-10px) scaleX(0.95);
+  }
+  80% {
+    transform: translateX(5px) scaleX(1.02);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0) scaleX(1);
+  }
+}
+
+/* Efecto de pulsación con colores */
+.animated-list-pulse .animated-list-item {
+  animation: color-pulse 0.8s ease forwards, pulse-entry 0.8s ease forwards;
+}
+
+@keyframes pulse-entry {
+  from {
+    opacity: 0;
+    transform: scale(0.8);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes color-pulse {
+  0% {
+    background: transparent;
+  }
+  25% {
+    background: rgba(var(--primary-color-rgb), 0.1);
+  }
+  50% {
+    background: rgba(var(--accent-color-rgb), 0.1);
+  }
+  75% {
+    background: rgba(var(--primary-color-rgb), 0.05);
+  }
+  100% {
+    background: transparent;
+  }
+}
+
+/* Efecto de flip 3D */
+.animated-list-flip .animated-list-item {
+  animation: flip-3d 1s ease forwards;
+  transform-style: preserve-3d;
+  perspective: 1000px;
+}
+
+@keyframes flip-3d {
+  from {
+    opacity: 0;
+    transform: rotateX(-90deg) rotateY(-90deg);
+  }
+  50% {
+    opacity: 0.8;
+    transform: rotateX(20deg) rotateY(20deg);
+  }
+  to {
+    opacity: 1;
+    transform: rotateX(0deg) rotateY(0deg);
+  }
+}
+
+/* Efecto de zoom explosivo */
+.animated-list-zoom .animated-list-item {
+  animation: zoom-explosion 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+}
+
+@keyframes zoom-explosion {
+  from {
+    opacity: 0;
+    transform: scale(0.1);
+    box-shadow: 0 0 0 rgba(var(--primary-color-rgb), 0);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.5);
+    box-shadow: 0 0 30px rgba(var(--primary-color-rgb), 0.5);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+    box-shadow: 0 0 5px rgba(var(--primary-color-rgb), 0.2);
+  }
+}
+
+/* Estilo específico para hover-highlight en tablas (GenericList) */
+.hover-highlight {
+  transition: all 0.3s ease !important;
+  position: relative;
+}
+
+.hover-highlight:hover {
+  transform: translateX(4px) !important;
+  background-color: rgba(76, 175, 80, 0.1) !important;
+  box-shadow: 0 4px 12px rgba(76, 175, 80, 0.3) !important;
+}
+
+.hover-highlight:hover .MuiTableCell-root {
+  color: #4CAF50 !important;
+  font-weight: 500 !important;
 }

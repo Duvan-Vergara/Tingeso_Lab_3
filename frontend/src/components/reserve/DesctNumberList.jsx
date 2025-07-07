@@ -50,7 +50,6 @@ function DesctNumberList() {
       onAdd={handleAdd}
       onEdit={handleEdit}
       columns={columns}
-      showSnackbar={showSnackbar}
       confirmTitle="¿Eliminar Descuento?"
       confirmMessage="¿Estás seguro de que deseas eliminar este descuento?"
       confirmText="Eliminar"

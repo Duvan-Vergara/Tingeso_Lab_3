@@ -1,0 +1,158 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: auto-populate-sql
+data:
+  populate-all-databases.sh: |
+    #!/bin/bash
+    set -e
+    
+    echo "=== POBLANDO BASES DE DATOS DE MICROSERVICIOS ==="
+    
+    # Función para esperar que una base de datos esté lista
+    wait_for_db() {
+        local host=$1
+        local max_attempts=30
+        local attempt=1
+        
+        echo "Esperando que $host esté disponible..."
+        while [ $attempt -le $max_attempts ]; do
+            if mysql -h "$host" -uroot -proot -e "SELECT 1" > /dev/null 2>&1; then
+                echo "✅ $host está listo"
+                return 0
+            fi
+            echo "Intento $attempt/$max_attempts - $host no está listo, esperando..."
+            sleep 5
+            attempt=$((attempt + 1))
+        done
+        
+        echo "❌ Error: $host no estuvo disponible después de $max_attempts intentos"
+        return 1
+    }
+    
+    # 1. Poblar tariff-service-db
+    echo "1. Iniciando población de tariff-service-db..."
+    wait_for_db "tariff-service-db-service"
+    
+    mysql -h tariff-service-db-service -uroot -proot -D tartifasbd <<'EOF'
+    -- Solo insertar datos adicionales si no existen
+    INSERT IGNORE INTO tariffs (laps, max_minutes, regular_price, total_duration) VALUES
+    (10, 10, 15000.0, 30),
+    (15, 15, 20000.0, 35),
+    (20, 20, 25000.0, 40),
+    (25, 25, 30000.0, 50),
+    (30, 30, 35000.0, 60);
+    
+    SELECT CONCAT('✅ TARIFAS EN BD: ', COUNT(*)) as resultado FROM tariffs;
+    EOF
+    echo "✅ tariff-service-db poblado exitosamente"
+    
+    # 2. Poblar reserve-service-db
+    echo "2. Iniciando población de reserve-service-db..."
+    wait_for_db "reserve-service-db-service"
+    
+    mysql -h reserve-service-db-service -uroot -proot -D reserve <<'EOF'
+    -- Solo insertar datos adicionales si no existen
+    INSERT IGNORE INTO users (rut, name, lastname, email, birthdate) VALUES
+    ('12345678-9', 'Juan', 'Pérez', 'juan.perez@test.com', '1990-01-15'),
+    ('98765432-1', 'María', 'González', 'maria.gonzalez@test.com', '1985-06-20'),
+    ('11111111-1', 'Pedro', 'López', 'pedro.lopez@test.com', '1992-03-10'),
+    ('22222222-2', 'Ana', 'Martínez', 'ana.martinez@test.com', '1988-11-05'),
+    ('33333333-3', 'Carlos', 'Rodríguez', 'carlos.rodriguez@test.com', '1995-08-25'),
+    ('44444444-4', 'Luis', 'Fernández', 'luis.fernandez@test.com', '1987-02-14'),
+    ('55555555-5', 'Carmen', 'Jiménez', 'carmen.jimenez@test.com', '1993-09-30'),
+    ('66666666-6', 'Miguel', 'Ruiz', 'miguel.ruiz@test.com', '1986-12-08'),
+    ('77777777-7', 'Laura', 'Díaz', 'laura.diaz@test.com', '1991-05-22'),
+    ('88888888-8', 'Roberto', 'Morales', 'roberto.morales@test.com', '1989-07-18');
+    
+    INSERT IGNORE INTO reserves (reserveday, begin, finish, tariff_id, final_price) VALUES
+    ('2024-01-15', '10:00:00', '11:00:00', 1, 15000.0),
+    ('2024-01-16', '14:00:00', '15:00:00', 2, 20000.0),
+    ('2024-01-17', '16:00:00', '17:00:00', 3, 25000.0),
+    ('2024-01-18', '09:00:00', '10:00:00', 1, 15000.0),
+    ('2024-01-19', '11:00:00', '12:00:00', 2, 20000.0),
+    ('2024-01-20', '15:00:00', '16:00:00', 3, 25000.0),
+    ('2024-01-21', '08:00:00', '09:00:00', 1, 15000.0),
+    ('2024-01-22', '13:00:00', '14:00:00', 2, 20000.0);
+    
+    -- Asociar usuarios con reservas (solo si no existen)
+    INSERT IGNORE INTO reserves_users (reserve_id, user_id) VALUES
+    (1, 1), (2, 2), (3, 3), (4, 4), (5, 5),
+    (6, 6), (7, 7), (8, 8),
+    (1, 2), (2, 3), (3, 4), (4, 5); -- Algunas reservas múltiples
+    
+    SELECT CONCAT('✅ USUARIOS EN BD: ', COUNT(*)) as resultado FROM users;
+    SELECT CONCAT('✅ RESERVAS EN BD: ', COUNT(*)) as resultado FROM reserves;
+    EOF
+    echo "✅ reserve-service-db poblado exitosamente"
+    
+    # 3. Poblar special-rates-service-db
+    echo "3. Iniciando población de special-rates-service-db..."
+    wait_for_db "special-rates-service-db-service"
+    
+    mysql -h special-rates-service-db-service -uroot -proot -D tartiffspecialbd <<'EOF'
+    -- Solo insertar datos adicionales si no existen
+    INSERT IGNORE INTO tariff_special (weekend_discount_percentage, holiday_increase_percentage) VALUES
+    (0.15, 0.10),
+    (0.20, 0.15),
+    (0.25, 0.20),
+    (0.10, 0.05),
+    (0.05, 0.12);
+    
+    SELECT CONCAT('✅ TARIFAS ESPECIALES EN BD: ', COUNT(*)) as resultado FROM tariff_special;
+    EOF
+    echo "✅ special-rates-service-db poblado exitosamente"
+    
+    # 4. Poblar discount-people-service-db
+    echo "4. Iniciando población de discount-people-service-db..."
+    wait_for_db "discount-people-service-db-service"
+    
+    mysql -h discount-people-service-db-service -uroot -proot -D desctpersona <<'EOF'
+    -- Solo insertar datos adicionales si no existen
+    INSERT IGNORE INTO desctnumber (minpersonas, maxpersonas, porcentajedesct) VALUES
+    (16, 20, 0.35),
+    (21, 30, 0.40);
+    
+    SELECT CONCAT('✅ DESCUENTOS POR CANTIDAD EN BD: ', COUNT(*)) as resultado FROM desctnumber;
+    EOF
+    echo "✅ discount-people-service-db poblado exitosamente"
+    
+    # 5. Poblar discount-frequent-service-db
+    echo "5. Iniciando población de discount-frequent-service-db..."
+    wait_for_db "discount-frequent-service-db-service"
+    
+    mysql -h discount-frequent-service-db-service -uroot -proot -D desctpersonafrect <<'EOF'
+    -- Solo insertar datos adicionales si no existen
+    INSERT IGNORE INTO desctfrecu (minveces, maxveces, porcentajedesct) VALUES
+    (10, 15, 0.35),
+    (16, 9999, 0.40);
+    
+    SELECT CONCAT('✅ DESCUENTOS FRECUENTES EN BD: ', COUNT(*)) as resultado FROM desctfrecu;
+    EOF
+    echo "✅ discount-frequent-service-db poblado exitosamente"
+    
+    echo "=== ✅ TODAS LAS BASES DE DATOS POBLADAS EXITOSAMENTE ==="
+
+---
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: auto-populate-data
+spec:
+  template:
+    spec:
+      containers:
+      - name: mysql-populate
+        image: mysql:8.0
+        command: ["/bin/bash"]
+        args: ["/scripts/populate-all-databases.sh"]
+        volumeMounts:
+        - name: sql-scripts
+          mountPath: /scripts
+      volumes:
+      - name: sql-scripts
+        configMap:
+          name: auto-populate-sql
+          defaultMode: 0755
+      restartPolicy: Never
+  backoffLimit: 3

@@ -22,116 +22,218 @@ import { useNavigate } from 'react-router-dom';
 export default function Sidemenu({ open, toggleDrawer }) {
   const navigate = useNavigate();
 
+  const menuItemStyle = {
+    '&:hover': {
+      backgroundColor: 'var(--primary-light)',
+      borderLeft: '3px solid var(--primary-color)',
+      transform: 'translateX(5px)',
+    },
+    transition: 'all 0.3s ease',
+    color: 'var(--text-color)',
+    margin: '0.3rem 0.8rem',
+    borderRadius: '0.5rem',
+    borderLeft: '3px solid transparent',
+    padding: '0.8rem 1rem',
+    '&:active': {
+      backgroundColor: 'var(--primary-hover)',
+    },
+  };
+
+  const iconStyle = {
+    color: 'var(--primary-color)',
+    fontSize: '1.5rem',
+  };
+
+  const textStyle = {
+    '& .MuiListItemText-primary': {
+      color: 'var(--text-color)',
+      fontWeight: '500',
+      fontSize: '0.95rem',
+    },
+  };
+
+  const dividerStyle = {
+    backgroundColor: 'var(--primary-color)',
+    margin: '1rem 0.8rem',
+    height: '2px',
+    borderRadius: '1px',
+  };
+
   const listOptions = () => (
     <Box
       role="presentation"
       onClick={toggleDrawer(false)}
       onKeyDown={(event) => {
-        // Mejorar el manejo del teclado para accesibilidad
         if (event.key === 'Escape' || event.key === 'Tab') {
           toggleDrawer(false)(event);
         }
       }}
       sx={{
-        backgroundColor: 'rgba(30,30,47,0.9)',
+        background: 'linear-gradient(135deg, var(--background-secondary) 0%, var(--background-accent) 100%)',
+        borderRight: '1px solid var(--primary-color)',
         height: '100%',
         color: 'var(--text-color)',
+        backdropFilter: 'blur(15px)',
+        WebkitBackdropFilter: 'blur(15px)',
+        width: '280px',
       }}
     >
-      <List>
-        <ListItemButton onClick={() => navigate('/home')}>
+      <List sx={{ padding: '1rem 0' }}>
+        <ListItemButton
+          onClick={() => navigate('/home')}
+          sx={menuItemStyle}
+        >
           <ListItemIcon>
-            <HomeIcon sx={{ color: 'var(--text-optional-color)' }} />
+            <HomeIcon sx={iconStyle} />
           </ListItemIcon>
-          <ListItemText primary="Home" />
+          <ListItemText
+            primary="Home"
+            sx={textStyle}
+          />
         </ListItemButton>
 
-        <Divider />
+        <Divider sx={dividerStyle} />
 
-        <ListItemButton onClick={() => navigate('/user/list')}>
+        <ListItemButton
+          onClick={() => navigate('/user/list')}
+          sx={menuItemStyle}
+        >
           <ListItemIcon>
-            <PeopleAltIcon sx={{ color: 'var(--text-optional-color)' }} />
+            <PeopleAltIcon sx={iconStyle} />
           </ListItemIcon>
-          <ListItemText primary="Usuarios" />
+          <ListItemText
+            primary="Lista de Usuarios"
+            sx={textStyle}
+          />
         </ListItemButton>
 
-        <ListItemButton onClick={() => navigate('/reserve/list')}>
+        <ListItemButton
+          onClick={() => navigate('/reserve/list')}
+          sx={menuItemStyle}
+        >
           <ListItemIcon>
-            <GroupAddIcon sx={{ color: 'var(--text-optional-color)' }} />
+            <GroupAddIcon sx={iconStyle} />
           </ListItemIcon>
-          <ListItemText primary="Reservas" />
+          <ListItemText
+            primary="Lista de Reservas"
+            sx={textStyle}
+          />
         </ListItemButton>
 
-        <ListItemButton onClick={() => navigate('/specialdays/list')}>
+        <ListItemButton
+          onClick={() => navigate('/specialdays/list')}
+          sx={menuItemStyle}
+        >
           <ListItemIcon>
-            <CalendarMonthIcon sx={{ color: 'var(--text-optional-color)' }} />
+            <CalendarMonthIcon sx={iconStyle} />
           </ListItemIcon>
-          <ListItemText primary="Días Especiales" />
+          <ListItemText
+            primary="Lista de Días Especiales"
+            sx={textStyle}
+          />
         </ListItemButton>
 
-        <ListItemButton onClick={() => navigate('/tariff/list')}>
+        <ListItemButton
+          onClick={() => navigate('/tariff/list')}
+          sx={menuItemStyle}
+        >
           <ListItemIcon>
-            <PaidIcon sx={{ color: 'var(--text-optional-color)' }} />
+            <PaidIcon sx={iconStyle} />
           </ListItemIcon>
-          <ListItemText primary="Tarifas" />
+          <ListItemText
+            primary="Lista de Tarifas"
+            sx={textStyle}
+          />
         </ListItemButton>
 
-        <ListItemButton onClick={() => navigate('/tariff/special/list')}>
+        <ListItemButton
+          onClick={() => navigate('/tariff/special/list')}
+          sx={menuItemStyle}
+        >
           <ListItemIcon>
-            <StarIcon sx={{ color: 'var(--text-optional-color)' }} />
+            <StarIcon sx={iconStyle} />
           </ListItemIcon>
-          <ListItemText primary="Tarifas Especiales" />
+          <ListItemText
+            primary="Lista de Tarifas Especiales"
+            sx={textStyle}
+          />
         </ListItemButton>
 
-        <ListItemButton onClick={() => navigate('/desctnumber/list')}>
+        <ListItemButton
+          onClick={() => navigate('/desctnumber/list')}
+          sx={menuItemStyle}
+        >
           <ListItemIcon>
-            <DiscountIcon sx={{ color: 'var(--text-optional-color)' }} />
+            <DiscountIcon sx={iconStyle} />
           </ListItemIcon>
-          <ListItemText primary="Descuentos por grupo" />
+          <ListItemText
+            primary="Lista de Descuentos por Grupo"
+            sx={textStyle}
+          />
         </ListItemButton>
 
-        <ListItemButton onClick={() => navigate('/desctfrec/list')}>
+        <ListItemButton
+          onClick={() => navigate('/desctfrec/list')}
+          sx={menuItemStyle}
+        >
           <ListItemIcon>
-            <LoopIcon sx={{ color: 'var(--text-optional-color)' }} />
+            <LoopIcon sx={iconStyle} />
           </ListItemIcon>
-          <ListItemText primary="Descuentos por Frecuencia" />
+          <ListItemText
+            primary="Lista de Descuentos por Frecuencia"
+            sx={textStyle}
+          />
         </ListItemButton>
 
-        <ListItemButton onClick={() => navigate('/reports/generate')}>
+        <ListItemButton
+          onClick={() => navigate('/reports/generate')}
+          sx={menuItemStyle}
+        >
           <ListItemIcon>
-            <AssessmentIcon sx={{ color: 'var(--text-optional-color)' }} />
+            <AssessmentIcon sx={iconStyle} />
           </ListItemIcon>
-          <ListItemText primary="Generar Reporte" />
+          <ListItemText
+            primary="Generar Reporte"
+            sx={textStyle}
+          />
         </ListItemButton>
 
-        <ListItemButton onClick={() => navigate('/rack/semana')}>
+        <ListItemButton
+          onClick={() => navigate('/rack/semana')}
+          sx={menuItemStyle}
+        >
           <ListItemIcon>
-            <MoreTimeIcon sx={{ color: 'var(--text-optional-color)' }} />
+            <MoreTimeIcon sx={iconStyle} />
           </ListItemIcon>
-          <ListItemText primary="Rack Semanal" />
+          <ListItemText
+            primary="Rack Semanal"
+            sx={textStyle}
+          />
         </ListItemButton>
 
-        <Divider sx={{ backgroundColor: 'var(--border-color)' }} />
+        <Divider sx={dividerStyle} />
 
-        <ListItemButton onClick={() => navigate('/faq')}>
+        <ListItemButton
+          onClick={() => navigate('/faq')}
+          sx={menuItemStyle}
+        >
           <ListItemIcon>
-            <HelpOutlineIcon sx={{ color: 'var(--text-optional-color)' }} />
+            <HelpOutlineIcon sx={iconStyle} />
           </ListItemIcon>
-          <ListItemText primary="Preguntas Frecuentes" />
+          <ListItemText
+            primary="Preguntas Frecuentes"
+            sx={textStyle}
+          />
         </ListItemButton>
       </List>
-      <Divider sx={{ backgroundColor: 'var(--border-color)' }} />
     </Box>
-  );
-
-  return (
+  );  return (
     <div>
-      <Drawer 
-        anchor="left" 
-        open={open} 
+      <Drawer
+        anchor="left"
+        open={open}
         onClose={toggleDrawer(false)}
         ModalProps={{
-          // Mejorar accesibilidad del modal
           keepMounted: false,
           disablePortal: false,
           hideBackdrop: false,
@@ -140,9 +242,30 @@ export default function Sidemenu({ open, toggleDrawer }) {
           disableRestoreFocus: false,
         }}
         PaperProps={{
-          // Asegurar que el contenido sea accesible
           role: 'navigation',
           'aria-label': 'Menú de navegación principal',
+          sx: {
+            background: 'linear-gradient(135deg, var(--background-secondary) 0%, var(--background-accent) 100%)',
+            backdropFilter: 'blur(15px)',
+            WebkitBackdropFilter: 'blur(15px)',
+            border: '1px solid var(--primary-color)',
+            borderLeft: 'none',
+            boxShadow: `
+              0 0 30px rgba(var(--primary-color-rgb), 0.3),
+              0 20px 25px -5px rgba(0, 0, 0, 0.4),
+              0 10px 10px -5px rgba(0, 0, 0, 0.1)
+            `,
+            '&::before': {
+              content: '""',
+              position: 'absolute',
+              top: 0,
+              left: 0,
+              right: 0,
+              bottom: 0,
+              background: 'var(--glass-bg)',
+              zIndex: -1,
+            },
+          },
         }}
       >
         {listOptions()}

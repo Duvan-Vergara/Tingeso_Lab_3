@@ -72,15 +72,14 @@ function AddEditUser() {
     submitWithUndo(
       user,
       (data) => {
-        // Guardar en backend solo si no se deshace
+
         const savePromise = id
           ? userService.saveUser({ ...data, id })
           : userService.saveUser(data);
-        
         executeWithLoading(async () => {
           try {
             await savePromise;
-            navigate('/user/list'); // No pasar undoMsg ni undoData
+            navigate('/user/list');
           } catch (error) {
             showSnackbar({
               msg: 'Ha ocurrido un error al intentar guardar el usuario.',
@@ -90,7 +89,7 @@ function AddEditUser() {
         });
       },
       (data) => {
-        // Restaurar el formulario si se deshace
+
         setRut(data.rut || '');
         setName(data.name || '');
         setLastName(data.lastName || '');

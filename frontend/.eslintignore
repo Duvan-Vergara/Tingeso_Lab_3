@@ -1,0 +1,32 @@
+# Archivos y directorios compilados/build
+dist/
+dist-ssr/
+build/
+
+# Node modules
+node_modules/
+
+# Archivos de configuración de herramientas que no son código fuente
+*.config.js
+vite.config.js
+
+# Archivos de log
+*.log
+
+# Archivos locales de desarrollo
+*.local
+
+# Archivos temporales
+.tmp/
+temp/
+
+# Coverage reports
+coverage/
+
+# Archivos de test e2e que no necesitan linting (si aplica)
+cypress/
+tests/e2e/
+
+# Archivos de configuración específicos
+.env
+.env.*

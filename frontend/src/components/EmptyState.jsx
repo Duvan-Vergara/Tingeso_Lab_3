@@ -1,14 +1,5 @@
 import PropTypes from 'prop-types';
 
-/**
- * Componente para mostrar estados vacíos con un diseño consistente
- * @param {Object} props - Props del componente
- * @param {string} props.title - Título del estado vacío
- * @param {string} props.description - Descripción del estado vacío
- * @param {string} props.icon - Icono a mostrar (emoji o texto)
- * @param {React.ReactNode} props.action - Botón o acción opcional
- * @param {string} props.className - Clases CSS adicionales
- */
 function EmptyState({
   title = 'No hay datos',
   description = 'No se encontraron elementos para mostrar.',

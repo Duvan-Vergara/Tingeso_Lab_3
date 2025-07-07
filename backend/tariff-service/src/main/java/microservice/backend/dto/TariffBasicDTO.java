@@ -9,5 +9,5 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class TariffBasicDTO {
     private int laps;
-    private int max_minutes;
+    private int maxMinutes;
 }

@@ -19,4 +19,6 @@ CREATE TABLE desctfrecu (
 -- Insertar datos según la lógica de calculateFrequentCustomerDiscount
 INSERT INTO desctfrecu (minveces, maxveces, porcentajedesct) VALUES (2, 4, 0.10);
 INSERT INTO desctfrecu (minveces, maxveces, porcentajedesct) VALUES (5, 6, 0.20);
-INSERT INTO desctfrecu (minveces, maxveces, porcentajedesct) VALUES (7, 9999, 0.30);
+INSERT INTO desctfrecu (minveces, maxveces, porcentajedesct) VALUES (7, 9, 0.30);
+INSERT INTO desctfrecu (minveces, maxveces, porcentajedesct) VALUES (10, 15, 0.35);
+INSERT INTO desctfrecu (minveces, maxveces, porcentajedesct) VALUES (16, 9999, 0.40);

@@ -1,0 +1,57 @@
+{
+    "performance_criteria": {
+        "load_testing": {
+            "max_response_time_ms": 2000,
+            "max_error_rate_percent": 1.0,
+            "min_throughput_requests_per_second": 50,
+            "max_avg_response_time_ms": 1000,
+            "description": "Criterios para pruebas de carga normal (100 usuarios concurrentes)"
+        },
+        "stress_testing": {
+            "max_response_time_ms": 5000,
+            "max_error_rate_percent": 5.0,
+            "min_throughput_requests_per_second": 20,
+            "max_avg_response_time_ms": 3000,
+            "description": "Criterios para pruebas de estrés (500 usuarios concurrentes)"
+        },
+        "volume_testing": {
+            "max_response_time_ms": 10000,
+            "max_error_rate_percent": 10.0,
+            "min_throughput_requests_per_second": 10,
+            "max_avg_response_time_ms": 7000,
+            "description": "Criterios para pruebas de volumen (1000 usuarios concurrentes)"
+        }
+    },
+    "endpoints_criteria": {
+        "/api/reserve": {
+            "max_response_time_ms": 3000,
+            "max_error_rate_percent": 2.0,
+            "priority": "high",
+            "description": "Endpoint crítico de reservas"
+        },
+        "/api/tariff": {
+            "max_response_time_ms": 1500,
+            "max_error_rate_percent": 1.0,
+            "priority": "high",
+            "description": "Endpoint de tarifas"
+        },
+        "/api/rack": {
+            "max_response_time_ms": 2000,
+            "max_error_rate_percent": 2.0,
+            "priority": "medium",
+            "description": "Endpoint de estado de karts"
+        },
+        "/api/reports": {
+            "max_response_time_ms": 5000,
+            "max_error_rate_percent": 3.0,
+            "priority": "medium",
+            "description": "Endpoint de reportes"
+        }
+    },
+    "system_criteria": {
+        "memory_usage_percent": 80,
+        "cpu_usage_percent": 85,
+        "database_connection_pool_utilization_percent": 90,
+        "description": "Criterios de utilización de recursos del sistema"
+    }
+}

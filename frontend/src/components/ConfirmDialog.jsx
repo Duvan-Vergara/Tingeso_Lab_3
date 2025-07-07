@@ -75,8 +75,8 @@ ConfirmDialog.propTypes = {
 };
 
 ConfirmDialog.defaultProps = {
-  title: 'Confimar Accion',
-  message: 'Está seguro de que desea continuar?',
+  title: 'Confirmar Acción',
+  message: '¿Está seguro de que desea continuar?',
   confirmText: 'Confirmar',
   cancelText: 'Cancelar',
 };

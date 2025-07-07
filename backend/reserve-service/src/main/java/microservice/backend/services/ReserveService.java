@@ -12,6 +12,8 @@ import microservice.backend.repositories.ReserveRepository;
 import microservice.backend.repositories.TariffClient;
 import microservice.backend.utils.ComplementReserve;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
@@ -63,6 +65,11 @@ public class ReserveService {
 
     public List<ReserveEntity> getReserves() {
         return new ArrayList<>(reserveRepository.findAll());
+    }
+
+    // RF5 Performance Optimization: Paginated reserves
+    public Page<ReserveEntity> getReservesPaginated(PageRequest pageRequest) {
+        return reserveRepository.findAll(pageRequest);
     }
 
     public ReserveEntity saveReserve(ReserveEntity reserve) {

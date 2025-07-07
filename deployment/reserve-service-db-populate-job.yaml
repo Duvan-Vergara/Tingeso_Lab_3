@@ -3,16 +3,33 @@ kind: Job
 metadata:
   name: reserve-service-db-populate
 spec:
+  ttlSecondsAfterFinished: 3600  # Limpiar después de 1 hora
+  backoffLimit: 3                # Máximo 3 reintentos
+  activeDeadlineSeconds: 600     # Timeout de 10 minutos
   template:
     spec:
       containers:
       - name: mysql-client
         image: mysql:latest
-        command: ["sh", "-c", "mysql -h reserve-service-db-service -uroot -proot < /scripts/reserve-service-db.mysql.sql"]
+        command:
+        - sh
+        - -c
+        - |
+          echo "Iniciando población de base de datos reserve-service..."
+          echo "Conectando a reserve-service-db-service..."
+          mysql -h reserve-service-db-service -uroot -proot --connect-timeout=30 < /scripts/reserve-service-db.mysql.sql
+          echo "✅ Población completada exitosamente"
         volumeMounts:
         - name: sql-script
           mountPath: /scripts
-      restartPolicy: OnFailure
+        resources:
+          limits:
+            memory: "128Mi"
+            cpu: "100m"
+          requests:
+            memory: "64Mi"
+            cpu: "50m"
+      restartPolicy: Never
       volumes:
       - name: sql-script
         configMap:

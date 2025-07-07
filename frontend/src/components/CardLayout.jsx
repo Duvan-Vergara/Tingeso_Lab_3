@@ -11,16 +11,16 @@ function CardLayout({
 }) {
   const getPaddingClass = () => {
     switch (padding) {
-    case 'small': return 'card-padding-sm';
-    case 'large': return 'card-padding-lg';
-    case 'none': return 'card-padding-none';
-    default: return '';
+      case 'small': return 'card-padding-sm';
+      case 'large': return 'card-padding-lg';
+      case 'none': return 'card-padding-none';
+      default: return '';
     }
   };
 
   return (
     <div
-      className={`card ${hover ? 'card-hoverable' : ''} ${getPaddingClass()} ${className}`}
+      className={`card animated-card animated-card-pulse ${hover ? 'card-hoverable' : ''} ${getPaddingClass()} ${className}`}
       {...props}
     >
       {title && (

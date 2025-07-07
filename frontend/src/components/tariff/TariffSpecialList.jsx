@@ -11,6 +11,7 @@ import TableRow from '@mui/material/TableRow';
 import Paper from '@mui/material/Paper';
 import { useSnackbar } from '../GlobalSnackbar';
 import tariffSpecialService from '../../services/tariffspecial.service';
+import AnimatedTitle from '../AnimatedTitle';
 
 function TariffSpecialList() {
   const [tariff, setTariff] = useState(null);
@@ -38,9 +39,19 @@ function TariffSpecialList() {
       component={Paper}
       sx={{ backgroundColor: 'rgba(30, 30, 47, 0.9)' }}
     >
-      <h3 style={{ color: 'var(--text-optional-color)', textAlign: 'center' }}>
-        Tarifa Especial
-      </h3>
+      <div style={{ textAlign: 'center', marginBottom: '1rem', paddingTop: '1rem' }}>
+        <AnimatedTitle
+          variant="h4"
+          component="h3"
+          animationType="pulse"
+          sx={{
+            fontSize: '1.5rem',
+            color: 'var(--text-optional-color)',
+          }}
+        >
+          Tarifa Especial
+        </AnimatedTitle>
+      </div>
       <Table>
         <TableHead>
           <TableRow>
@@ -60,11 +71,26 @@ function TariffSpecialList() {
         </TableHead>
         <TableBody>
           {tariff && (
-            <TableRow>
-              <TableCell sx={{ color: 'var(--text-color)' }}>
+            <TableRow
+              className="hover-highlight"
+              sx={{
+                cursor: 'pointer',
+                transition: 'all 0.3s ease',
+                '&:hover': {
+                  transform: 'translateX(4px)',
+                  backgroundColor: 'rgba(76, 175, 80, 0.1)',
+                  boxShadow: '0 4px 12px rgba(76, 175, 80, 0.3)',
+                  '& .MuiTableCell-root': {
+                    color: '#4CAF50',
+                    fontWeight: '500',
+                  },
+                },
+              }}
+            >
+              <TableCell sx={{ color: 'var(--text-color)', transition: 'all 0.3s ease' }}>
                 {tariff.weekendDiscountPercentage}
               </TableCell>
-              <TableCell sx={{ color: 'var(--text-color)' }}>
+              <TableCell sx={{ color: 'var(--text-color)', transition: 'all 0.3s ease' }}>
                 {tariff.holidayIncreasePercentage}
               </TableCell>
               <TableCell align="center">

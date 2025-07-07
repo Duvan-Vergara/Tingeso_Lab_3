@@ -63,7 +63,7 @@ function AddEditDesctFrec() {
     submitWithUndo(
       desct,
       (data) => {
-        // Guardar en backend solo si no se deshace
+
         const savePromise = id
           ? desctFrecService.createDesctFrecu({ ...data, id })
           : desctFrecService.createDesctFrecu(data);
@@ -78,7 +78,7 @@ function AddEditDesctFrec() {
           });
       },
       (data) => {
-        // Restaurar el formulario si se deshace
+
         setMinveces(data.minveces || '');
         setMaxveces(data.maxveces || '');
         setPorcentajedesct(data.porcentajedesct || '');

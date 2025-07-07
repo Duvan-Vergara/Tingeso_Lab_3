@@ -11,6 +11,15 @@ module.exports = {
     'plugin:react-hooks/recommended',
     'plugin:jsx-a11y/recommended',
   ],
+  ignorePatterns: [
+    'dist/',
+    'dist-ssr/',
+    'build/',
+    'node_modules/',
+    '*.config.js',
+    '*.min.js',
+    'coverage/',
+  ],
   parserOptions: {
     ecmaFeatures: {
       jsx: true,
@@ -28,7 +37,7 @@ module.exports = {
     'jsx-a11y/anchor-is-valid': 'warn',
     // Reglas de formato estricto
     'no-multiple-empty-lines': ['error', { max: 1, maxEOF: 0, maxBOF: 0 }],
-    'indent': ['error', 2],
+    'indent': ['error', 2, { 'SwitchCase': 1 }],
     'quotes': ['error', 'single'],
     'semi': ['error', 'always'],
     'comma-dangle': ['error', 'always-multiline'],

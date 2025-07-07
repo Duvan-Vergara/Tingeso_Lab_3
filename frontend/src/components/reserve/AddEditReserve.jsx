@@ -118,7 +118,6 @@ function AddEditReserve() {
       return;
     }
 
-    // Datos para el formulario (camelCase)
     const formData = {
       clientName,
       reserveDay,
@@ -132,7 +131,7 @@ function AddEditReserve() {
     submitWithUndo(
       formData,
       (data) => {
-        // Mapear a snake_case para el backend
+
         const reserveData = {
           clientName: data.clientName,
           reserveday: data.reserveDay,
@@ -143,7 +142,6 @@ function AddEditReserve() {
           finish: data.finish,
         };
 
-        // Guardar en backend solo si no se deshace
         const savePromise = id
           ? reserveService.updateReserve(id, reserveData)
           : reserveService.createReserve(reserveData);
@@ -160,7 +158,7 @@ function AddEditReserve() {
           });
       },
       (data) => {
-        // Restaurar el formulario si se deshace
+
         setClientName(data.clientName || '');
         setReserveDay(data.reserveDay || '');
         setTariffId(data.tariffId || '');

@@ -8,9 +8,9 @@ function LoadingState({
 }) {
   const getSizeClass = () => {
     switch (size) {
-    case 'small': return 'small';
-    case 'large': return 'large';
-    default: return '';
+      case 'small': return 'small';
+      case 'large': return 'large';
+      default: return '';
     }
   };
 

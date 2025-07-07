@@ -8,10 +8,12 @@ import microservice.backend.dto.ReserveDTO;
 import microservice.backend.dto.StarEndDTO;
 import microservice.backend.entities.ReserveEntity;
 import microservice.backend.services.ReserveService;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
 
 import java.time.LocalDate;
 import java.util.List;
@@ -24,8 +26,16 @@ public class ReserveController {
     private final ReserveService reserveService;
 
     @GetMapping("/")
-    public ResponseEntity<List<ReserveEntity>> listReservers() {
-        List<ReserveEntity> reserves = reserveService.getReserves();
+    public ResponseEntity<Page<ReserveEntity>> listReservers(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "20") int size,
+            @RequestParam(defaultValue = "reserveday") String sortBy,
+            @RequestParam(defaultValue = "desc") String sortDir) {
+        
+        PageRequest pageRequest = PageRequest.of(page, size, 
+            Sort.by(Sort.Direction.fromString(sortDir), sortBy));
+        
+        Page<ReserveEntity> reserves = reserveService.getReservesPaginated(pageRequest);
         return ResponseEntity.ok(reserves);
     }
 
