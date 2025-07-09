@@ -1,0 +1,174 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jmeterTestPlan version="1.2" properties="5.0" jmeter="5.6.3">
+  <hashTree>
+    <TestPlan guiclass="TestPlanGui" testclass="TestPlan" testname="RF5 - REGISTRO RESERVAS - STRESS TEST">
+      <stringProp name="TestPlan.comments">STRESS TESTING ESCALABLE para RF5 - Registro de Reservas
+      Configuración para encontrar el punto de quiebre del sistema:
+      - USERS: Número máximo de usuarios concurrentes (5000, 10000, 15000+)
+      - RAMP_TIME: Tiempo agresivo de rampa (60-300s)
+      - LOOPS: Múltiples iteraciones para estrés sostenido
+      - DURATION: Duración extendida para probar estabilidad
+      
+      Objetivo: Alcanzar 10%+ de error rate o fallas del sistema
+      
+      Uso desde Jenkins/Terminal:
+      jmeter -n -t RF5-STRESS.jmx -JUSERS=10000 -JRAMP_TIME=180 -JLOOPS=10 -JDURATION=3600 -l stress-results.jtl -e -o html-stress
+      </stringProp>
+      <boolProp name="TestPlan.functional_mode">false</boolProp>
+      <boolProp name="TestPlan.serialize_threadgroups">false</boolProp>
+      <elementProp name="TestPlan.arguments" elementType="Arguments" guiclass="ArgumentsPanel" testclass="Arguments" testname="User Defined Variables">
+        <collectionProp name="Arguments.arguments"/>
+      </elementProp>
+    </TestPlan>
+    <hashTree>
+      <ThreadGroup guiclass="ThreadGroupGui" testclass="ThreadGroup" testname="Stress Test - ${__P(USERS,5000)} Usuarios MÁXIMO">
+        <stringProp name="ThreadGroup.on_sample_error">continue</stringProp>
+        <elementProp name="ThreadGroup.main_controller" elementType="LoopController" guiclass="LoopControllerGui" testclass="LoopController" testname="Loop Controller">
+          <boolProp name="LoopController.continue_forever">false</boolProp>
+          <stringProp name="LoopController.loops">${__P(LOOPS,10)}</stringProp>
+        </elementProp>
+        <stringProp name="ThreadGroup.num_threads">${__P(USERS,5000)}</stringProp>
+        <stringProp name="ThreadGroup.ramp_time">${__P(RAMP_TIME,180)}</stringProp>
+        <boolProp name="ThreadGroup.scheduler">true</boolProp>
+        <stringProp name="ThreadGroup.duration">${__P(DURATION,3600)}</stringProp>
+        <stringProp name="ThreadGroup.delay">0</stringProp>
+      </ThreadGroup>
+      <hashTree>
+        <!-- JSR223 PreProcessor para generar datos únicos de stress -->
+        <JSR223PreProcessor guiclass="TestBeanGUI" testclass="JSR223PreProcessor" testname="Generate Unique Stress Test Data">
+          <stringProp name="scriptLanguage">groovy</stringProp>
+          <stringProp name="script">
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Random
+
+// Generar ID único agresivo para STRESS TEST
+def threadNum = ctx.getThreadNum() 
+def iterationNum = vars.get("__jm__Loop Controller__idx") as Integer ?: 0
+def timestamp = System.currentTimeMillis()
+def random = new Random()
+def uniqueId = (threadNum * 1000000) + (iterationNum * 10000) + (timestamp % 10000)
+
+// Fechas más agresivas - hoy y próximos 7 días (mayor contención)
+def today = new Date()
+def daysToAdd = (uniqueId % 7) + 1  // Solo próximos 7 días para más conflictos
+def futureDate = new Date(today.time + daysToAdd * 24 * 60 * 60 * 1000)
+def dateFormat = new SimpleDateFormat("yyyy-MM-dd")
+
+// Horas pico concentradas (mayor contención), asegurando que nunca pase de 23:45
+def peakHours = [8, 9, 10, 18, 19, 20, 21]  // Horas pico
+def baseHour = peakHours[uniqueId % peakHours.size()]
+def minute = ((uniqueId % 4) * 15)    // 0, 15, 30, 45 minutos
+// Limitar la hora de fin a máximo 23:45
+def finishBase = baseHour + random.nextInt(3) + 1
+if (finishBase &gt; 23) { finishBase = 23 }
+def beginTime = String.format("%02d:%02d", baseHour, minute)
+def finishTime = String.format("%02d:%02d", finishBase, minute)
+
+// Variables para stress testing
+vars.put("reserveday", dateFormat.format(futureDate))
+vars.put("begin", beginTime)
+vars.put("finish", finishTime)
+vars.put("tariffId", String.valueOf((uniqueId % 3) + 1))
+vars.put("finalPrice", String.valueOf(15000 + (uniqueId % 10) * 2500)) // Precios variables
+
+// Log agresivo para stress
+def users = props.get("USERS")
+log.info("STRESS-${users}U [T${threadNum}-I${iterationNum}-${uniqueId}]: ${reserveday} ${begin}-${finish} (PEAK HOUR)")
+          </stringProp>
+        </JSR223PreProcessor>
+        <hashTree/>
+        <!-- Stress Test: Carga máxima simultánea -->
+        <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="RF5-STRESS: CREAR RESERVA (MÁXIMA CARGA)">
+          <boolProp name="HTTPSampler.postBodyRaw">true</boolProp>
+          <elementProp name="HTTPsampler.Arguments" elementType="Arguments">
+            <collectionProp name="Arguments.arguments">
+              <elementProp name="" elementType="HTTPArgument">
+                <boolProp name="HTTPArgument.always_encode">false</boolProp>
+                <stringProp name="Argument.value">{
+  "reserveday": "${reserveday}",
+  "begin": "${begin}",
+  "finish": "${finish}",
+  "reservesUsers": [],
+  "tariffId": ${tariffId},
+  "finalPrice": ${finalPrice}
+}</stringProp>
+                <stringProp name="Argument.metadata">=</stringProp>
+              </elementProp>
+            </collectionProp>
+          </elementProp>
+          <stringProp name="HTTPSampler.domain">localhost</stringProp>
+          <stringProp name="HTTPSampler.port">30088</stringProp>
+          <stringProp name="HTTPSampler.protocol">http</stringProp>
+          <stringProp name="HTTPSampler.contentEncoding"></stringProp>
+          <stringProp name="HTTPSampler.path">/api/reserves/</stringProp>
+          <stringProp name="HTTPSampler.method">POST</stringProp>
+          <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
+          <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
+          <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
+          <boolProp name="HTTPSampler.DO_MULTIPART_POST">false</boolProp>
+        </HTTPSamplerProxy>
+        <hashTree>
+          <HeaderManager guiclass="HeaderPanel" testclass="HeaderManager" testname="HTTP Header Manager">
+            <collectionProp name="HeaderManager.headers">
+              <elementProp name="" elementType="Header">
+                <stringProp name="Header.name">Content-Type</stringProp>
+                <stringProp name="Header.value">application/json</stringProp>
+              </elementProp>
+            </collectionProp>
+          </HeaderManager>
+          <hashTree/>
+          <!-- Asserts más tolerantes para stress - esperamos errores -->
+          <ResponseAssertion guiclass="AssertionGui" testclass="ResponseAssertion" testname="Verificar Response Code Válido">
+            <collectionProp name="Asserion.test_strings">
+              <stringProp name="49586">200</stringProp>
+              <stringProp name="52511">201</stringProp>
+              <stringProp name="1509">400</stringProp>
+              <stringProp name="1505">409</stringProp>
+            </collectionProp>
+            <stringProp name="Assertion.test_field">Assertion.response_code</stringProp>
+            <boolProp name="Assertion.assume_success">false</boolProp>
+            <intProp name="Assertion.test_type">1</intProp>
+          </ResponseAssertion>
+          <hashTree/>
+          <DurationAssertion guiclass="DurationAssertionGui" testclass="DurationAssertion" testname="Tiempo STRESS menor 10s">
+            <stringProp name="DurationAssertion.duration">10000</stringProp>
+          </DurationAssertion>
+          <hashTree/>
+        </hashTree>
+        <!-- Verificación rápida para stress -->
+        <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="RF5-STRESS: Verificar Sistema Disponible">
+          <elementProp name="HTTPsampler.Arguments" elementType="Arguments" guiclass="HTTPArgumentsPanel" testclass="Arguments" testname="User Defined Variables">
+            <collectionProp name="Arguments.arguments"/>
+          </elementProp>
+          <stringProp name="HTTPSampler.domain">localhost</stringProp>
+          <stringProp name="HTTPSampler.port">30088</stringProp>
+          <stringProp name="HTTPSampler.protocol">http</stringProp>
+          <stringProp name="HTTPSampler.contentEncoding"></stringProp>
+          <stringProp name="HTTPSampler.path">/api/reserves/</stringProp>
+          <stringProp name="HTTPSampler.method">GET</stringProp>
+          <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
+          <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
+          <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
+          <boolProp name="HTTPSampler.DO_MULTIPART_POST">false</boolProp>
+        </HTTPSamplerProxy>
+        <hashTree>
+          <DurationAssertion guiclass="DurationAssertionGui" testclass="DurationAssertion" testname="Sistema Responde en 15s">
+            <stringProp name="DurationAssertion.duration">15000</stringProp>
+          </DurationAssertion>
+          <hashTree/>
+        </hashTree>
+      </hashTree>
+    </hashTree>
+  </hashTree>
+        <!-- ResultCollectors para cumplimiento de rúbrica -->
+        <ResultCollector guiclass="ViewResultsFullVisualizer" testclass="ResultCollector" testname="View Results Tree">
+          <boolProp name="ResultCollector.error_logging">false</boolProp>
+        </ResultCollector>
+        <ResultCollector guiclass="StatVisualizer" testclass="ResultCollector" testname="Aggregate Report">
+          <boolProp name="ResultCollector.error_logging">false</boolProp>
+        </ResultCollector>
+        <ResultCollector guiclass="ViewResultsTable" testclass="ResultCollector" testname="View Results in Table">
+          <boolProp name="ResultCollector.error_logging">false</boolProp>
+        </ResultCollector>
+</jmeterTestPlan>

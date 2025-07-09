@@ -2,3 +2,23 @@
 *.pem
 
 **/target/
+
+# Archivos temporales
+temp.txt
+*.tmp
+
+# Archivos de configuración local
+**/node_modules/
+
+# Archivos de IDE
+.vscode/settings.json
+.idea/
+*.iml
+
+# Archivos de sistema
+.DS_Store
+Thumbs.db
+
+# Archivos de backup
+*.bak
+*.backup

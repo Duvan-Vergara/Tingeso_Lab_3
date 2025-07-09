@@ -1,0 +1,485 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: volume-test-data-config
+  namespace: default
+data:
+  populate-volume-data.sql: |
+    -- ============================================================================================================
+    -- SCRIPT DE POBLADO MASIVO PARA PRUEBAS DE VOLUMEN - ARQUITECTURA MICROSERVICIOS
+    -- ============================================================================================================
+    -- Este script respeta la arquitectura de microservicios y mantiene datos base requeridos
+    -- Compatible con MySQL 8.0 y optimizado para grandes volúmenes
+    -- ============================================================================================================
+    
+    -- ============================================================================================
+    -- POBLADO BASE DE DATOS DE MICROSERVICIOS (SI NO EXISTEN)
+    -- ============================================================================================
+    
+    -- 1. TARIFF SERVICE DB - Base de datos: tartifasbd
+    CREATE DATABASE IF NOT EXISTS tartifasbd;
+    USE tartifasbd;
+    
+    CREATE TABLE IF NOT EXISTS tariffs (
+        id BIGINT NOT NULL AUTO_INCREMENT,
+        laps INT NOT NULL,
+        max_minutes INT NOT NULL,
+        regular_price DOUBLE NOT NULL,
+        total_duration INT NOT NULL,
+        PRIMARY KEY (id)
+    );
+    
+    -- Insertar datos base de tarifas (OBLIGATORIOS)
+    INSERT IGNORE INTO tariffs (laps, max_minutes, regular_price, total_duration) VALUES
+        (10, 10, 15000.0, 30),
+        (15, 15, 20000.0, 35),
+        (20, 20, 25000.0, 40);
+    
+    -- 2. DISCOUNT PEOPLE SERVICE DB - Base de datos: desctpersona
+    CREATE DATABASE IF NOT EXISTS desctpersona;
+    USE desctpersona;
+    
+    CREATE TABLE IF NOT EXISTS desctnumber (
+        id BIGINT NOT NULL AUTO_INCREMENT,
+        minpersonas INT NOT NULL,
+        maxpersonas INT NOT NULL,
+        porcentajedesct DOUBLE NOT NULL,
+        PRIMARY KEY (id)
+    );
+    
+    -- Insertar datos base de descuentos por cantidad de personas (OBLIGATORIOS)
+    INSERT IGNORE INTO desctnumber (minpersonas, maxpersonas, porcentajedesct) VALUES 
+        (3, 5, 0.10),
+        (6, 10, 0.20),
+        (11, 15, 0.30);
+    
+    -- 3. DISCOUNT FREQUENT SERVICE DB - Base de datos: desctpersonafrect
+    CREATE DATABASE IF NOT EXISTS desctpersonafrect;
+    USE desctpersonafrect;
+    
+    CREATE TABLE IF NOT EXISTS desctfrecu (
+        id BIGINT NOT NULL AUTO_INCREMENT,
+        minveces INT NOT NULL,
+        maxveces INT NOT NULL,
+        porcentajedesct DOUBLE NOT NULL,
+        PRIMARY KEY (id)
+    );
+    
+    -- Insertar datos base de descuentos por frecuencia (OBLIGATORIOS)
+    INSERT IGNORE INTO desctfrecu (minveces, maxveces, porcentajedesct) VALUES 
+        (2, 4, 0.10),
+        (5, 6, 0.20),
+        (7, 9, 0.30),
+        (10, 15, 0.35),
+        (16, 9999, 0.40);
+    
+    -- 4. SPECIAL RATES SERVICE DB - Base de datos: tartiffspecialbd
+    CREATE DATABASE IF NOT EXISTS tartiffspecialbd CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+    USE tartiffspecialbd;
+    
+    CREATE TABLE IF NOT EXISTS special_days (
+        id BIGINT NOT NULL AUTO_INCREMENT,
+        date DATE NOT NULL,
+        description VARCHAR(255) NOT NULL,
+        PRIMARY KEY (id)
+    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+    
+    CREATE TABLE IF NOT EXISTS tariff_special (
+        id BIGINT NOT NULL AUTO_INCREMENT,
+        weekend_discount_percentage DOUBLE NOT NULL,
+        holiday_increase_percentage DOUBLE NOT NULL,
+        PRIMARY KEY (id)
+    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+    
+    -- Insertar días especiales (OBLIGATORIOS)
+    INSERT IGNORE INTO special_days (date, description) VALUES 
+        ('2024-01-01', 'Año Nuevo'),
+        ('2024-03-29', 'Viernes Santo'),
+        ('2024-03-30', 'Sábado Santo'),
+        ('2024-05-01', 'Día del Trabajo'),
+        ('2024-05-21', 'Día de las Glorias Navales'),
+        ('2024-06-20', 'Día Nacional de los Pueblos Indígenas'),
+        ('2024-06-29', 'San Pedro y San Pablo'),
+        ('2024-07-16', 'Día de la Virgen del Carmen'),
+        ('2024-08-15', 'Asunción de la Virgen'),
+        ('2024-09-18', 'Independencia Nacional'),
+        ('2024-09-19', 'Día de las Glorias del Ejército'),
+        ('2024-10-12', 'Encuentro de Dos Mundos'),
+        ('2024-10-31', 'Día de las Iglesias Evangélicas y Protestantes'),
+        ('2024-11-01', 'Día de Todos los Santos'),
+        ('2024-12-08', 'Inmaculada Concepción'),
+        ('2024-12-25', 'Navidad');
+    
+    -- Insertar tarifa especial (OBLIGATORIO)
+    INSERT IGNORE INTO tariff_special (weekend_discount_percentage, holiday_increase_percentage) VALUES (10.0, 15.0);
+    
+    -- 5. RESERVE SERVICE DB - Base de datos: reserve
+    CREATE DATABASE IF NOT EXISTS reserve CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+    USE reserve;
+    
+    CREATE TABLE IF NOT EXISTS users (
+        id BIGINT NOT NULL AUTO_INCREMENT,
+        rut VARCHAR(255) NOT NULL,
+        name VARCHAR(255) NOT NULL,
+        lastname VARCHAR(255) NOT NULL,
+        email VARCHAR(255) NOT NULL,
+        birthdate DATE NOT NULL,
+        PRIMARY KEY (id)
+    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+    
+    CREATE TABLE IF NOT EXISTS reserves (
+        id BIGINT NOT NULL AUTO_INCREMENT,
+        reserveday DATE NOT NULL,
+        begin TIME NOT NULL,
+        finish TIME NOT NULL,
+        tariff_id BIGINT NOT NULL,
+        final_price DOUBLE NOT NULL,
+        PRIMARY KEY (id)
+    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+    
+    CREATE TABLE IF NOT EXISTS reserves_users (
+        reserve_id BIGINT NOT NULL,
+        user_id BIGINT NOT NULL,
+        PRIMARY KEY (reserve_id, user_id),
+        FOREIGN KEY (reserve_id) REFERENCES reserves(id) ON DELETE CASCADE,
+        FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+    
+    -- Configurar variables para optimizar inserción masiva
+    SET autocommit = 0;
+    SET unique_checks = 0;
+    SET foreign_key_checks = 0;
+    SET sql_log_bin = 0;
+    SET SESSION sql_mode = 'NO_AUTO_VALUE_ON_ZERO';
+    
+    -- Limpiar solo datos de prueba, NO los datos base
+    DELETE FROM reserves_users WHERE reserve_id > 0;
+    DELETE FROM reserves WHERE id > 0;
+    DELETE FROM users WHERE id > 0;
+    ALTER TABLE reserves AUTO_INCREMENT = 1;
+    ALTER TABLE users AUTO_INCREMENT = 1;
+    
+    -- ============================================================================================================
+    -- CREAR PROCEDIMIENTO PARA GENERAR DATOS MASIVOS DE PRUEBA
+    -- ============================================================================================================
+    
+    DELIMITER $$
+    
+    DROP PROCEDURE IF EXISTS GenerateVolumeTestData$$
+    
+    CREATE PROCEDURE GenerateVolumeTestData(IN reserve_count INT)
+    BEGIN
+        DECLARE i INT DEFAULT 1;
+        DECLARE j INT DEFAULT 1;
+        DECLARE user_id_counter INT DEFAULT 1;
+        DECLARE reserve_id_counter INT DEFAULT 1;
+        DECLARE rut_base VARCHAR(10);
+        DECLARE email_base VARCHAR(100);
+        DECLARE random_date DATE;
+        DECLARE random_time TIME;
+        DECLARE random_finish_time TIME;
+        DECLARE random_tariff_id INT;
+        DECLARE calculated_price DOUBLE;
+        DECLARE progress_count INT DEFAULT 0;
+        DECLARE users_to_create INT;
+        DECLARE current_user_id INT;
+        DECLARE group_size INT;
+        
+        SELECT CONCAT('🚀 INICIANDO GENERACIÓN DE DATOS DE PRUEBA - ', reserve_count, ' RESERVAS...') AS mensaje;
+        
+        -- Generar usuarios suficientes (1 usuario por cada 2 reservas en promedio)
+        SET users_to_create = CEILING(reserve_count / 2);
+        
+        SELECT CONCAT('👥 Generando ', users_to_create, ' usuarios...') AS paso1;
+        
+        -- Generar usuarios
+        WHILE j <= users_to_create DO
+            SET rut_base = CONCAT('1', LPAD(j, 7, '0'), '-', (j % 10));
+            SET email_base = CONCAT('cliente', j, '@karting-test.com');
+            
+            INSERT INTO users (rut, name, lastname, email, birthdate) VALUES (
+                rut_base,
+                CONCAT('Cliente ', j),
+                CONCAT('Apellido ', j),
+                email_base,
+                DATE_ADD('1980-01-01', INTERVAL FLOOR(RAND() * 15000) DAY)
+            );
+            
+            SET j = j + 1;
+            
+            IF j % 500 = 0 THEN
+                COMMIT;
+                SELECT CONCAT('✅ Generados ', j, ' usuarios de ', users_to_create) AS progreso_usuarios;
+            END IF;
+        END WHILE;
+        
+        COMMIT;
+        SELECT CONCAT('✅ Usuarios generados: ', users_to_create) AS usuarios_completados;
+        
+        -- Generar reservas
+        SELECT CONCAT('📅 Generando ', reserve_count, ' reservas...') AS paso2;
+        
+        WHILE i <= reserve_count DO
+            -- Generar fecha aleatoria entre 2024-01-01 y 2025-12-31
+            SET random_date = DATE_ADD('2024-01-01', INTERVAL FLOOR(RAND() * 730) DAY);
+            
+            -- Generar hora aleatoria entre 08:00 y 20:00
+            SET random_time = TIME(CONCAT(8 + FLOOR(RAND() * 12), ':', LPAD(FLOOR(RAND() * 60), 2, '0'), ':00'));
+            
+            -- Generar tarifa aleatoria (1-3 según los datos base)
+            SET random_tariff_id = 1 + FLOOR(RAND() * 3);
+            
+            -- Calcular precio según tarifa
+            SET calculated_price = CASE random_tariff_id
+                WHEN 1 THEN 15000.0
+                WHEN 2 THEN 20000.0
+                WHEN 3 THEN 25000.0
+                ELSE 15000.0
+            END;
+            
+            -- Calcular hora de fin según tarifa
+            SET random_finish_time = CASE random_tariff_id
+                WHEN 1 THEN ADDTIME(random_time, '00:30:00')
+                WHEN 2 THEN ADDTIME(random_time, '00:35:00')
+                WHEN 3 THEN ADDTIME(random_time, '00:40:00')
+                ELSE ADDTIME(random_time, '00:30:00')
+            END;
+            
+            -- Insertar reserva
+            INSERT INTO reserves (reserveday, begin, finish, tariff_id, final_price) VALUES (
+                random_date,
+                random_time,
+                random_finish_time,
+                random_tariff_id,
+                calculated_price
+            );
+            
+            SET reserve_id_counter = LAST_INSERT_ID();
+            
+            -- Asociar usuarios aleatorios a la reserva (1-7 usuarios por reserva)
+            SET group_size = 1 + FLOOR(RAND() * 7);
+            SET j = 1;
+            
+            WHILE j <= group_size AND j <= users_to_create DO
+                SET current_user_id = 1 + FLOOR(RAND() * users_to_create);
+                
+                -- Insertar relación usuario-reserva (ignorar duplicados)
+                INSERT IGNORE INTO reserves_users (reserve_id, user_id) VALUES (
+                    reserve_id_counter,
+                    current_user_id
+                );
+                
+                SET j = j + 1;
+            END WHILE;
+            
+            SET i = i + 1;
+            
+            -- Commit cada 1000 reservas
+            IF i % 1000 = 0 THEN
+                COMMIT;
+                SET progress_count = progress_count + 1000;
+                SELECT CONCAT('✅ Procesadas ', progress_count, ' reservas de ', reserve_count, ' (', ROUND((progress_count/reserve_count)*100, 1), '%)') AS progreso;
+            END IF;
+        END WHILE;
+        
+        COMMIT;
+        
+        SELECT CONCAT('🎉 COMPLETADO! Se generaron ', reserve_count, ' reservas exitosamente') AS resultado;
+        SELECT CONCAT('👥 Total de usuarios: ', (SELECT COUNT(*) FROM users)) AS total_usuarios;
+        SELECT CONCAT('📊 Total de reservas: ', (SELECT COUNT(*) FROM reserves)) AS total_reservas;
+        SELECT CONCAT('� Total de relaciones usuario-reserva: ', (SELECT COUNT(*) FROM reserves_users)) AS total_relaciones;
+        
+    END$$
+    
+    DELIMITER ;
+    
+    -- ============================================================================================================
+    -- GENERAR DATOS PARA DIFERENTES ESCENARIOS DE PRUEBA
+    -- ============================================================================================================
+    
+    -- Uncomment la línea que corresponda al escenario de prueba que necesites:
+    
+    -- PRUEBA BÁSICA: 1,000 reservas
+    -- CALL GenerateVolumeTestData(1000);
+    
+    -- PRUEBA DE CARGA: 5,000 reservas
+    -- CALL GenerateVolumeTestData(5000);
+    
+    -- PRUEBA DE VOLUMEN: 10,000 reservas
+    CALL GenerateVolumeTestData(10000);
+    
+    -- PRUEBA DE VOLUMEN ALTO: 25,000 reservas
+    -- CALL GenerateVolumeTestData(25000);
+    
+    -- PRUEBA DE VOLUMEN EXTREMO: 100,000 reservas
+    -- CALL GenerateVolumeTestData(100000);
+    
+    -- ============================================================================================================
+    -- CREAR ÍNDICES PARA MEJORAR RENDIMIENTO DE CONSULTAS
+    -- ============================================================================================================
+    
+    -- Índice para búsquedas por fecha
+    CREATE INDEX IF NOT EXISTS idx_reserves_date ON reserves(reserveday);
+    
+    -- Índice para búsquedas por tarifa
+    CREATE INDEX IF NOT EXISTS idx_reserves_tariff ON reserves(tariff_id);
+    
+    -- Índice para relaciones usuario-reserva
+    CREATE INDEX IF NOT EXISTS idx_reserves_users_reserve ON reserves_users(reserve_id);
+    CREATE INDEX IF NOT EXISTS idx_reserves_users_user ON reserves_users(user_id);
+    
+    -- Índice para usuarios por RUT
+    CREATE INDEX IF NOT EXISTS idx_users_rut ON users(rut);
+    
+    -- ============================================================================================================
+    -- RESTAURAR CONFIGURACIONES DE MYSQL
+    -- ============================================================================================================
+    
+    SET sql_log_bin = 1;
+    SET foreign_key_checks = 1;
+    SET unique_checks = 1;
+    SET autocommit = 1;
+    
+    -- ============================================================================================================
+    -- CONSULTAS DE VERIFICACIÓN Y ESTADÍSTICAS
+    -- ============================================================================================================
+    
+    SELECT '🔍 VERIFICACIÓN DE DATOS BASE (MICROSERVICIOS):' AS info;
+    
+    USE tartifasbd;
+    SELECT 'TARIFF SERVICE:' as microservicio, COUNT(*) as tarifas FROM tariffs;
+    
+    USE desctpersona;
+    SELECT 'DISCOUNT PEOPLE SERVICE:' as microservicio, COUNT(*) as descuentos_personas FROM desctnumber;
+    
+    USE desctpersonafrect;
+    SELECT 'DISCOUNT FREQUENT SERVICE:' as microservicio, COUNT(*) as descuentos_frecuencia FROM desctfrecu;
+    
+    USE tartiffspecialbd;
+    SELECT 'SPECIAL RATES SERVICE:' as microservicio, COUNT(*) as dias_especiales FROM special_days;
+    SELECT 'SPECIAL RATES SERVICE:' as microservicio, COUNT(*) as tarifas_especiales FROM tariff_special;
+    
+    USE reserve;
+    SELECT '📊 ESTADÍSTICAS DE PRUEBAS DE VOLUMEN:' AS info;
+    SELECT COUNT(*) as total_usuarios FROM users;
+    SELECT COUNT(*) as total_reservas FROM reserves;
+    SELECT COUNT(*) as total_relaciones FROM reserves_users;
+    
+    SELECT 
+        tariff_id,
+        COUNT(*) as cantidad_reservas,
+        AVG(final_price) as precio_promedio
+    FROM reserves 
+    GROUP BY tariff_id
+    ORDER BY tariff_id;
+    
+    SELECT 
+        YEAR(reserveday) as año,
+        MONTH(reserveday) as mes,
+        COUNT(*) as reservas_mes
+    FROM reserves 
+    GROUP BY YEAR(reserveday), MONTH(reserveday)
+    ORDER BY año DESC, mes DESC 
+    LIMIT 12;
+    
+    SELECT 'DATOS LISTOS PARA PRUEBAS DE VOLUMEN ✅' AS resultado_final;
+
+---
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: volume-test-data-job
+  namespace: default
+spec:
+  backoffLimit: 10
+  activeDeadlineSeconds: 3600  # 1 hora máximo
+  ttlSecondsAfterFinished: 600  # Limpiar después de 10 minutos
+  template:
+    metadata:
+      labels:
+        app: volume-test-data
+    spec:
+      restartPolicy: OnFailure
+      containers:
+      - name: mysql-volume-populate
+        image: mysql:8.0
+        env:
+        - name: MYSQL_HOST
+          value: "mysql-service"
+        - name: MYSQL_PORT
+          value: "3306"
+        - name: MYSQL_DATABASE
+          value: "reserve"  # Base de datos principal donde se generan las reservas masivas
+        - name: MYSQL_USER
+          valueFrom:
+            secretKeyRef:
+              name: mysql-user-secret
+              key: username
+        - name: MYSQL_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: mysql-user-secret
+              key: password
+        command:
+        - /bin/bash
+        - -c
+        - |
+          set -e
+          
+          echo "🚀 INICIANDO POBLADO MASIVO DE DATOS PARA PRUEBAS DE VOLUMEN"
+          echo "=================================================="
+          
+          # Función para esperar MySQL
+          wait_for_mysql() {
+            local max_attempts=60
+            local attempt=1
+            
+            echo "⏳ Esperando que MySQL esté disponible..."
+            while [ $attempt -le $max_attempts ]; do
+              if mysql -h"$MYSQL_HOST" -P"$MYSQL_PORT" -u"$MYSQL_USER" -p"$MYSQL_PASSWORD" -e "SELECT 1" > /dev/null 2>&1; then
+                echo "✅ MySQL está listo"
+                return 0
+              fi
+              echo "   Intento $attempt/$max_attempts - MySQL no disponible..."
+              sleep 5
+              attempt=$((attempt + 1))
+            done
+            
+            echo "❌ ERROR: MySQL no disponible después de $max_attempts intentos"
+            return 1
+          }
+          
+          # Esperar MySQL
+          wait_for_mysql
+          
+          # Verificar que las BDs existen
+          echo "🔍 Verificando y creando bases de datos..."
+          mysql -h"$MYSQL_HOST" -P"$MYSQL_PORT" -u"$MYSQL_USER" -p"$MYSQL_PASSWORD" -e "
+            CREATE DATABASE IF NOT EXISTS tartifasbd;
+            CREATE DATABASE IF NOT EXISTS desctpersona;
+            CREATE DATABASE IF NOT EXISTS desctpersonafrect;
+            CREATE DATABASE IF NOT EXISTS tartiffspecialbd CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+            CREATE DATABASE IF NOT EXISTS reserve CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+          "
+          
+          # Ejecutar script de poblado
+          echo "📊 Ejecutando script de poblado masivo..."
+          mysql -h"$MYSQL_HOST" -P"$MYSQL_PORT" -u"$MYSQL_USER" -p"$MYSQL_PASSWORD" "$MYSQL_DATABASE" < /sql/populate-volume-data.sql
+          
+          echo "🎉 POBLADO MASIVO COMPLETADO EXITOSAMENTE"
+          echo "=================================================="
+          
+        volumeMounts:
+        - name: sql-volume
+          mountPath: /sql
+        resources:
+          requests:
+            memory: "256Mi"
+            cpu: "200m"
+          limits:
+            memory: "512Mi"
+            cpu: "500m"
+      volumes:
+      - name: sql-volume
+        configMap:
+          name: volume-test-data-config

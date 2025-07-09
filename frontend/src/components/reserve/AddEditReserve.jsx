@@ -4,6 +4,7 @@ import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import FormControl from '@mui/material/FormControl';
 import MenuItem from '@mui/material/MenuItem';
+import TextField from '@mui/material/TextField';
 import SaveIcon from '@mui/icons-material/Save';
 import Autocomplete from '@mui/material/Autocomplete';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
@@ -13,6 +14,7 @@ import reserveService from '../../services/reserve.service';
 import CustomTextField from '../CustomTextField';
 import { useSnackbar } from '../GlobalSnackbar';
 import useUndo from '../useUndo';
+import './AddEditReserve.css';
 
 function AddEditReserve() {
   const [clientName, setClientName] = useState('');
@@ -31,12 +33,15 @@ function AddEditReserve() {
   const { submitWithUndo } = useUndo(showSnackbar);
 
   const loadUsers = useCallback(() => {
+    console.log('Cargando usuarios...');
     userService
       .getAllUsers()
       .then((response) => {
+        console.log('Usuarios cargados:', response.data);
         setUsers(response.data);
       })
-      .catch(() => {
+      .catch((error) => {
+        console.error('Error cargando usuarios:', error);
         showSnackbar({
           msg: 'Error al cargar usuarios.',
           severity: 'error',
@@ -45,12 +50,15 @@ function AddEditReserve() {
   }, [showSnackbar]);
 
   const loadTariffs = useCallback(() => {
+    console.log('Cargando tarifas...');
     tariffService
       .getAllTariffs()
       .then((response) => {
+        console.log('Tarifas cargadas:', response.data);
         setTariffs(response.data);
       })
-      .catch(() => {
+      .catch((error) => {
+        console.error('Error cargando tarifas:', error);
         showSnackbar({
           msg: 'Error al cargar tarifas.',
           severity: 'error',
@@ -71,19 +79,22 @@ function AddEditReserve() {
       setBeginTime(location.state.beginTime || '');
       setFinishTime(location.state.finish || '');
     } else if (id) {
+      console.log('Cargando reserva existente con ID:', id);
       reserveService
         .getReserveById(id)
         .then((response) => {
+          console.log('Reserva cargada desde backend:', response.data);
           const reserve = response.data;
-          setClientName(reserve.clientName || '');
+          setClientName(''); // No hay clientName en el backend
           setReserveDay(reserve.reserveday || '');
-          setTariffId(reserve.tariff_id || '');
-          setFinalPrice(reserve.final_price || 0.0);
-          setSelectedUsers(reserve.reserves_users || []);
+          setTariffId(reserve.tariffId || '');
+          setFinalPrice(reserve.finalPrice || 0.0);
+          setSelectedUsers(Array.from(reserve.reservesUsers || [])); // Convertir Set a Array
           setBeginTime(reserve.begin || '');
           setFinishTime(reserve.finish || '');
         })
-        .catch(() => {
+        .catch((error) => {
+          console.error('Error cargando reserva:', error);
           showSnackbar({
             msg: 'Error al cargar la reserva.',
             severity: 'error',
@@ -131,26 +142,32 @@ function AddEditReserve() {
     submitWithUndo(
       formData,
       (data) => {
-
+        // Construir el objeto con los nombres de campos exactos que espera el backend
         const reserveData = {
-          clientName: data.clientName,
           reserveday: data.reserveDay,
-          tariff_id: data.tariffId,
-          final_price: data.finalPrice,
-          reserves_users: data.selectedUsers.map((u) => u.id),
           begin: data.beginTime,
           finish: data.finish,
+          reservesUsers: data.selectedUsers, // Enviar objetos completos
+          tariffId: parseInt(data.tariffId),
+          finalPrice: data.finalPrice,
         };
+
+        console.log('Datos a enviar al backend:', reserveData);
+        console.log('Es actualización?', !!id);
 
         const savePromise = id
           ? reserveService.updateReserve(id, reserveData)
           : reserveService.createReserve(reserveData);
 
         savePromise
-          .then(() => {
+          .then((response) => {
+            console.log('Respuesta del servidor:', response.data);
             navigate('/reserve/list');
           })
-          .catch(() => {
+          .catch((error) => {
+            console.error('Error saving reserve:', error);
+            console.error('Error response:', error.response?.data);
+            console.error('Error status:', error.response?.status);
             showSnackbar({
               msg: 'Ha ocurrido un error al intentar guardar la reserva.',
               severity: 'error',
@@ -178,23 +195,33 @@ function AddEditReserve() {
       !tariffId
       || selectedUsers.length === 0
       || !reserveDay
+      || !beginTime
+      || !finish
     ) {
       setFinalPrice(0);
       return;
     }
+    
+    // Construir el objeto reserve con la estructura que espera el backend
     const reserve = {
-      reserveday: reserveDay,
-      begin: beginTime,
-      finish,
-      reserves_users: selectedUsers,
-      tariff_id: tariffId,
+      reserveday: reserveDay, // Formato YYYY-MM-DD
+      begin: beginTime, // Formato HH:MM
+      finish: finish, // Formato HH:MM
+      reservesUsers: selectedUsers, // Enviar los objetos completos de usuarios
+      tariffId: parseInt(tariffId), // Asegurar que sea un número
     };
+    
+    console.log('Datos enviados para calcular precio:', reserve);
+    
     reserveService
       .calculateFinalPrice(reserve)
       .then((response) => {
+        console.log('Precio calculado:', response.data);
         setFinalPrice(response.data);
       })
-      .catch(() => {
+      .catch((error) => {
+        console.error('Error calculating price:', error);
+        console.error('Error response:', error.response?.data);
         showSnackbar({
           msg: 'Error al calcular el precio final.',
           severity: 'error',
@@ -291,6 +318,7 @@ function AddEditReserve() {
           InputLabelProps={{
             shrink: true,
           }}
+          required
         />
       </FormControl>
       <FormControl fullWidth>
@@ -303,6 +331,7 @@ function AddEditReserve() {
           InputLabelProps={{
             shrink: true,
           }}
+          required
         />
       </FormControl>
 
@@ -320,12 +349,85 @@ function AddEditReserve() {
           onChange={(event, newValue) => setSelectedUsers(newValue)}
           isOptionEqualToValue={(option, value) => option.id === value.id}
           renderInput={(params) => (
-            <CustomTextField
-              InputProps={params.InputProps}
+            <TextField
+              {...params}
               label="Seleccionar Usuarios"
               variant="standard"
+              fullWidth
+              margin="normal"
+              sx={{
+                '& .MuiInputBase-root': {
+                  backgroundColor: 'var(--optional-color)',
+                  color: 'var(--text-optional-color)',
+                  '&:hover': {
+                    backgroundColor: 'rgba(255, 255, 255, 0.1)',
+                  },
+                },
+                '& .MuiInputLabel-root': {
+                  color: 'var(--text-optional-color)',
+                },
+                '& .MuiInput-underline:before': {
+                  borderBottomColor: 'var(--text-optional-color)',
+                },
+                '& .MuiInput-underline:hover:before': {
+                  borderBottomColor: 'var(--accent-color)',
+                },
+                '& .MuiInput-underline:after': {
+                  borderBottomColor: 'var(--primary-color)',
+                },
+              }}
             />
           )}
+          renderOption={(props, option) => (
+            <li {...props} style={{ 
+              backgroundColor: 'var(--optional-color)',
+              color: 'var(--text-optional-color)',
+              padding: '8px 16px',
+              borderBottom: '1px solid rgba(255, 255, 255, 0.1)',
+            }}>
+              {`${option.name} - ${option.rut}`}
+            </li>
+          )}
+          componentsProps={{
+            paper: {
+              sx: {
+                backgroundColor: 'var(--optional-color)',
+                color: 'var(--text-optional-color)',
+                border: '1px solid var(--secondary-color)',
+                borderRadius: '8px',
+                boxShadow: '0 4px 8px rgba(0, 0, 0, 0.3)',
+                '& .MuiAutocomplete-option': {
+                  backgroundColor: 'var(--optional-color)',
+                  color: 'var(--text-optional-color)',
+                  '&:hover': {
+                    backgroundColor: 'rgba(255, 255, 255, 0.1)',
+                  },
+                  '&[aria-selected="true"]': {
+                    backgroundColor: 'var(--primary-color)',
+                    color: 'var(--text-color)',
+                  },
+                },
+              },
+            },
+          }}
+          sx={{
+            '& .MuiAutocomplete-tag': {
+              backgroundColor: 'var(--primary-color)',
+              color: 'var(--text-color)',
+              '& .MuiChip-deleteIcon': {
+                color: 'var(--text-color)',
+                '&:hover': {
+                  color: 'var(--accent-color)',
+                },
+              },
+            },
+            '& .MuiAutocomplete-popupIndicator': {
+              color: 'var(--text-optional-color)',
+            },
+            '& .MuiAutocomplete-clearIndicator': {
+              color: 'var(--text-optional-color)',
+            },
+          }}
         />
       </FormControl>
       <FormControl fullWidth>
@@ -335,10 +437,11 @@ function AddEditReserve() {
           select
           value={tariffId}
           onChange={(e) => setTariffId(e.target.value)}
+          required
         >
           {tariffs.map((tariff) => (
             <MenuItem key={tariff.id} value={tariff.id}>
-              {`${tariff.laps} vueltas / ${tariff.max_minutes} minutos`}
+              {`${tariff.laps} vueltas / ${tariff.maxMinutes || tariff.max_minutes || 'N/A'} minutos`}
             </MenuItem>
           ))}
         </CustomTextField>

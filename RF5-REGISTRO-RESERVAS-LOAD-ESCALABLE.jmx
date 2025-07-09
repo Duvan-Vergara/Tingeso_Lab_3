@@ -1,0 +1,196 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jmeterTestPlan version="1.2" properties="5.0" jmeter="5.6.3">
+  <hashTree>
+    <TestPlan guiclass="TestPlanGui" testclass="TestPlan" testname="RF5 - REGISTRO RESERVAS - LOAD TEST ESCALABLE">
+      <stringProp name="TestPlan.comments">LOAD TESTING ESCALABLE para RF5 - Registro de Reservas
+      Configuración escalable con parámetros:
+      - USERS: Número de usuarios concurrentes (100, 500, 1000, 5000, 10000+)
+      - RAMP_TIME: Tiempo de rampa en segundos
+      - LOOPS: Número de iteraciones por usuario
+      - DURATION: Duración total en segundos
+      
+      Uso desde Jenkins/Terminal:
+      jmeter -n -t RF5-REGISTRO-RESERVAS-LOAD-ESCALABLE.jmx -JUSERS=1000 -JRAMP_TIME=300 -JLOOPS=5 -JDURATION=1800 -l results.jtl -e -o html-report</stringProp>
+      <boolProp name="TestPlan.functional_mode">false</boolProp>
+      <boolProp name="TestPlan.serialize_threadgroups">false</boolProp>
+      <elementProp name="TestPlan.arguments" elementType="Arguments" guiclass="ArgumentsPanel" testclass="Arguments" testname="User Defined Variables">
+        <collectionProp name="Arguments.arguments"/>
+      </elementProp>
+    </TestPlan>
+    <hashTree>
+      <ThreadGroup guiclass="ThreadGroupGui" testclass="ThreadGroup" testname="Load Test - ${__P(USERS,100)} Usuarios Concurrentes">
+        <stringProp name="ThreadGroup.on_sample_error">continue</stringProp>
+        <elementProp name="ThreadGroup.main_controller" elementType="LoopController" guiclass="LoopControllerGui" testclass="LoopController" testname="Loop Controller">
+          <boolProp name="LoopController.continue_forever">false</boolProp>
+          <stringProp name="LoopController.loops">${__P(LOOPS,3)}</stringProp>
+        </elementProp>
+        <stringProp name="ThreadGroup.num_threads">${__P(USERS,100)}</stringProp>
+        <stringProp name="ThreadGroup.ramp_time">${__P(RAMP_TIME,60)}</stringProp>
+        <boolProp name="ThreadGroup.scheduler">true</boolProp>
+        <stringProp name="ThreadGroup.duration">${__P(DURATION,600)}</stringProp>
+        <stringProp name="ThreadGroup.delay">0</stringProp>
+      </ThreadGroup>
+      <hashTree>
+        <!-- JSR223 PreProcessor para generar datos dinámicos únicos -->
+        <JSR223PreProcessor guiclass="TestBeanGUI" testclass="JSR223PreProcessor" testname="Generate Unique Load Test Data">
+          <stringProp name="scriptLanguage">groovy</stringProp>
+          <stringProp name="script">
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
+
+// Generar ID único para LOAD TEST
+def threadNum = ctx.getThreadNum() 
+def iterationNum = vars.get("__jm__Loop Controller__idx") as Integer ?: 0
+def timestamp = System.currentTimeMillis()
+def uniqueId = (threadNum * 100000) + (iterationNum * 1000) + (timestamp % 1000)
+
+// Generar fecha futura única (próximos 30 días)
+def today = new Date()
+def daysToAdd = (uniqueId % 30) + 1
+def futureDate = new Date(today.time + daysToAdd * 24 * 60 * 60 * 1000)
+def dateFormat = new SimpleDateFormat("yyyy-MM-dd")
+
+// Generar hora única (6:00 AM a 11:00 PM, cada 15 min)
+def baseHour = 6 + (uniqueId % 17) // 6-22 horas
+def minute = ((uniqueId % 4) * 15)    // 0, 15, 30, 45 minutos
+def beginTime = String.format("%02d:%02d", baseHour, minute)
+def finishTime = String.format("%02d:%02d", baseHour + 1, minute)
+
+// Variables dinámicas para la reserva
+vars.put("reserveday", dateFormat.format(futureDate))
+vars.put("begin", beginTime)
+vars.put("finish", finishTime)
+vars.put("tariffId", String.valueOf((uniqueId % 3) + 1)) // 1, 2, 3
+vars.put("finalPrice", String.valueOf(25000 + (uniqueId % 6) * 5000)) // 25000-50000
+
+// Log para debugging
+def users = props.get("USERS")
+log.info("LOAD-${users}U [T${threadNum}-I${iterationNum}-${uniqueId}]: ${reserveday} ${begin}-${finish}, tariff=${tariffId}, price=${finalPrice}")
+          </stringProp>
+        </JSR223PreProcessor>
+        <hashTree/>
+        
+        <!-- Paso 1: Verificar disponibilidad de tarifas -->
+        <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="RF5-LOAD-1: Consultar Tarifas">
+          <elementProp name="HTTPsampler.Arguments" elementType="Arguments" guiclass="HTTPArgumentsPanel" testclass="Arguments" testname="User Defined Variables">
+            <collectionProp name="Arguments.arguments"/>
+          </elementProp>
+          <stringProp name="HTTPSampler.domain">localhost</stringProp>
+          <stringProp name="HTTPSampler.port">30088</stringProp>
+          <stringProp name="HTTPSampler.protocol">http</stringProp>
+          <stringProp name="HTTPSampler.contentEncoding"></stringProp>
+          <stringProp name="HTTPSampler.path">/api/tariffs/</stringProp>
+          <stringProp name="HTTPSampler.method">GET</stringProp>
+          <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
+          <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
+          <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
+          <boolProp name="HTTPSampler.DO_MULTIPART_POST">false</boolProp>
+        </HTTPSamplerProxy>
+        <hashTree>
+          <ResponseAssertion guiclass="AssertionGui" testclass="ResponseAssertion" testname="Verificar Response 200">
+            <collectionProp name="Asserion.test_strings">
+              <stringProp name="49586">200</stringProp>
+            </collectionProp>
+            <stringProp name="Assertion.test_field">Assertion.response_code</stringProp>
+            <boolProp name="Assertion.assume_success">false</boolProp>
+            <intProp name="Assertion.test_type">1</intProp>
+          </ResponseAssertion>
+          <hashTree/>
+          <DurationAssertion guiclass="DurationAssertionGui" testclass="DurationAssertion" testname="Tiempo Respuesta menor 3s">
+            <stringProp name="DurationAssertion.duration">3000</stringProp>
+          </DurationAssertion>
+          <hashTree/>
+        </hashTree>
+        
+        <!-- Paso 2: Crear la reserva (PRINCIPAL LOAD TEST) -->
+        <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="RF5-LOAD-2: CREAR RESERVA (LOAD)">
+          <boolProp name="HTTPSampler.postBodyRaw">true</boolProp>
+          <elementProp name="HTTPsampler.Arguments" elementType="Arguments">
+            <collectionProp name="Arguments.arguments">
+              <elementProp name="" elementType="HTTPArgument">
+                <boolProp name="HTTPArgument.always_encode">false</boolProp>
+                <stringProp name="Argument.value">{
+  "reserveday": "${reserveday}",
+  "begin": "${begin}",
+  "finish": "${finish}",
+  "reservesUsers": [],
+  "tariffId": ${tariffId},
+  "finalPrice": ${finalPrice}
+}</stringProp>
+                <stringProp name="Argument.metadata">=</stringProp>
+              </elementProp>
+            </collectionProp>
+          </elementProp>
+          <stringProp name="HTTPSampler.domain">localhost</stringProp>
+          <stringProp name="HTTPSampler.port">30088</stringProp>
+          <stringProp name="HTTPSampler.protocol">http</stringProp>
+          <stringProp name="HTTPSampler.contentEncoding"></stringProp>
+          <stringProp name="HTTPSampler.path">/api/reserves/</stringProp>
+          <stringProp name="HTTPSampler.method">POST</stringProp>
+          <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
+          <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
+          <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
+          <boolProp name="HTTPSampler.DO_MULTIPART_POST">false</boolProp>
+        </HTTPSamplerProxy>
+        <hashTree>
+          <HeaderManager guiclass="HeaderPanel" testclass="HeaderManager" testname="HTTP Header Manager">
+            <collectionProp name="HeaderManager.headers">
+              <elementProp name="" elementType="Header">
+                <stringProp name="Header.name">Content-Type</stringProp>
+                <stringProp name="Header.value">application/json</stringProp>
+              </elementProp>
+            </collectionProp>
+          </HeaderManager>
+          <hashTree/>
+          <ResponseAssertion guiclass="AssertionGui" testclass="ResponseAssertion" testname="Verificar Creación Exitosa">
+            <collectionProp name="Asserion.test_strings">
+              <stringProp name="49586">200</stringProp>
+            </collectionProp>
+            <stringProp name="Assertion.test_field">Assertion.response_code</stringProp>
+            <boolProp name="Assertion.assume_success">false</boolProp>
+            <intProp name="Assertion.test_type">1</intProp>
+          </ResponseAssertion>
+          <hashTree/>
+          <DurationAssertion guiclass="DurationAssertionGui" testclass="DurationAssertion" testname="Creacion menor 5s">
+            <stringProp name="DurationAssertion.duration">5000</stringProp>
+          </DurationAssertion>
+          <hashTree/>
+        </hashTree>
+
+        <!-- Paso 3: Verificar la reserva creada -->
+        <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="RF5-LOAD-3: Verificar Reservas">
+          <elementProp name="HTTPsampler.Arguments" elementType="Arguments" guiclass="HTTPArgumentsPanel" testclass="Arguments" testname="User Defined Variables">
+            <collectionProp name="Arguments.arguments"/>
+          </elementProp>
+          <stringProp name="HTTPSampler.domain">localhost</stringProp>
+          <stringProp name="HTTPSampler.port">30088</stringProp>
+          <stringProp name="HTTPSampler.protocol">http</stringProp>
+          <stringProp name="HTTPSampler.contentEncoding"></stringProp>
+          <stringProp name="HTTPSampler.path">/api/reserves/</stringProp>
+          <stringProp name="HTTPSampler.method">GET</stringProp>
+          <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
+          <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
+          <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
+          <boolProp name="HTTPSampler.DO_MULTIPART_POST">false</boolProp>
+        </HTTPSamplerProxy>
+        <hashTree>
+          <ResponseAssertion guiclass="AssertionGui" testclass="ResponseAssertion" testname="Verificar Response 200">
+            <collectionProp name="Asserion.test_strings">
+              <stringProp name="49586">200</stringProp>
+            </collectionProp>
+            <stringProp name="Assertion.test_field">Assertion.response_code</stringProp>
+            <boolProp name="Assertion.assume_success">false</boolProp>
+            <intProp name="Assertion.test_type">1</intProp>
+          </ResponseAssertion>
+          <hashTree/>
+          <DurationAssertion guiclass="DurationAssertionGui" testclass="DurationAssertion" testname="Verificacion menor 2s">
+            <stringProp name="DurationAssertion.duration">2000</stringProp>
+          </DurationAssertion>
+          <hashTree/>
+        </hashTree>
+      </hashTree>
+    </hashTree>
+  </hashTree>
+</jmeterTestPlan>

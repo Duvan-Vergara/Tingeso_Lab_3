@@ -13,6 +13,13 @@ jenkins/
 │   ├── analyze-performance-metrics.py    # Análisis de métricas de rendimiento
 │   ├── validate-performance-criteria.py  # Validación de criterios
 │   └── generate-consolidated-report.py   # Generación de reportes consolidados
+├── ejecutar_pruebas_escalables.bat      # Script principal de producción
+├── test_quick_escalable.bat             # Pruebas rápidas robustas
+├── test_debug_individual.bat            # Debug individual
+├── validar_jmx.bat                      # Validación de archivos JMX
+├── verificar_requisitos_oficial.bat     # Verificación de prerequisitos
+├── poblar_bd_masivo.ps1                 # Poblamiento masivo de BD
+├── SCRIPTS-ESENCIALES.md                # Documentación de scripts (NUEVO)
 └── README.md                            # Este archivo
 ```
 
@@ -260,3 +267,39 @@ Este sistema de automatización cumple completamente con los requisitos de la r�
 - ✅ **Evidencia documentada de automatización**
 
 El pipeline se ejecuta automáticamente tras cada deployment y genera evidencia completa del cumplimiento de criterios de rendimiento del sistema Karting.
+
+---
+
+## 📋 Estructura del Proyecto (Actualización)
+
+```
+jenkins/
+├── Jenkinsfile                           # Pipeline principal de Jenkins
+├── performance-criteria.json             # Criterios de validación de rendimiento
+├── requirements.txt                      # Dependencias Python
+├── scripts/
+│   ├── analyze-performance-metrics.py    # Análisis de métricas de rendimiento
+│   ├── validate-performance-criteria.py  # Validación de criterios
+│   └── generate-consolidated-report.py   # Generación de reportes consolidados
+├── ejecutar_pruebas_escalables.bat      # Script principal de producción
+├── test_quick_escalable.bat             # Pruebas rápidas robustas
+├── test_debug_individual.bat            # Debug individual
+├── validar_jmx.bat                      # Validación de archivos JMX
+├── verificar_requisitos_oficial.bat     # Verificación de prerequisitos
+├── poblar_bd_masivo.ps1                 # Poblamiento masivo de BD
+├── SCRIPTS-ESENCIALES.md                # Documentación de scripts (NUEVO)
+└── README.md                            # Este archivo
+```
+
+## 🧹 Scripts Optimizados (Limpieza Realizada)
+
+**✅ Scripts Esenciales Conservados:**
+- `ejecutar_pruebas_escalables.bat` - Script principal de producción
+- `test_quick_escalable.bat` - Pruebas rápidas con manejo robusto de errores
+- `test_debug_individual.bat` - Debug y diagnóstico individual
+- `validar_jmx.bat` - Validación de archivos JMX
+- `verificar_requisitos_oficial.bat` - Verificación de prerequisitos
+
+**🗑️ Archivos Eliminados (duplicados/experimentales):**
+- Se eliminaron 7 archivos batch redundantes o experimentales
+- Ver `SCRIPTS-ESENCIALES.md` para detalles completos

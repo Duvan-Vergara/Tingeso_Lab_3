@@ -1,23 +1,38 @@
-# Selenium IDE - Automatización de Historias de Usuario
+# 🧪 PRUEBAS FUNCIONALES - SISTEMA KARTING
+## Automatización Selenium IDE (Rúbrica 20%)
 
-## Descripción
-Este directorio contiene las **8 Historias de Usuario automatizadas** (53.3% de cobertura) usando Selenium IDE para el Sistema de Karting. Las pruebas se ejecutan automáticamente en el pipeline de Jenkins para validar la funcionalidad del sistema según los criterios de aceptación definidos.
+Este directorio contiene la **implementación completa de pruebas funcionales** para cumplir con el 20% de la rúbrica correspondiente a pruebas funcionales automatizadas.
 
-## 📋 Archivos de Test
+## 📊 CUMPLIMIENTO RÚBRICA
 
-### 1. `historias-usuario-automatizadas.side` (PRINCIPAL)
-**Suite con 8 Historias de Usuario automatizadas que cubren RF5, RF7, RF8:**
+### ✅ **PRUEBAS FUNCIONALES (20%)**
+- **Historias de Usuario Definidas**: 15 (5 por RF5, RF7, RF8)
+- **Formato**: Lenguaje Gherkin en MS Word/Markdown ✅
+- **Automatización**: 8/15 = 53.3% (>50% requerido) ✅
+- **Herramienta**: Selenium IDE ✅
+- **Cobertura**: RF5, RF7, RF8 completamente cubiertas ✅
 
-| Test ID | Historia Usuario | Descripción |
-|---------|------------------|-------------|
-| `hu001-registro-reserva-exitoso` | **HU001** | Como cliente quiero registrar una reserva para usar las instalaciones |
-| `hu002-validacion-campos-obligatorios` | **HU002** | Como administrador quiero validar datos para garantizar información correcta |
-| `hu003-calculo-automatico-precios` | **HU003** | Como cliente quiero ver el cálculo automático de precios |
-| `hu006-visualizacion-rack-semanal` | **HU006** | Como administrador quiero visualizar el rack semanal |
-| `hu007-consulta-estado-por-fecha` | **HU007** | Como operador quiero consultar estado por fecha |
-| `hu011-generacion-reporte-ingresos` | **HU011** | Como administrador quiero generar reportes de ingresos |
-| `hu012-filtrado-reportes-periodo` | **HU012** | Como gerente quiero filtrar reportes por período |
-| `hu013-exportacion-datos-excel` | **HU013** | Como contador quiero exportar datos para procesos contables |
+## 📋 ARCHIVOS DEL PROYECTO
+
+### 1. `HISTORIAS-USUARIO-GHERKIN.md` (PRINCIPAL)
+**Documento con las 15 Historias de Usuario en formato Gherkin:**
+- ✅ **RF5**: 5 historias (3 automatizadas, 2 manuales)
+- ✅ **RF7**: 5 historias (2 automatizadas, 3 manuales)  
+- ✅ **RF8**: 5 historias (3 automatizadas, 2 manuales)
+
+### 2. `karting-functional-tests-optimized.side` (AUTOMATIZACIÓN)
+**Suite Selenium IDE con 8 tests automatizados optimizados:**
+
+| Test ID | RF | Historia | Descripción |
+|---------|----|---------| ------------|
+| `rf5-hu001-registro-reserva-exitoso` | RF5 | HU001 | Registro exitoso de reserva con datos válidos |
+| `rf5-hu002-validacion-campos-obligatorios` | RF5 | HU002 | Validación de campos requeridos |
+| `rf5-hu003-calculo-automatico-precios` | RF5 | HU003 | Cálculo automático según tarifa |
+| `rf7-hu006-visualizacion-rack-semanal` | RF7 | HU006 | Vista completa del rack semanal |
+| `rf7-hu007-consulta-estado-por-fecha` | RF7 | HU007 | Consulta por fecha específica |
+| `rf8-hu011-generacion-reporte-ingresos` | RF8 | HU011 | Generación de reportes de ingresos |
+| `rf8-hu012-filtrado-reportes-periodo` | RF8 | HU012 | Filtrado por diferentes períodos |
+| `rf8-hu013-exportacion-datos-excel` | RF8 | HU013 | Exportación para procesos contables |
 
 ### 2. `karting-functional-tests.side` (SOPORTE)
 **Pruebas funcionales adicionales y validaciones técnicas del sistema**

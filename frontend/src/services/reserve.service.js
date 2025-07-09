@@ -32,7 +32,7 @@ const getAllReserves = (page = 0, size = 10, sortBy = 'reserveday', sortDir = 'd
  */
 const getReservesByDateRange = (startDate, endDate) => {
   const dateRange = {
-    star: startDate,
+    star: startDate, // Backend espera 'star', no 'start'
     end: endDate,
   };
   // Uses the actual backend endpoint: POST /reserves/getAll
@@ -59,7 +59,13 @@ const getReservesByWeek = (year, month, day) => {
 // Core CRUD operations that match the real backend endpoints
 const getReserveById = (id) => httpClient.get(`${API_URL}${id}`);
 
-const saveReserve = (reserve) => httpClient.post(API_URL, reserve);
+const createReserve = (reserve) => httpClient.post(API_URL, reserve);
+
+const updateReserve = (id, reserve) => {
+  // El backend no tiene PUT, usar POST con el ID incluido en el objeto
+  const reserveWithId = { ...reserve, id: parseInt(id) };
+  return httpClient.post(API_URL, reserveWithId);
+};
 
 const deleteReserveById = (id) => httpClient.delete(`${API_URL}${id}`);
 
@@ -67,14 +73,18 @@ const sendPaymentReceipt = (id) => httpClient.get(`${API_URL}${id}/payment-recei
 
 const sendPaymentReceiptV2 = (id) => httpClient.get(`${API_URL}${id}/payment-receipt-v2`);
 
-const calculateFinalPrice = (reserve) => httpClient.post(`${API_URL}calculate-price`, reserve);
+const calculateFinalPrice = (reserve) => {
+  console.log('Enviando datos para calcular precio:', reserve);
+  return httpClient.post(`${API_URL}calculate-price`, reserve);
+};
 
 export default {
   getAllReserves,
   getReservesByDateRange,
   getReservesByWeek,
   getReserveById,
-  saveReserve,
+  createReserve,
+  updateReserve,
   deleteById: deleteReserveById,
   sendPaymentReceipt,
   sendPaymentReceiptV2,

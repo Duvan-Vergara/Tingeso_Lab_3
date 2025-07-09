@@ -1,0 +1,201 @@
+timeStamp,elapsed,label,responseCode,responseMessage,threadName,dataType,success,failureMessage,bytes,sentBytes,grpThreads,allThreads,URL,Latency,IdleTime,Connect
+1752050916992,72,RF7-LOAD: Obtener Rack Semanal,200,OK,RF7-LOAD-USERS 1-2,text,true,,1515,228,2,2,http://localhost:30088/api/racksemanal/obtener,68,0,46
+1752050916992,73,RF7-LOAD: Obtener Rack Semanal,200,OK,RF7-LOAD-USERS 1-1,text,true,,238,228,2,2,http://localhost:30088/api/racksemanal/obtener,68,0,45
+1752050917079,0,Debug Sampler,200,OK,RF7-LOAD-USERS 1-1,text,true,,0,0,2,2,null,0,0,0
+1752050917079,0,Debug Sampler,200,OK,RF7-LOAD-USERS 1-2,text,true,,0,0,2,2,null,0,0,0
+1752050917082,12,RF7-LOAD: Obtener Rack Semanal,200,OK,RF7-LOAD-USERS 1-1,text,true,,238,229,2,2,http://localhost:30088/api/racksemanal/obtener,9,0,0
+1752050917095,0,Debug Sampler,200,OK,RF7-LOAD-USERS 1-1,text,true,,0,0,2,2,null,0,0,0
+1752050917096,6,RF7-LOAD: Obtener Rack Semanal,200,OK,RF7-LOAD-USERS 1-1,text,true,,238,227,2,2,http://localhost:30088/api/racksemanal/obtener,5,0,0
+1752050917103,0,Debug Sampler,200,OK,RF7-LOAD-USERS 1-1,text,true,,0,0,2,2,null,0,0,0
+1752050917081,22,RF7-LOAD: Obtener Rack Semanal,200,OK,RF7-LOAD-USERS 1-2,text,true,,238,228,2,2,http://localhost:30088/api/racksemanal/obtener,21,0,0
+1752050917104,0,Debug Sampler,200,OK,RF7-LOAD-USERS 1-2,text,true,,0,0,2,2,null,0,0,0
+1752050917104,6,RF7-LOAD: Obtener Rack Semanal,200,OK,RF7-LOAD-USERS 1-1,text,true,,238,228,2,2,http://localhost:30088/api/racksemanal/obtener,6,0,0
+1752050917112,0,Debug Sampler,200,OK,RF7-LOAD-USERS 1-1,text,true,,0,0,2,2,null,0,0,0
+1752050917113,12,RF7-LOAD: Obtener Rack Semanal,200,OK,RF7-LOAD-USERS 1-1,text,true,,238,228,3,3,http://localhost:30088/api/racksemanal/obtener,12,0,0
+1752050917126,0,Debug Sampler,200,OK,RF7-LOAD-USERS 1-1,text,true,,0,0,3,3,null,0,0,0
+1752050917105,25,RF7-LOAD: Obtener Rack Semanal,200,OK,RF7-LOAD-USERS 1-2,text,true,,283,227,3,3,http://localhost:30088/api/racksemanal/obtener,25,0,0
+1752050917118,13,RF7-LOAD: Obtener Rack Semanal,200,OK,RF7-LOAD-USERS 1-3,text,true,,238,227,3,3,http://localhost:30088/api/racksemanal/obtener,13,0,2
+1752050917131,0,Debug Sampler,200,OK,RF7-LOAD-USERS 1-2,text,true,,0,0,3,3,null,0,0,0
+1752050917132,0,Debug Sampler,200,OK,RF7-LOAD-USERS 1-3,text,true,,0,0,3,3,null,0,0,0
+1752050917129,11,RF7-LOAD: Obtener Rack Semanal,200,OK,RF7-LOAD-USERS 1-1,text,true,,238,228,3,3,http://localhost:30088/api/racksemanal/obtener,11,0,0
+1752050917142,0,Debug Sampler,200,OK,RF7-LOAD-USERS 1-1,text,true,,0,0,3,3,null,0,0,0
+1752050917133,11,RF7-LOAD: Obtener Rack Semanal,200,OK,RF7-LOAD-USERS 1-3,text,true,,238,227,3,3,http://localhost:30088/api/racksemanal/obtener,10,0,0
+1752050917145,0,Debug Sampler,200,OK,RF7-LOAD-USERS 1-3,text,true,,0,0,3,3,null,0,0,0
+1752050917134,15,RF7-LOAD: Obtener Rack Semanal,200,OK,RF7-LOAD-USERS 1-2,text,true,,238,228,3,3,http://localhost:30088/api/racksemanal/obtener,14,0,0
+1752050917150,0,Debug Sampler,200,OK,RF7-LOAD-USERS 1-2,text,true,,0,0,3,3,null,0,0,0
+1752050917145,8,RF7-LOAD: Obtener Rack Semanal,200,OK,RF7-LOAD-USERS 1-3,text,true,,238,228,3,3,http://localhost:30088/api/racksemanal/obtener,8,0,0
+1752050917144,9,RF7-LOAD: Obtener Rack Semanal,200,OK,RF7-LOAD-USERS 1-1,text,true,,238,228,3,3,http://localhost:30088/api/racksemanal/obtener,9,0,0
+1752050917154,0,Debug Sampler,200,OK,RF7-LOAD-USERS 1-3,text,true,,0,0,3,3,null,0,0,0
+1752050917155,0,Debug Sampler,200,OK,RF7-LOAD-USERS 1-1,text,true,,0,0,3,3,null,0,0,0
+1752050917150,9,RF7-LOAD: Obtener Rack Semanal,200,OK,RF7-LOAD-USERS 1-2,text,true,,238,228,3,3,http://localhost:30088/api/racksemanal/obtener,8,0,0
+1752050917161,0,Debug Sampler,200,OK,RF7-LOAD-USERS 1-2,text,true,,0,0,3,3,null,0,0,0
+1752050917155,7,RF7-LOAD: Obtener Rack Semanal,200,OK,RF7-LOAD-USERS 1-3,text,true,,238,228,3,3,http://localhost:30088/api/racksemanal/obtener,7,0,0
+1752050917155,7,RF7-LOAD: Obtener Rack Semanal,200,OK,RF7-LOAD-USERS 1-1,text,true,,238,229,3,3,http://localhost:30088/api/racksemanal/obtener,7,0,0
+1752050917163,0,Debug Sampler,200,OK,RF7-LOAD-USERS 1-3,text,true,,0,0,3,3,null,0,0,0
+1752050917163,0,Debug Sampler,200,OK,RF7-LOAD-USERS 1-1,text,true,,0,0,3,3,null,0,0,0
+1752050917162,8,RF7-LOAD: Obtener Rack Semanal,200,OK,RF7-LOAD-USERS 1-2,text,true,,238,228,3,3,http://localhost:30088/api/racksemanal/obtener,8,0,0
+1752050917164,6,RF7-LOAD: Obtener Rack Semanal,200,OK,RF7-LOAD-USERS 1-1,text,true,,238,229,3,3,http://localhost:30088/api/racksemanal/obtener,6,0,0
+1752050917172,0,Debug Sampler,200,OK,RF7-LOAD-USERS 1-1,text,true,,0,0,3,3,null,0,0,0
+1752050917173,0,Debug Sampler,200,OK,RF7-LOAD-USERS 1-2,text,true,,0,0,3,3,null,0,0,0
+1752050917164,13,RF7-LOAD: Obtener Rack Semanal,200,OK,RF7-LOAD-USERS 1-3,text,true,,238,229,3,3,http://localhost:30088/api/racksemanal/obtener,13,0,0
+1752050917179,0,Debug Sampler,200,OK,RF7-LOAD-USERS 1-3,text,true,,0,0,3,3,null,0,0,0
+1752050917179,6,RF7-LOAD: Obtener Rack Semanal,200,OK,RF7-LOAD-USERS 1-3,text,true,,238,229,3,3,http://localhost:30088/api/racksemanal/obtener,6,0,0
+1752050917187,0,Debug Sampler,200,OK,RF7-LOAD-USERS 1-3,text,true,,0,0,3,3,null,0,0,0
+1752050917173,19,RF7-LOAD: Obtener Rack Semanal,200,OK,RF7-LOAD-USERS 1-1,text,true,,238,228,3,3,http://localhost:30088/api/racksemanal/obtener,19,0,0
+1752050917174,18,RF7-LOAD: Obtener Rack Semanal,200,OK,RF7-LOAD-USERS 1-2,text,true,,238,229,3,3,http://localhost:30088/api/racksemanal/obtener,18,0,0
+1752050917193,0,Debug Sampler,200,OK,RF7-LOAD-USERS 1-2,text,true,,0,0,3,3,null,0,0,0
+1752050917194,0,Debug Sampler,200,OK,RF7-LOAD-USERS 1-1,text,true,,0,0,3,3,null,0,0,0
+1752050917190,9,RF7-LOAD: Obtener Rack Semanal,200,OK,RF7-LOAD-USERS 1-3,text,true,,238,228,2,2,http://localhost:30088/api/racksemanal/obtener,9,0,0
+1752050917200,0,Debug Sampler,200,OK,RF7-LOAD-USERS 1-3,text,true,,0,0,2,2,null,0,0,0
+1752050917194,12,RF7-LOAD: Obtener Rack Semanal,200,OK,RF7-LOAD-USERS 1-2,text,true,,238,228,2,2,http://localhost:30088/api/racksemanal/obtener,12,0,0
+1752050917201,5,RF7-LOAD: Obtener Rack Semanal,200,OK,RF7-LOAD-USERS 1-3,text,true,,238,228,2,2,http://localhost:30088/api/racksemanal/obtener,5,0,0
+1752050917207,0,Debug Sampler,200,OK,RF7-LOAD-USERS 1-2,text,true,,0,0,2,2,null,0,0,0
+1752050917207,0,Debug Sampler,200,OK,RF7-LOAD-USERS 1-3,text,true,,0,0,2,2,null,0,0,0
+1752050917208,5,RF7-LOAD: Obtener Rack Semanal,200,OK,RF7-LOAD-USERS 1-2,text,true,,238,228,2,2,http://localhost:30088/api/racksemanal/obtener,5,0,0
+1752050917208,5,RF7-LOAD: Obtener Rack Semanal,200,OK,RF7-LOAD-USERS 1-3,text,true,,238,228,2,2,http://localhost:30088/api/racksemanal/obtener,5,0,0
+1752050917214,0,Debug Sampler,200,OK,RF7-LOAD-USERS 1-2,text,true,,0,0,2,2,null,0,0,0
+1752050917214,0,Debug Sampler,200,OK,RF7-LOAD-USERS 1-3,text,true,,0,0,2,2,null,0,0,0
+1752050917215,6,RF7-LOAD: Obtener Rack Semanal,200,OK,RF7-LOAD-USERS 1-2,text,true,,375,228,2,2,http://localhost:30088/api/racksemanal/obtener,6,0,0
+1752050917223,0,Debug Sampler,200,OK,RF7-LOAD-USERS 1-2,text,true,,0,0,2,2,null,0,0,0
+1752050917215,10,RF7-LOAD: Obtener Rack Semanal,200,OK,RF7-LOAD-USERS 1-3,text,true,,238,228,1,1,http://localhost:30088/api/racksemanal/obtener,10,0,0
+1752050917227,0,Debug Sampler,200,OK,RF7-LOAD-USERS 1-3,text,true,,0,0,1,1,null,0,0,0
+1752050917615,6,RF7-LOAD: Obtener Rack Semanal,200,OK,RF7-LOAD-USERS 1-4,text,true,,238,228,1,1,http://localhost:30088/api/racksemanal/obtener,6,0,2
+1752050917623,0,Debug Sampler,200,OK,RF7-LOAD-USERS 1-4,text,true,,0,0,1,1,null,0,0,0
+1752050917625,5,RF7-LOAD: Obtener Rack Semanal,200,OK,RF7-LOAD-USERS 1-4,text,true,,238,228,1,1,http://localhost:30088/api/racksemanal/obtener,5,0,0
+1752050917631,0,Debug Sampler,200,OK,RF7-LOAD-USERS 1-4,text,true,,0,0,1,1,null,0,0,0
+1752050917632,5,RF7-LOAD: Obtener Rack Semanal,200,OK,RF7-LOAD-USERS 1-4,text,true,,238,229,1,1,http://localhost:30088/api/racksemanal/obtener,5,0,0
+1752050917638,0,Debug Sampler,200,OK,RF7-LOAD-USERS 1-4,text,true,,0,0,1,1,null,0,0,0
+1752050917639,4,RF7-LOAD: Obtener Rack Semanal,200,OK,RF7-LOAD-USERS 1-4,text,true,,461,227,1,1,http://localhost:30088/api/racksemanal/obtener,4,0,0
+1752050917644,0,Debug Sampler,200,OK,RF7-LOAD-USERS 1-4,text,true,,0,0,1,1,null,0,0,0
+1752050917644,12,RF7-LOAD: Obtener Rack Semanal,200,OK,RF7-LOAD-USERS 1-4,text,true,,238,229,1,1,http://localhost:30088/api/racksemanal/obtener,12,0,0
+1752050917657,0,Debug Sampler,200,OK,RF7-LOAD-USERS 1-4,text,true,,0,0,1,1,null,0,0,0
+1752050917658,4,RF7-LOAD: Obtener Rack Semanal,200,OK,RF7-LOAD-USERS 1-4,text,true,,483,228,1,1,http://localhost:30088/api/racksemanal/obtener,4,0,0
+1752050917663,0,Debug Sampler,200,OK,RF7-LOAD-USERS 1-4,text,true,,0,0,1,1,null,0,0,0
+1752050917664,43,RF7-LOAD: Obtener Rack Semanal,200,OK,RF7-LOAD-USERS 1-4,text,true,,1529,228,1,1,http://localhost:30088/api/racksemanal/obtener,43,0,0
+1752050917707,0,Debug Sampler,200,OK,RF7-LOAD-USERS 1-4,text,true,,0,0,1,1,null,0,0,0
+1752050917708,4,RF7-LOAD: Obtener Rack Semanal,200,OK,RF7-LOAD-USERS 1-4,text,true,,238,228,1,1,http://localhost:30088/api/racksemanal/obtener,4,0,0
+1752050917714,0,Debug Sampler,200,OK,RF7-LOAD-USERS 1-4,text,true,,0,0,1,1,null,0,0,0
+1752050917714,4,RF7-LOAD: Obtener Rack Semanal,200,OK,RF7-LOAD-USERS 1-4,text,true,,238,228,1,1,http://localhost:30088/api/racksemanal/obtener,4,0,0
+1752050917719,0,Debug Sampler,200,OK,RF7-LOAD-USERS 1-4,text,true,,0,0,1,1,null,0,0,0
+1752050917719,4,RF7-LOAD: Obtener Rack Semanal,200,OK,RF7-LOAD-USERS 1-4,text,true,,238,228,1,1,http://localhost:30088/api/racksemanal/obtener,4,0,0
+1752050917724,0,Debug Sampler,200,OK,RF7-LOAD-USERS 1-4,text,true,,0,0,1,1,null,0,0,0
+1752050918115,6,RF7-LOAD: Obtener Rack Semanal,200,OK,RF7-LOAD-USERS 1-5,text,true,,238,228,1,1,http://localhost:30088/api/racksemanal/obtener,6,0,1
+1752050918122,0,Debug Sampler,200,OK,RF7-LOAD-USERS 1-5,text,true,,0,0,1,1,null,0,0,0
+1752050918122,5,RF7-LOAD: Obtener Rack Semanal,200,OK,RF7-LOAD-USERS 1-5,text,true,,238,228,1,1,http://localhost:30088/api/racksemanal/obtener,5,0,0
+1752050918128,0,Debug Sampler,200,OK,RF7-LOAD-USERS 1-5,text,true,,0,0,1,1,null,0,0,0
+1752050918128,4,RF7-LOAD: Obtener Rack Semanal,200,OK,RF7-LOAD-USERS 1-5,text,true,,238,228,1,1,http://localhost:30088/api/racksemanal/obtener,4,0,0
+1752050918133,0,Debug Sampler,200,OK,RF7-LOAD-USERS 1-5,text,true,,0,0,1,1,null,0,0,0
+1752050918134,4,RF7-LOAD: Obtener Rack Semanal,200,OK,RF7-LOAD-USERS 1-5,text,true,,487,227,1,1,http://localhost:30088/api/racksemanal/obtener,4,0,0
+1752050918139,0,Debug Sampler,200,OK,RF7-LOAD-USERS 1-5,text,true,,0,0,1,1,null,0,0,0
+1752050918139,4,RF7-LOAD: Obtener Rack Semanal,200,OK,RF7-LOAD-USERS 1-5,text,true,,238,227,1,1,http://localhost:30088/api/racksemanal/obtener,4,0,0
+1752050918144,0,Debug Sampler,200,OK,RF7-LOAD-USERS 1-5,text,true,,0,0,1,1,null,0,0,0
+1752050918145,4,RF7-LOAD: Obtener Rack Semanal,200,OK,RF7-LOAD-USERS 1-5,text,true,,238,227,1,1,http://localhost:30088/api/racksemanal/obtener,4,0,0
+1752050918150,0,Debug Sampler,200,OK,RF7-LOAD-USERS 1-5,text,true,,0,0,1,1,null,0,0,0
+1752050918150,5,RF7-LOAD: Obtener Rack Semanal,200,OK,RF7-LOAD-USERS 1-5,text,true,,238,228,1,1,http://localhost:30088/api/racksemanal/obtener,5,0,0
+1752050918157,0,Debug Sampler,200,OK,RF7-LOAD-USERS 1-5,text,true,,0,0,1,1,null,0,0,0
+1752050918159,7,RF7-LOAD: Obtener Rack Semanal,200,OK,RF7-LOAD-USERS 1-5,text,true,,238,228,1,1,http://localhost:30088/api/racksemanal/obtener,7,0,0
+1752050918168,0,Debug Sampler,200,OK,RF7-LOAD-USERS 1-5,text,true,,0,0,1,1,null,0,0,0
+1752050918169,6,RF7-LOAD: Obtener Rack Semanal,200,OK,RF7-LOAD-USERS 1-5,text,true,,238,228,1,1,http://localhost:30088/api/racksemanal/obtener,6,0,0
+1752050918176,0,Debug Sampler,200,OK,RF7-LOAD-USERS 1-5,text,true,,0,0,1,1,null,0,0,0
+1752050918177,5,RF7-LOAD: Obtener Rack Semanal,200,OK,RF7-LOAD-USERS 1-5,text,true,,238,228,1,1,http://localhost:30088/api/racksemanal/obtener,5,0,0
+1752050918183,0,Debug Sampler,200,OK,RF7-LOAD-USERS 1-5,text,true,,0,0,1,1,null,0,0,0
+1752050918614,7,RF7-LOAD: Obtener Rack Semanal,200,OK,RF7-LOAD-USERS 1-6,text,true,,238,228,1,1,http://localhost:30088/api/racksemanal/obtener,6,0,1
+1752050918621,0,Debug Sampler,200,OK,RF7-LOAD-USERS 1-6,text,true,,0,0,1,1,null,0,0,0
+1752050918622,4,RF7-LOAD: Obtener Rack Semanal,200,OK,RF7-LOAD-USERS 1-6,text,true,,487,227,1,1,http://localhost:30088/api/racksemanal/obtener,4,0,0
+1752050918627,0,Debug Sampler,200,OK,RF7-LOAD-USERS 1-6,text,true,,0,0,1,1,null,0,0,0
+1752050918627,4,RF7-LOAD: Obtener Rack Semanal,200,OK,RF7-LOAD-USERS 1-6,text,true,,238,229,1,1,http://localhost:30088/api/racksemanal/obtener,4,0,0
+1752050918632,0,Debug Sampler,200,OK,RF7-LOAD-USERS 1-6,text,true,,0,0,1,1,null,0,0,0
+1752050918633,3,RF7-LOAD: Obtener Rack Semanal,200,OK,RF7-LOAD-USERS 1-6,text,true,,238,229,1,1,http://localhost:30088/api/racksemanal/obtener,3,0,0
+1752050918637,0,Debug Sampler,200,OK,RF7-LOAD-USERS 1-6,text,true,,0,0,1,1,null,0,0,0
+1752050918638,3,RF7-LOAD: Obtener Rack Semanal,200,OK,RF7-LOAD-USERS 1-6,text,true,,261,228,1,1,http://localhost:30088/api/racksemanal/obtener,3,0,0
+1752050918642,0,Debug Sampler,200,OK,RF7-LOAD-USERS 1-6,text,true,,0,0,1,1,null,0,0,0
+1752050918643,4,RF7-LOAD: Obtener Rack Semanal,200,OK,RF7-LOAD-USERS 1-6,text,true,,238,228,1,1,http://localhost:30088/api/racksemanal/obtener,4,0,0
+1752050918648,0,Debug Sampler,200,OK,RF7-LOAD-USERS 1-6,text,true,,0,0,1,1,null,0,0,0
+1752050918648,9,RF7-LOAD: Obtener Rack Semanal,200,OK,RF7-LOAD-USERS 1-6,text,true,,238,228,1,1,http://localhost:30088/api/racksemanal/obtener,9,0,0
+1752050918658,0,Debug Sampler,200,OK,RF7-LOAD-USERS 1-6,text,true,,0,0,1,1,null,0,0,0
+1752050918658,5,RF7-LOAD: Obtener Rack Semanal,200,OK,RF7-LOAD-USERS 1-6,text,true,,487,227,1,1,http://localhost:30088/api/racksemanal/obtener,5,0,0
+1752050918663,0,Debug Sampler,200,OK,RF7-LOAD-USERS 1-6,text,true,,0,0,1,1,null,0,0,0
+1752050918664,4,RF7-LOAD: Obtener Rack Semanal,200,OK,RF7-LOAD-USERS 1-6,text,true,,1600,228,1,1,http://localhost:30088/api/racksemanal/obtener,4,0,0
+1752050918669,0,Debug Sampler,200,OK,RF7-LOAD-USERS 1-6,text,true,,0,0,1,1,null,0,0,0
+1752050918670,3,RF7-LOAD: Obtener Rack Semanal,200,OK,RF7-LOAD-USERS 1-6,text,true,,238,228,1,1,http://localhost:30088/api/racksemanal/obtener,3,0,0
+1752050918674,0,Debug Sampler,200,OK,RF7-LOAD-USERS 1-6,text,true,,0,0,1,1,null,0,0,0
+1752050919114,5,RF7-LOAD: Obtener Rack Semanal,200,OK,RF7-LOAD-USERS 1-7,text,true,,238,228,1,1,http://localhost:30088/api/racksemanal/obtener,5,0,1
+1752050919120,0,Debug Sampler,200,OK,RF7-LOAD-USERS 1-7,text,true,,0,0,1,1,null,0,0,0
+1752050919120,5,RF7-LOAD: Obtener Rack Semanal,200,OK,RF7-LOAD-USERS 1-7,text,true,,333,227,1,1,http://localhost:30088/api/racksemanal/obtener,5,0,0
+1752050919126,0,Debug Sampler,200,OK,RF7-LOAD-USERS 1-7,text,true,,0,0,1,1,null,0,0,0
+1752050919127,4,RF7-LOAD: Obtener Rack Semanal,200,OK,RF7-LOAD-USERS 1-7,text,true,,238,227,1,1,http://localhost:30088/api/racksemanal/obtener,4,0,0
+1752050919131,0,Debug Sampler,200,OK,RF7-LOAD-USERS 1-7,text,true,,0,0,1,1,null,0,0,0
+1752050919133,4,RF7-LOAD: Obtener Rack Semanal,200,OK,RF7-LOAD-USERS 1-7,text,true,,238,228,1,1,http://localhost:30088/api/racksemanal/obtener,4,0,0
+1752050919138,0,Debug Sampler,200,OK,RF7-LOAD-USERS 1-7,text,true,,0,0,1,1,null,0,0,0
+1752050919139,5,RF7-LOAD: Obtener Rack Semanal,200,OK,RF7-LOAD-USERS 1-7,text,true,,386,228,1,1,http://localhost:30088/api/racksemanal/obtener,5,0,0
+1752050919145,0,Debug Sampler,200,OK,RF7-LOAD-USERS 1-7,text,true,,0,0,1,1,null,0,0,0
+1752050919145,4,RF7-LOAD: Obtener Rack Semanal,200,OK,RF7-LOAD-USERS 1-7,text,true,,492,227,1,1,http://localhost:30088/api/racksemanal/obtener,4,0,0
+1752050919150,0,Debug Sampler,200,OK,RF7-LOAD-USERS 1-7,text,true,,0,0,1,1,null,0,0,0
+1752050919151,4,RF7-LOAD: Obtener Rack Semanal,200,OK,RF7-LOAD-USERS 1-7,text,true,,238,227,1,1,http://localhost:30088/api/racksemanal/obtener,3,0,0
+1752050919156,0,Debug Sampler,200,OK,RF7-LOAD-USERS 1-7,text,true,,0,0,1,1,null,0,0,0
+1752050919157,4,RF7-LOAD: Obtener Rack Semanal,200,OK,RF7-LOAD-USERS 1-7,text,true,,238,227,1,1,http://localhost:30088/api/racksemanal/obtener,3,0,0
+1752050919161,0,Debug Sampler,200,OK,RF7-LOAD-USERS 1-7,text,true,,0,0,1,1,null,0,0,0
+1752050919162,3,RF7-LOAD: Obtener Rack Semanal,200,OK,RF7-LOAD-USERS 1-7,text,true,,238,227,1,1,http://localhost:30088/api/racksemanal/obtener,3,0,0
+1752050919166,0,Debug Sampler,200,OK,RF7-LOAD-USERS 1-7,text,true,,0,0,1,1,null,0,0,0
+1752050919166,12,RF7-LOAD: Obtener Rack Semanal,200,OK,RF7-LOAD-USERS 1-7,text,true,,306,228,1,1,http://localhost:30088/api/racksemanal/obtener,12,0,0
+1752050919179,0,Debug Sampler,200,OK,RF7-LOAD-USERS 1-7,text,true,,0,0,1,1,null,0,0,0
+1752050919614,9,RF7-LOAD: Obtener Rack Semanal,200,OK,RF7-LOAD-USERS 1-8,text,true,,238,227,1,1,http://localhost:30088/api/racksemanal/obtener,9,0,1
+1752050919624,0,Debug Sampler,200,OK,RF7-LOAD-USERS 1-8,text,true,,0,0,1,1,null,0,0,0
+1752050919625,12,RF7-LOAD: Obtener Rack Semanal,200,OK,RF7-LOAD-USERS 1-8,text,true,,238,227,1,1,http://localhost:30088/api/racksemanal/obtener,12,0,0
+1752050919638,0,Debug Sampler,200,OK,RF7-LOAD-USERS 1-8,text,true,,0,0,1,1,null,0,0,0
+1752050919638,6,RF7-LOAD: Obtener Rack Semanal,200,OK,RF7-LOAD-USERS 1-8,text,true,,238,227,1,1,http://localhost:30088/api/racksemanal/obtener,6,0,0
+1752050919645,0,Debug Sampler,200,OK,RF7-LOAD-USERS 1-8,text,true,,0,0,1,1,null,0,0,0
+1752050919645,24,RF7-LOAD: Obtener Rack Semanal,200,OK,RF7-LOAD-USERS 1-8,text,true,,339,228,1,1,http://localhost:30088/api/racksemanal/obtener,24,0,0
+1752050919671,0,Debug Sampler,200,OK,RF7-LOAD-USERS 1-8,text,true,,0,0,1,1,null,0,0,0
+1752050919671,10,RF7-LOAD: Obtener Rack Semanal,200,OK,RF7-LOAD-USERS 1-8,text,true,,306,228,1,1,http://localhost:30088/api/racksemanal/obtener,10,0,0
+1752050919682,0,Debug Sampler,200,OK,RF7-LOAD-USERS 1-8,text,true,,0,0,1,1,null,0,0,0
+1752050919683,6,RF7-LOAD: Obtener Rack Semanal,200,OK,RF7-LOAD-USERS 1-8,text,true,,1068,227,1,1,http://localhost:30088/api/racksemanal/obtener,6,0,0
+1752050919690,0,Debug Sampler,200,OK,RF7-LOAD-USERS 1-8,text,true,,0,0,1,1,null,0,0,0
+1752050919690,4,RF7-LOAD: Obtener Rack Semanal,200,OK,RF7-LOAD-USERS 1-8,text,true,,238,229,1,1,http://localhost:30088/api/racksemanal/obtener,4,0,0
+1752050919695,0,Debug Sampler,200,OK,RF7-LOAD-USERS 1-8,text,true,,0,0,1,1,null,0,0,0
+1752050919695,5,RF7-LOAD: Obtener Rack Semanal,200,OK,RF7-LOAD-USERS 1-8,text,true,,238,227,1,1,http://localhost:30088/api/racksemanal/obtener,5,0,0
+1752050919700,0,Debug Sampler,200,OK,RF7-LOAD-USERS 1-8,text,true,,0,0,1,1,null,0,0,0
+1752050919701,4,RF7-LOAD: Obtener Rack Semanal,200,OK,RF7-LOAD-USERS 1-8,text,true,,238,227,1,1,http://localhost:30088/api/racksemanal/obtener,4,0,0
+1752050919706,0,Debug Sampler,200,OK,RF7-LOAD-USERS 1-8,text,true,,0,0,1,1,null,0,0,0
+1752050919706,5,RF7-LOAD: Obtener Rack Semanal,200,OK,RF7-LOAD-USERS 1-8,text,true,,238,228,1,1,http://localhost:30088/api/racksemanal/obtener,5,0,0
+1752050919712,0,Debug Sampler,200,OK,RF7-LOAD-USERS 1-8,text,true,,0,0,1,1,null,0,0,0
+1752050920114,11,RF7-LOAD: Obtener Rack Semanal,200,OK,RF7-LOAD-USERS 1-9,text,true,,238,228,1,1,http://localhost:30088/api/racksemanal/obtener,10,0,1
+1752050920125,0,Debug Sampler,200,OK,RF7-LOAD-USERS 1-9,text,true,,0,0,1,1,null,0,0,0
+1752050920126,4,RF7-LOAD: Obtener Rack Semanal,200,OK,RF7-LOAD-USERS 1-9,text,true,,238,227,1,1,http://localhost:30088/api/racksemanal/obtener,4,0,0
+1752050920131,0,Debug Sampler,200,OK,RF7-LOAD-USERS 1-9,text,true,,0,0,1,1,null,0,0,0
+1752050920131,4,RF7-LOAD: Obtener Rack Semanal,200,OK,RF7-LOAD-USERS 1-9,text,true,,238,228,1,1,http://localhost:30088/api/racksemanal/obtener,4,0,0
+1752050920136,0,Debug Sampler,200,OK,RF7-LOAD-USERS 1-9,text,true,,0,0,1,1,null,0,0,0
+1752050920136,12,RF7-LOAD: Obtener Rack Semanal,200,OK,RF7-LOAD-USERS 1-9,text,true,,238,228,1,1,http://localhost:30088/api/racksemanal/obtener,11,0,0
+1752050920148,0,Debug Sampler,200,OK,RF7-LOAD-USERS 1-9,text,true,,0,0,1,1,null,0,0,0
+1752050920149,4,RF7-LOAD: Obtener Rack Semanal,200,OK,RF7-LOAD-USERS 1-9,text,true,,238,227,1,1,http://localhost:30088/api/racksemanal/obtener,4,0,0
+1752050920153,0,Debug Sampler,200,OK,RF7-LOAD-USERS 1-9,text,true,,0,0,1,1,null,0,0,0
+1752050920154,4,RF7-LOAD: Obtener Rack Semanal,200,OK,RF7-LOAD-USERS 1-9,text,true,,238,227,1,1,http://localhost:30088/api/racksemanal/obtener,4,0,0
+1752050920159,0,Debug Sampler,200,OK,RF7-LOAD-USERS 1-9,text,true,,0,0,1,1,null,0,0,0
+1752050920160,3,RF7-LOAD: Obtener Rack Semanal,200,OK,RF7-LOAD-USERS 1-9,text,true,,238,228,1,1,http://localhost:30088/api/racksemanal/obtener,3,0,0
+1752050920164,0,Debug Sampler,200,OK,RF7-LOAD-USERS 1-9,text,true,,0,0,1,1,null,0,0,0
+1752050920165,3,RF7-LOAD: Obtener Rack Semanal,200,OK,RF7-LOAD-USERS 1-9,text,true,,238,229,1,1,http://localhost:30088/api/racksemanal/obtener,3,0,0
+1752050920169,0,Debug Sampler,200,OK,RF7-LOAD-USERS 1-9,text,true,,0,0,1,1,null,0,0,0
+1752050920169,9,RF7-LOAD: Obtener Rack Semanal,200,OK,RF7-LOAD-USERS 1-9,text,true,,238,228,1,1,http://localhost:30088/api/racksemanal/obtener,9,0,0
+1752050920179,0,Debug Sampler,200,OK,RF7-LOAD-USERS 1-9,text,true,,0,0,1,1,null,0,0,0
+1752050920179,3,RF7-LOAD: Obtener Rack Semanal,200,OK,RF7-LOAD-USERS 1-9,text,true,,238,229,1,1,http://localhost:30088/api/racksemanal/obtener,3,0,0
+1752050920183,0,Debug Sampler,200,OK,RF7-LOAD-USERS 1-9,text,true,,0,0,1,1,null,0,0,0
+1752050920616,5,RF7-LOAD: Obtener Rack Semanal,200,OK,RF7-LOAD-USERS 1-10,text,true,,238,228,1,1,http://localhost:30088/api/racksemanal/obtener,5,0,1
+1752050920622,0,Debug Sampler,200,OK,RF7-LOAD-USERS 1-10,text,true,,0,0,1,1,null,0,0,0
+1752050920622,5,RF7-LOAD: Obtener Rack Semanal,200,OK,RF7-LOAD-USERS 1-10,text,true,,375,228,1,1,http://localhost:30088/api/racksemanal/obtener,5,0,0
+1752050920627,0,Debug Sampler,200,OK,RF7-LOAD-USERS 1-10,text,true,,0,0,1,1,null,0,0,0
+1752050920628,5,RF7-LOAD: Obtener Rack Semanal,200,OK,RF7-LOAD-USERS 1-10,text,true,,238,228,1,1,http://localhost:30088/api/racksemanal/obtener,5,0,0
+1752050920633,0,Debug Sampler,200,OK,RF7-LOAD-USERS 1-10,text,true,,0,0,1,1,null,0,0,0
+1752050920634,4,RF7-LOAD: Obtener Rack Semanal,200,OK,RF7-LOAD-USERS 1-10,text,true,,238,228,1,1,http://localhost:30088/api/racksemanal/obtener,4,0,0
+1752050920639,0,Debug Sampler,200,OK,RF7-LOAD-USERS 1-10,text,true,,0,0,1,1,null,0,0,0
+1752050920639,4,RF7-LOAD: Obtener Rack Semanal,200,OK,RF7-LOAD-USERS 1-10,text,true,,238,228,1,1,http://localhost:30088/api/racksemanal/obtener,4,0,0
+1752050920644,0,Debug Sampler,200,OK,RF7-LOAD-USERS 1-10,text,true,,0,0,1,1,null,0,0,0
+1752050920645,4,RF7-LOAD: Obtener Rack Semanal,200,OK,RF7-LOAD-USERS 1-10,text,true,,238,229,1,1,http://localhost:30088/api/racksemanal/obtener,4,0,0
+1752050920649,0,Debug Sampler,200,OK,RF7-LOAD-USERS 1-10,text,true,,0,0,1,1,null,0,0,0
+1752050920650,6,RF7-LOAD: Obtener Rack Semanal,200,OK,RF7-LOAD-USERS 1-10,text,true,,261,228,1,1,http://localhost:30088/api/racksemanal/obtener,6,0,0
+1752050920658,0,Debug Sampler,200,OK,RF7-LOAD-USERS 1-10,text,true,,0,0,1,1,null,0,0,0
+1752050920659,8,RF7-LOAD: Obtener Rack Semanal,200,OK,RF7-LOAD-USERS 1-10,text,true,,238,228,1,1,http://localhost:30088/api/racksemanal/obtener,8,0,0
+1752050920668,0,Debug Sampler,200,OK,RF7-LOAD-USERS 1-10,text,true,,0,0,1,1,null,0,0,0
+1752050920668,5,RF7-LOAD: Obtener Rack Semanal,200,OK,RF7-LOAD-USERS 1-10,text,true,,238,227,1,1,http://localhost:30088/api/racksemanal/obtener,5,0,0
+1752050920674,0,Debug Sampler,200,OK,RF7-LOAD-USERS 1-10,text,true,,0,0,1,1,null,0,0,0
+1752050920674,10,RF7-LOAD: Obtener Rack Semanal,200,OK,RF7-LOAD-USERS 1-10,text,true,,238,228,1,1,http://localhost:30088/api/racksemanal/obtener,10,0,0
+1752050920685,0,Debug Sampler,200,OK,RF7-LOAD-USERS 1-10,text,true,,0,0,1,1,null,0,0,0

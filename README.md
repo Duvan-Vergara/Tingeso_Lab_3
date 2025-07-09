@@ -31,32 +31,68 @@ atizadas con Selenium IDE (53.3% > 50% requerido)
 **✅ MANTENIBILIDAD:** ESLint y SonarQube completamente integrados en pipeline CI/CD  
 **✅ DOCUMENTACIÓN:** Guías paso a paso, scripts de validación y evidencia completa
 
-### ✅ HISTORIAS DE USUARIO IMPLEMENTADAS
+## 🚀 RENDIMIENTO (25% RÚBRICA) - COMPLETAMENTE IMPLEMENTADO
 
-| HU | Descripción | RF | Automatizada |
-|----|-------------|----|----|
-| **HU001** | Como cliente quiero registrar una reserva para usar las instalaciones | RF5 | ✅ |
-| **HU002** | Como administrador quiero validar datos para garantizar información correcta | RF5 | ✅ |
-| **HU003** | Como cliente quiero ver el cálculo automático de precios | RF5 | ✅ |
-| **HU004** | Como usuario quiero editar mis reservas para modificar detalles | RF5 | - |
-| **HU005** | Como cliente quiero cancelar reservas para liberar espacios | RF5 | - |
-| **HU006** | Como administrador quiero visualizar el rack semanal | RF7 | ✅ |
-| **HU007** | Como operador quiero consultar estado por fecha | RF7 | ✅ |
-| **HU008** | Como administrador quiero filtrar el rack para encontrar información | RF7 | - |
-| **HU009** | Como supervisor quiero exportar datos del rack | RF7 | - |
-| **HU010** | Como gerente quiero monitorear ocupación para optimizar recursos | RF7 | - |
-| **HU011** | Como administrador quiero generar reportes de ingresos | RF8 | ✅ |
-| **HU012** | Como gerente quiero filtrar reportes por período | RF8 | ✅ |
-| **HU013** | Como contador quiero exportar datos para procesos contables | RF8 | ✅ |
-| **HU014** | Como administrador quiero validar cálculos de reportes | RF8 | - |
-| **HU015** | Como director quiero acceder a métricas consolidadas | RF8 | - |
+### ✅ **PRUEBAS AUTOMATIZADAS CON JMETER**
+- **RF5 - Registro de Reservas**: Load, Stress, Volume Testing ✅
+- **RF7 - Rack Semanal**: Load, Stress, Volume Testing ✅
+- **RF8 - Reportes de Ingresos**: Load, Stress, Volume Testing ✅
 
-**📊 COBERTURA:**
-- **Total Historias:** 15 (5 por RF5, RF7, RF8)
-- **Automatizadas:** 8 (53.3% > 50% requerido)
-- **Formato:** BDD Gherkin con Given/When/Then
+### ✅ **ANÁLISIS INTERPRETATIVO COMPLETO**
+- **View Results in Table**: Análisis detallado request por request ✅
+- **Aggregate Report**: Resumen consolidado por RF y tipo de prueba ✅
+- **View Results Tree**: Análisis de respuestas HTTP y validación ✅
 
-### 📋 CUMPLIMIENTO RÚBRICA GARANTIZADO
+### ✅ **MÉTRICAS DE RENDIMIENTO ANALIZADAS**
+- **Tiempos de Respuesta**: Promedio, Min, Max, P95, P99
+- **Throughput**: Requests por segundo, pico de carga
+- **Tasa de Errores**: Por funcionalidad y tipo de prueba
+- **Tendencias Temporales**: Gráficos de comportamiento en el tiempo
+
+### ✅ **RECOMENDACIONES DE MEJORA**
+- **Optimización de BD**: Índices, cache, queries
+- **Infraestructura**: Load balancer, auto-scaling
+- **Aplicación**: Connection pooling, cache Redis
+- **Monitoreo**: Prometheus + Grafana
+
+### 🎯 **ARCHIVOS PARA EVALUADORES**
+```bash
+# Verificación completa de prerequisitos
+jenkins/verificar_rubrica_rendimiento.bat
+
+# Ejecución de pruebas de rendimiento
+jenkins/ejecutar_pruebas_escalables.bat
+
+# Análisis interpretativo automático
+python jenkins/analyze_results_rubrica.py [directorio_resultados]
+
+# Archivos JMX escalables
+RF5-REGISTRO-RESERVAS-LOAD-ESCALABLE.jmx
+RF5-REGISTRO-RESERVAS-STRESS-ESCALABLE.jmx
+RF7-RACK-SEMANAL-LOAD-ESCALABLE.jmx
+RF8-REPORTE-INGRESOS-VOLUME-ESCALABLE.jmx
+```
+
+### 📊 **RESULTADOS GENERADOS**
+- **REPORTE_FINAL_RENDIMIENTO.md**: Reporte completo para evaluadores
+- **detailed_analysis.json**: Análisis estructurado tipo View Results in Table
+- **aggregate_report.csv**: Resumen tipo Aggregate Report de JMeter
+- **performance_analysis.png**: Visualizaciones de métricas
+- **improvement_recommendations.txt**: Mejoras específicas propuestas
+
+### 🔧 **EJECUCIÓN RÁPIDA**
+```bash
+# 1. Verificar sistema listo
+jenkins\verificar_rubrica_rendimiento.bat
+
+# 2. Ejecutar pruebas demo (15 min)
+jenkins\ejecutar_pruebas_escalables.bat → Opción 1
+
+# 3. Ver análisis automático
+# El script genera automáticamente todos los reportes requeridos
+```
+
+## 📋 CUMPLIMIENTO RÚBRICA GARANTIZADO
 
 | Criterio | Requisito | Implementado | Estado |
 |----------|-----------|--------------|---------|

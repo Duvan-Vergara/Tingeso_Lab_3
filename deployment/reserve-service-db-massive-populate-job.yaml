@@ -1,0 +1,71 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: reserve-service-db-massive-populate
+spec:
+  ttlSecondsAfterFinished: 3600  # Limpiar después de 1 hora
+  backoffLimit: 3                # Máximo 3 reintentos
+  activeDeadlineSeconds: 900     # Timeout de 15 minutos (más tiempo para datos masivos)
+  template:
+    spec:
+      containers:
+      - name: mysql-client
+        image: mysql:latest
+        command:
+        - sh
+        - -c
+        - |
+          set -e  # Fallar inmediatamente si cualquier comando falla
+          echo "=== POBLADO MASIVO DE RESERVE-SERVICE ==="
+          echo "Iniciando población masiva para pruebas de volumen/carga/estrés..."
+          echo "Esperando a que reserve-service-db-service esté disponible..."
+          
+          # Esperar hasta que la BD esté disponible (máximo 3 minutos)
+          timeout=180
+          elapsed=0
+          while [ $elapsed -lt $timeout ]; do
+            if mysql -h reserve-service-db-service -uroot -proot -e "SELECT 1" > /dev/null 2>&1; then
+              echo "✅ Base de datos disponible"
+              break
+            fi
+            echo "Esperando BD... ($elapsed/$timeout segundos)"
+            sleep 5
+            elapsed=$((elapsed + 5))
+          done
+          
+          if [ $elapsed -ge $timeout ]; then
+            echo "❌ Error: Base de datos no disponible después de $timeout segundos"
+            exit 1
+          fi
+          
+          # Verificar que la BD reserve existe
+          echo "Verificando existencia de base de datos 'reserve'..."
+          if ! mysql -h reserve-service-db-service -uroot -proot -e "USE reserve; SELECT 1;" > /dev/null 2>&1; then
+            echo "❌ Error: Base de datos 'reserve' no existe. Ejecutar poblado básico primero."
+            exit 1
+          fi
+          
+          echo "✅ Base de datos 'reserve' confirmada"
+          echo "Ejecutando script de poblado masivo..."
+          
+          # Ejecutar el script SQL de poblado masivo
+          mysql -h reserve-service-db-service -uroot -proot < /scripts/reserve-service-db-massive-populate.sql
+          
+          echo "✅ Población masiva completada exitosamente"
+          echo "📊 Sistema listo para pruebas de volumen, carga y estrés"
+        volumeMounts:
+        - name: sql-script
+          mountPath: /scripts
+        resources:
+          limits:
+            memory: "256Mi"  # Más memoria para operaciones masivas
+            cpu: "200m"
+          requests:
+            memory: "128Mi"
+            cpu: "100m"
+      restartPolicy: Never
+      volumes:
+      - name: sql-script
+        configMap:
+          name: reserve-service-db-massive-sql
+          defaultMode: 0644

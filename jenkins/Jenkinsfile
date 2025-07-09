@@ -9,8 +9,8 @@ pipeline {
     parameters {
         choice(
             name: 'TEST_TYPE',
-            choices: ['all', 'load', 'stress', 'volume', 'functional'],
-            description: 'Tipo de prueba: all (todas), load (carga normal), stress (alta carga), volume (volumen masivo), functional (Selenium)'
+            choices: ['all', 'load', 'stress', 'volume', 'functional', 'quality'],
+            description: 'Tipo de prueba a ejecutar'
         )
         string(
             name: 'BASE_URL',
@@ -180,16 +180,17 @@ pipeline {
                     
                     sh """
                         echo "Iniciando Load Test..."
-                        # Comando JMeter según documentación oficial Jenkins
-                        ${JMETER_HOME}/bin/jmeter -j jmeter.save.saveservice.output_format=xml \\
-                            -n -t Karting-Load-Testing.jmx \\
+                        # Comando JMeter usando sintaxis estándar: jmeter -n -t prueba.jmx -l resultados.jtl -e -o carpeta_output
+                        ${JMETER_HOME}/bin/jmeter -n -t Karting-Load-Testing.jmx \\
                             -l ${RESULTS_DIR}/${TIMESTAMP}/load-test-results.jtl \\
+                            -e -o ${REPORTS_DIR}/${TIMESTAMP}/load-test-report \\
                             -JSERVER_URL=localhost \\
                             -JSERVER_PORT=30088 \\
-                            -JPROTOCOL=http \\
-                            -e -o ${REPORTS_DIR}/${TIMESTAMP}/load-test-report
+                            -JPROTOCOL=http
                         
                         echo "✅ Load Test completado"
+                        echo "📊 Archivo JTL: \$(du -h ${RESULTS_DIR}/${TIMESTAMP}/load-test-results.jtl)"
+                        echo "🌐 Reporte HTML: ${REPORTS_DIR}/${TIMESTAMP}/load-test-report/index.html"
                         ls -la ${RESULTS_DIR}/${TIMESTAMP}/load-test-results.jtl
                     """
                 }
@@ -226,16 +227,17 @@ pipeline {
                     
                     sh """
                         echo "Iniciando Stress Test..."
-                        # Comando JMeter según documentación oficial Jenkins
-                        ${JMETER_HOME}/bin/jmeter -j jmeter.save.saveservice.output_format=xml \\
-                            -n -t Karting-Stress-Testing.jmx \\
+                        # Comando JMeter usando sintaxis estándar: jmeter -n -t prueba.jmx -l resultados.jtl -e -o carpeta_output
+                        ${JMETER_HOME}/bin/jmeter -n -t Karting-Stress-Testing.jmx \\
                             -l ${RESULTS_DIR}/${TIMESTAMP}/stress-test-results.jtl \\
+                            -e -o ${REPORTS_DIR}/${TIMESTAMP}/stress-test-report \\
                             -JSERVER_URL=localhost \\
                             -JSERVER_PORT=30088 \\
-                            -JPROTOCOL=http \\
-                            -e -o ${REPORTS_DIR}/${TIMESTAMP}/stress-test-report
+                            -JPROTOCOL=http
                         
                         echo "✅ Stress Test completado"
+                        echo "📊 Archivo JTL: \$(du -h ${RESULTS_DIR}/${TIMESTAMP}/stress-test-results.jtl)"
+                        echo "🌐 Reporte HTML: ${REPORTS_DIR}/${TIMESTAMP}/stress-test-report/index.html"
                         ls -la ${RESULTS_DIR}/${TIMESTAMP}/stress-test-results.jtl
                     """
                 }
@@ -270,16 +272,17 @@ pipeline {
                     
                     sh """
                         echo "Iniciando Volume Test..."
-                        # Comando JMeter según documentación oficial Jenkins
-                        ${JMETER_HOME}/bin/jmeter -j jmeter.save.saveservice.output_format=xml \\
-                            -n -t Karting-Volume-Testing.jmx \\
+                        # Comando JMeter usando sintaxis estándar: jmeter -n -t prueba.jmx -l resultados.jtl -e -o carpeta_output
+                        ${JMETER_HOME}/bin/jmeter -n -t Karting-Volume-Testing.jmx \\
                             -l ${RESULTS_DIR}/${TIMESTAMP}/volume-test-results.jtl \\
+                            -e -o ${REPORTS_DIR}/${TIMESTAMP}/volume-test-report \\
                             -JSERVER_URL=localhost \\
                             -JSERVER_PORT=30088 \\
-                            -JPROTOCOL=http \\
-                            -e -o ${REPORTS_DIR}/${TIMESTAMP}/volume-test-report
+                            -JPROTOCOL=http
                         
                         echo "✅ Volume Test completado"
+                        echo "📊 Archivo JTL: \$(du -h ${RESULTS_DIR}/${TIMESTAMP}/volume-test-results.jtl)"
+                        echo "🌐 Reporte HTML: ${REPORTS_DIR}/${TIMESTAMP}/volume-test-report/index.html"
                         ls -la ${RESULTS_DIR}/${TIMESTAMP}/volume-test-results.jtl
                     """
                 }

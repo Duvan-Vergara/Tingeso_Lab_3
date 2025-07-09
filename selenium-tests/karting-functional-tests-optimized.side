@@ -1,0 +1,641 @@
+{
+  "id": "karting-functional-tests-optimized",
+  "version": "2.0",
+  "name": "Karting System - Pruebas Funcionales RF5, RF7, RF8 (Rúbrica 20%)",
+  "url": "http://localhost:30080",
+  "tests": [
+    {
+      "id": "rf5-hu001-registro-reserva-exitoso",
+      "name": "RF5-HU001: Como cliente quiero registrar una reserva para usar las instalaciones",
+      "commands": [
+        {
+          "id": "1",
+          "comment": "ESCENARIO: Registro exitoso de reserva con datos válidos",
+          "command": "open",
+          "target": "/",
+          "targets": [],
+          "value": ""
+        },
+        {
+          "id": "2",
+          "comment": "DADO que el cliente está en la página principal",
+          "command": "waitForElementVisible",
+          "target": "css=body",
+          "targets": [],
+          "value": "5000"
+        },
+        {
+          "id": "3",
+          "comment": "CUANDO navega a registro de reservas",
+          "command": "click",
+          "target": "css=a[href*='reserve'], button:contains('Reservar'), .nav-reserve",
+          "targets": [
+            ["css=a[href*='reserve']", "css:finder"],
+            ["linkText=Reservar", "linkText"],
+            ["css=.nav-reserve", "css:finder"]
+          ],
+          "value": ""
+        },
+        {
+          "id": "4",
+          "comment": "Y espera que cargue el formulario",
+          "command": "waitForElementVisible",
+          "target": "css=form, .reserve-form, input[name*='client'], input[name*='name']",
+          "targets": [],
+          "value": "10000"
+        },
+        {
+          "id": "5",
+          "comment": "Y completa el nombre del cliente",
+          "command": "type",
+          "target": "css=input[name*='client'], input[name*='name'], #clientName, [data-testid='client-name']",
+          "targets": [
+            ["css=input[name*='client']", "css:finder"],
+            ["id=clientName", "id"],
+            ["css=input[name*='name']", "css:finder"]
+          ],
+          "value": "Juan Pérez Test"
+        },
+        {
+          "id": "6",
+          "comment": "Y selecciona una fecha futura",
+          "command": "type",
+          "target": "css=input[type='date'], input[name*='date'], input[name*='day'], #reserveDay",
+          "targets": [
+            ["css=input[type='date']", "css:finder"],
+            ["id=reserveDay", "id"]
+          ],
+          "value": "2025-07-20"
+        },
+        {
+          "id": "7",
+          "comment": "Y selecciona hora de inicio",
+          "command": "type",
+          "target": "css=input[type='time'], input[name*='time'], input[name*='begin'], #beginTime",
+          "targets": [
+            ["css=input[type='time']", "css:finder"],
+            ["id=beginTime", "id"]
+          ],
+          "value": "15:00"
+        },
+        {
+          "id": "8",
+          "comment": "Y selecciona una tarifa",
+          "command": "click",
+          "target": "css=select[name*='tariff'], #tariffId, .tariff-select",
+          "targets": [],
+          "value": ""
+        },
+        {
+          "id": "9",
+          "comment": "Y elige la primera opción disponible",
+          "command": "select",
+          "target": "css=select[name*='tariff'], #tariffId",
+          "targets": [],
+          "value": "index=1"
+        },
+        {
+          "id": "10",
+          "comment": "ENTONCES envía el formulario",
+          "command": "click",
+          "target": "css=button[type='submit'], .submit-btn, input[type='submit']",
+          "targets": [],
+          "value": ""
+        },
+        {
+          "id": "11",
+          "comment": "Y debe ver confirmación de éxito",
+          "command": "waitForElementVisible",
+          "target": "css=.success, .alert-success, .confirmation, [class*='success']",
+          "targets": [],
+          "value": "5000"
+        },
+        {
+          "id": "12",
+          "comment": "RESULTADO: Reserva registrada exitosamente",
+          "command": "assertElementPresent",
+          "target": "css=.success, .alert-success, [class*='success'], [data-testid='success-message']",
+          "targets": [],
+          "value": ""
+        }
+      ]
+    },
+    {
+      "id": "rf5-hu002-validacion-campos-obligatorios",
+      "name": "RF5-HU002: Como administrador quiero validar datos para garantizar información correcta",
+      "commands": [
+        {
+          "id": "1",
+          "comment": "ESCENARIO: Validación de campos obligatorios",
+          "command": "open",
+          "target": "/",
+          "targets": [],
+          "value": ""
+        },
+        {
+          "id": "2",
+          "comment": "DADO que el administrador está en el formulario de reservas",
+          "command": "click",
+          "target": "css=a[href*='reserve'], .nav-reserve",
+          "targets": [],
+          "value": ""
+        },
+        {
+          "id": "3",
+          "comment": "CUANDO intenta enviar sin completar campos obligatorios",
+          "command": "waitForElementVisible",
+          "target": "css=form",
+          "targets": [],
+          "value": "5000"
+        },
+        {
+          "id": "4",
+          "comment": "Y hace clic en enviar sin datos",
+          "command": "click",
+          "target": "css=button[type='submit'], .submit-btn",
+          "targets": [],
+          "value": ""
+        },
+        {
+          "id": "5",
+          "comment": "ENTONCES debe ver mensajes de validación",
+          "command": "waitForElementVisible",
+          "target": "css=.error, .validation-error, .invalid-feedback, [class*='error']",
+          "targets": [],
+          "value": "3000"
+        },
+        {
+          "id": "6",
+          "comment": "Y verificar que aparece error para nombre",
+          "command": "assertElementPresent",
+          "target": "css=.error, .validation-error, [class*='error'], [data-testid*='error']",
+          "targets": [],
+          "value": ""
+        },
+        {
+          "id": "7",
+          "comment": "RESULTADO: Validación funcionando correctamente",
+          "command": "assertText",
+          "target": "css=.error, .validation-error",
+          "targets": [],
+          "value": "*obligatorio*|*requerido*|*required*"
+        }
+      ]
+    },
+    {
+      "id": "rf5-hu003-calculo-automatico-precios",
+      "name": "RF5-HU003: Como cliente quiero ver el cálculo automático de precios",
+      "commands": [
+        {
+          "id": "1",
+          "comment": "ESCENARIO: Cálculo automático de precios según tarifa",
+          "command": "open",
+          "target": "/",
+          "targets": [],
+          "value": ""
+        },
+        {
+          "id": "2",
+          "comment": "DADO que el cliente selecciona una tarifa",
+          "command": "click",
+          "target": "css=a[href*='reserve']",
+          "targets": [],
+          "value": ""
+        },
+        {
+          "id": "3",
+          "comment": "CUANDO completa los datos básicos",
+          "command": "waitForElementVisible",
+          "target": "css=form",
+          "targets": [],
+          "value": "5000"
+        },
+        {
+          "id": "4",
+          "comment": "Y selecciona una tarifa específica",
+          "command": "click",
+          "target": "css=select[name*='tariff'], #tariffId",
+          "targets": [],
+          "value": ""
+        },
+        {
+          "id": "5",
+          "comment": "Y elige tarifa estándar",
+          "command": "select",
+          "target": "css=select[name*='tariff'], #tariffId",
+          "targets": [],
+          "value": "index=1"
+        },
+        {
+          "id": "6",
+          "comment": "ENTONCES debe ver el precio calculado",
+          "command": "waitForElementVisible",
+          "target": "css=.price, .total, .amount, [class*='price'], [data-testid*='price']",
+          "targets": [],
+          "value": "3000"
+        },
+        {
+          "id": "7",
+          "comment": "Y verificar que muestra un monto válido",
+          "command": "assertElementPresent",
+          "target": "css=.price, .total, [class*='price']",
+          "targets": [],
+          "value": ""
+        },
+        {
+          "id": "8",
+          "comment": "RESULTADO: Precio calculado automáticamente",
+          "command": "assertText",
+          "target": "css=.price, .total, [class*='price']",
+          "targets": [],
+          "value": "*$*|*precio*|*total*"
+        }
+      ]
+    },
+    {
+      "id": "rf7-hu006-visualizacion-rack-semanal",
+      "name": "RF7-HU006: Como administrador quiero visualizar el rack semanal",
+      "commands": [
+        {
+          "id": "1",
+          "comment": "ESCENARIO: Visualización del rack semanal de ocupación",
+          "command": "open",
+          "target": "/",
+          "targets": [],
+          "value": ""
+        },
+        {
+          "id": "2",
+          "comment": "DADO que el administrador accede al sistema",
+          "command": "waitForElementVisible",
+          "target": "css=body",
+          "targets": [],
+          "value": "5000"
+        },
+        {
+          "id": "3",
+          "comment": "CUANDO navega al rack semanal",
+          "command": "click",
+          "target": "css=a[href*='rack'], a[href*='weekly'], .nav-rack, [data-testid*='rack']",
+          "targets": [
+            ["css=a[href*='rack']", "css:finder"],
+            ["linkText=Rack", "linkText"],
+            ["css=.nav-rack", "css:finder"]
+          ],
+          "value": ""
+        },
+        {
+          "id": "4",
+          "comment": "Y espera que cargue la vista del rack",
+          "command": "waitForElementVisible",
+          "target": "css=.rack, .weekly, .schedule, table, [class*='rack'], [data-testid*='rack']",
+          "targets": [],
+          "value": "10000"
+        },
+        {
+          "id": "5",
+          "comment": "ENTONCES debe ver la estructura semanal",
+          "command": "assertElementPresent",
+          "target": "css=.rack, .weekly, .schedule, table",
+          "targets": [],
+          "value": ""
+        },
+        {
+          "id": "6",
+          "comment": "Y debe mostrar días de la semana",
+          "command": "assertText",
+          "target": "css=.rack, .weekly, table",
+          "targets": [],
+          "value": "*lunes*|*monday*|*día*|*day*"
+        },
+        {
+          "id": "7",
+          "comment": "RESULTADO: Rack semanal visible y funcional",
+          "command": "assertElementPresent",
+          "target": "css=.rack, .schedule, table, [class*='weekly']",
+          "targets": [],
+          "value": ""
+        }
+      ]
+    },
+    {
+      "id": "rf7-hu007-consulta-estado-por-fecha",
+      "name": "RF7-HU007: Como operador quiero consultar estado por fecha específica",
+      "commands": [
+        {
+          "id": "1",
+          "comment": "ESCENARIO: Consulta de ocupación por fecha específica",
+          "command": "open",
+          "target": "/",
+          "targets": [],
+          "value": ""
+        },
+        {
+          "id": "2",
+          "comment": "DADO que el operador está en el rack",
+          "command": "click",
+          "target": "css=a[href*='rack'], .nav-rack",
+          "targets": [],
+          "value": ""
+        },
+        {
+          "id": "3",
+          "comment": "CUANDO selecciona una fecha específica",
+          "command": "waitForElementVisible",
+          "target": "css=input[type='date'], .date-picker, [name*='date']",
+          "targets": [],
+          "value": "5000"
+        },
+        {
+          "id": "4",
+          "comment": "Y ingresa una fecha de consulta",
+          "command": "type",
+          "target": "css=input[type='date'], [name*='date']",
+          "targets": [],
+          "value": "2025-07-20"
+        },
+        {
+          "id": "5",
+          "comment": "Y hace clic en consultar",
+          "command": "click",
+          "target": "css=button[type='submit'], .search-btn, .consultar-btn, button:contains('Consultar')",
+          "targets": [],
+          "value": ""
+        },
+        {
+          "id": "6",
+          "comment": "ENTONCES debe ver resultados para esa fecha",
+          "command": "waitForElementVisible",
+          "target": "css=.results, .schedule, table, [class*='result']",
+          "targets": [],
+          "value": "5000"
+        },
+        {
+          "id": "7",
+          "comment": "RESULTADO: Consulta por fecha funcional",
+          "command": "assertElementPresent",
+          "target": "css=.results, .schedule, table",
+          "targets": [],
+          "value": ""
+        }
+      ]
+    },
+    {
+      "id": "rf8-hu011-generacion-reporte-ingresos",
+      "name": "RF8-HU011: Como administrador quiero generar reportes de ingresos",
+      "commands": [
+        {
+          "id": "1",
+          "comment": "ESCENARIO: Generación de reporte de ingresos",
+          "command": "open",
+          "target": "/",
+          "targets": [],
+          "value": ""
+        },
+        {
+          "id": "2",
+          "comment": "DADO que el administrador accede a reportes",
+          "command": "click",
+          "target": "css=a[href*='report'], a[href*='ingreso'], .nav-reports, [data-testid*='report']",
+          "targets": [
+            ["css=a[href*='report']", "css:finder"],
+            ["linkText=Reportes", "linkText"],
+            ["css=.nav-reports", "css:finder"]
+          ],
+          "value": ""
+        },
+        {
+          "id": "3",
+          "comment": "CUANDO configura parámetros del reporte",
+          "command": "waitForElementVisible",
+          "target": "css=form, .report-form, [class*='report']",
+          "targets": [],
+          "value": "5000"
+        },
+        {
+          "id": "4",
+          "comment": "Y selecciona fecha de inicio",
+          "command": "type",
+          "target": "css=input[name*='inicio'], input[name*='start'], input[type='date']:first",
+          "targets": [],
+          "value": "2025-07-01"
+        },
+        {
+          "id": "5",
+          "comment": "Y selecciona fecha de fin",
+          "command": "type",
+          "target": "css=input[name*='fin'], input[name*='end'], input[type='date']:last",
+          "targets": [],
+          "value": "2025-07-31"
+        },
+        {
+          "id": "6",
+          "comment": "Y hace clic en generar reporte",
+          "command": "click",
+          "target": "css=button[type='submit'], .generate-btn, button:contains('Generar')",
+          "targets": [],
+          "value": ""
+        },
+        {
+          "id": "7",
+          "comment": "ENTONCES debe ver el reporte generado",
+          "command": "waitForElementVisible",
+          "target": "css=.report-results, .ingresos, table, [class*='report']",
+          "targets": [],
+          "value": "10000"
+        },
+        {
+          "id": "8",
+          "comment": "RESULTADO: Reporte de ingresos generado",
+          "command": "assertElementPresent",
+          "target": "css=.report-results, table, [class*='report']",
+          "targets": [],
+          "value": ""
+        }
+      ]
+    },
+    {
+      "id": "rf8-hu012-filtrado-reportes-periodo",
+      "name": "RF8-HU012: Como gerente quiero filtrar reportes por período específico",
+      "commands": [
+        {
+          "id": "1",
+          "comment": "ESCENARIO: Filtrado de reportes por diferentes períodos",
+          "command": "open",
+          "target": "/",
+          "targets": [],
+          "value": ""
+        },
+        {
+          "id": "2",
+          "comment": "DADO que el gerente está en reportes",
+          "command": "click",
+          "target": "css=a[href*='report'], .nav-reports",
+          "targets": [],
+          "value": ""
+        },
+        {
+          "id": "3",
+          "comment": "CUANDO selecciona filtro por período",
+          "command": "waitForElementVisible",
+          "target": "css=select[name*='period'], .period-filter, [name*='filtro']",
+          "targets": [],
+          "value": "5000"
+        },
+        {
+          "id": "4",
+          "comment": "Y elige período semanal",
+          "command": "select",
+          "target": "css=select[name*='period'], .period-filter",
+          "targets": [],
+          "value": "label=Semanal"
+        },
+        {
+          "id": "5",
+          "comment": "Y aplica el filtro",
+          "command": "click",
+          "target": "css=button[type='submit'], .filter-btn, button:contains('Filtrar')",
+          "targets": [],
+          "value": ""
+        },
+        {
+          "id": "6",
+          "comment": "ENTONCES debe ver resultados filtrados",
+          "command": "waitForElementVisible",
+          "target": "css=.filtered-results, .report-results, table",
+          "targets": [],
+          "value": "5000"
+        },
+        {
+          "id": "7",
+          "comment": "RESULTADO: Filtrado por período funcional",
+          "command": "assertElementPresent",
+          "target": "css=.filtered-results, table, [class*='result']",
+          "targets": [],
+          "value": ""
+        }
+      ]
+    },
+    {
+      "id": "rf8-hu013-exportacion-datos-excel",
+      "name": "RF8-HU013: Como contador quiero exportar datos para procesos contables",
+      "commands": [
+        {
+          "id": "1",
+          "comment": "ESCENARIO: Exportación de datos a formato Excel",
+          "command": "open",
+          "target": "/",
+          "targets": [],
+          "value": ""
+        },
+        {
+          "id": "2",
+          "comment": "DADO que el contador está en la vista de reportes",
+          "command": "click",
+          "target": "css=a[href*='report'], .nav-reports",
+          "targets": [],
+          "value": ""
+        },
+        {
+          "id": "3",
+          "comment": "CUANDO genera un reporte",
+          "command": "waitForElementVisible",
+          "target": "css=.report-results, table",
+          "targets": [],
+          "value": "5000"
+        },
+        {
+          "id": "4",
+          "comment": "Y busca opción de exportar",
+          "command": "waitForElementVisible",
+          "target": "css=.export-btn, button:contains('Exportar'), a[href*='export'], [data-testid*='export']",
+          "targets": [],
+          "value": "3000"
+        },
+        {
+          "id": "5",
+          "comment": "Y hace clic en exportar",
+          "command": "click",
+          "target": "css=.export-btn, button:contains('Exportar'), a[href*='export']",
+          "targets": [],
+          "value": ""
+        },
+        {
+          "id": "6",
+          "comment": "ENTONCES debe iniciar descarga",
+          "command": "waitForElementVisible",
+          "target": "css=.download-success, .export-success, [class*='success']",
+          "targets": [],
+          "value": "5000"
+        },
+        {
+          "id": "7",
+          "comment": "RESULTADO: Exportación iniciada correctamente",
+          "command": "assertElementPresent",
+          "target": "css=.download-success, .export-success, [class*='success']",
+          "targets": [],
+          "value": ""
+        }
+      ]
+    }
+  ],
+  "suites": [
+    {
+      "id": "rf5-registro-reservas",
+      "name": "RF5 - Registro de Reservas (3 tests automatizados)",
+      "persistSession": false,
+      "parallel": false,
+      "timeout": 300,
+      "tests": [
+        "rf5-hu001-registro-reserva-exitoso",
+        "rf5-hu002-validacion-campos-obligatorios", 
+        "rf5-hu003-calculo-automatico-precios"
+      ]
+    },
+    {
+      "id": "rf7-rack-semanal",
+      "name": "RF7 - Rack Semanal (2 tests automatizados)",
+      "persistSession": false,
+      "parallel": false,
+      "timeout": 300,
+      "tests": [
+        "rf7-hu006-visualizacion-rack-semanal",
+        "rf7-hu007-consulta-estado-por-fecha"
+      ]
+    },
+    {
+      "id": "rf8-reportes-ingresos",
+      "name": "RF8 - Reportes de Ingresos (3 tests automatizados)",
+      "persistSession": false,
+      "parallel": false,
+      "timeout": 300,
+      "tests": [
+        "rf8-hu011-generacion-reporte-ingresos",
+        "rf8-hu012-filtrado-reportes-periodo",
+        "rf8-hu013-exportacion-datos-excel"
+      ]
+    },
+    {
+      "id": "suite-completa-funcional",
+      "name": "Suite Completa - 8 Tests Automatizados (53.3% Cobertura)",
+      "persistSession": false,
+      "parallel": false,
+      "timeout": 600,
+      "tests": [
+        "rf5-hu001-registro-reserva-exitoso",
+        "rf5-hu002-validacion-campos-obligatorios",
+        "rf5-hu003-calculo-automatico-precios",
+        "rf7-hu006-visualizacion-rack-semanal",
+        "rf7-hu007-consulta-estado-por-fecha",
+        "rf8-hu011-generacion-reporte-ingresos",
+        "rf8-hu012-filtrado-reportes-periodo",
+        "rf8-hu013-exportacion-datos-excel"
+      ]
+    }
+  ],
+  "urls": [
+    "http://localhost:30080",
+    "http://localhost:30088"
+  ],
+  "plugins": []
+}

@@ -1,0 +1,89 @@
+/* Estilos para el dropdown del Autocomplete */
+.MuiAutocomplete-paper {
+  background-color: var(--optional-color) !important;
+  color: var(--text-optional-color) !important;
+  border: 1px solid var(--secondary-color) !important;
+  border-radius: 8px !important;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3) !important;
+  max-height: 200px !important;
+  overflow-y: auto !important;
+}
+
+.MuiAutocomplete-option {
+  background-color: var(--optional-color) !important;
+  color: var(--text-optional-color) !important;
+  padding: 8px 16px !important;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1) !important;
+  transition: background-color 0.2s ease !important;
+}
+
+.MuiAutocomplete-option:hover {
+  background-color: rgba(255, 255, 255, 0.1) !important;
+}
+
+.MuiAutocomplete-option[aria-selected="true"] {
+  background-color: var(--primary-color) !important;
+  color: var(--text-color) !important;
+}
+
+.MuiAutocomplete-option:last-child {
+  border-bottom: none !important;
+}
+
+/* Mejorar la apariencia de los chips/tags */
+.MuiAutocomplete-tag {
+  background-color: var(--primary-color) !important;
+  color: var(--text-color) !important;
+  border-radius: 16px !important;
+  font-size: 0.875rem !important;
+  font-weight: 500 !important;
+  margin: 2px !important;
+  max-width: 200px !important;
+}
+
+.MuiAutocomplete-tag .MuiChip-deleteIcon {
+  color: var(--text-color) !important;
+  transition: color 0.2s ease !important;
+}
+
+.MuiAutocomplete-tag .MuiChip-deleteIcon:hover {
+  color: var(--accent-color) !important;
+}
+
+/* Mejorar los indicadores */
+.MuiAutocomplete-popupIndicator {
+  color: var(--text-optional-color) !important;
+  transition: color 0.2s ease !important;
+}
+
+.MuiAutocomplete-popupIndicator:hover {
+  color: var(--accent-color) !important;
+}
+
+.MuiAutocomplete-clearIndicator {
+  color: var(--text-optional-color) !important;
+  transition: color 0.2s ease !important;
+}
+
+.MuiAutocomplete-clearIndicator:hover {
+  color: var(--accent-color) !important;
+}
+
+/* Scrollbar personalizada para el dropdown */
+.MuiAutocomplete-paper::-webkit-scrollbar {
+  width: 8px;
+}
+
+.MuiAutocomplete-paper::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 4px;
+}
+
+.MuiAutocomplete-paper::-webkit-scrollbar-thumb {
+  background: var(--primary-color);
+  border-radius: 4px;
+}
+
+.MuiAutocomplete-paper::-webkit-scrollbar-thumb:hover {
+  background: var(--accent-color);
+}

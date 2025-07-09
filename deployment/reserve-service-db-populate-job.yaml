@@ -15,9 +15,30 @@ spec:
         - sh
         - -c
         - |
+          set -e  # Fallar inmediatamente si cualquier comando falla
           echo "Iniciando población de base de datos reserve-service..."
-          echo "Conectando a reserve-service-db-service..."
-          mysql -h reserve-service-db-service -uroot -proot --connect-timeout=30 < /scripts/reserve-service-db.mysql.sql
+          echo "Esperando a que reserve-service-db-service esté disponible..."
+          
+          # Esperar hasta que la BD esté disponible (máximo 2 minutos)
+          timeout=120
+          elapsed=0
+          while [ $elapsed -lt $timeout ]; do
+            if mysql -h reserve-service-db-service -uroot -proot -e "SELECT 1" > /dev/null 2>&1; then
+              echo "✅ Base de datos disponible"
+              break
+            fi
+            echo "Esperando BD... ($elapsed/$timeout segundos)"
+            sleep 5
+            elapsed=$((elapsed + 5))
+          done
+          
+          if [ $elapsed -ge $timeout ]; then
+            echo "❌ Error: Base de datos no disponible después de $timeout segundos"
+            exit 1
+          fi
+          
+          echo "Ejecutando script SQL..."
+          mysql -h reserve-service-db-service -uroot -proot < /scripts/reserve-service-db.mysql.sql
           echo "✅ Población completada exitosamente"
         volumeMounts:
         - name: sql-script

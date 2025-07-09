@@ -2,7 +2,7 @@ import httpClient from '../http-common';
 
 const API_URL = '/api/tariffs/';
 
-const getAllTariffs = () => httpClient.get(API_URL);
+const getAllTariffs = () => httpClient.get(`${API_URL}getAll`);
 
 const saveTariff = (tariff) => httpClient.post(`${API_URL}save`, tariff);
 

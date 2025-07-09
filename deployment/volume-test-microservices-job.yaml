@@ -1,0 +1,236 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: volume-test-microservices-config
+  namespace: default
+data:
+  populate-volume-microservices.sh: |
+    #!/bin/bash
+    set -e
+    
+    # Variables configurables
+    RESERVE_COUNT=${1:-10000}
+    USER_COUNT=$((RESERVE_COUNT / 5))  # 20% del número de reservas
+    
+    echo "🚀 INICIANDO POBLADO MASIVO DE MICROSERVICIOS"
+    echo "📊 Generando $RESERVE_COUNT reservas con $USER_COUNT usuarios únicos"
+    
+    # Función para esperar BD
+    wait_for_db() {
+        local host=$1
+        local max_attempts=30
+        local attempt=1
+        
+        echo "⏳ Esperando que $host esté disponible..."
+        while [ $attempt -le $max_attempts ]; do
+            if mysql -h "$host" -uroot -proot -e "SELECT 1" > /dev/null 2>&1; then
+                echo "✅ $host está listo"
+                return 0
+            fi
+            sleep 5
+            attempt=$((attempt + 1))
+        done
+        
+        echo "❌ Error: $host no disponible después de $max_attempts intentos"
+        return 1
+    }
+    
+    # 1. POBLAR RESERVE SERVICE (BASE DE DATOS PRINCIPAL PARA PRUEBAS)
+    echo "1. 📋 Poblando reserve-service-db con $RESERVE_COUNT reservas..."
+    wait_for_db "reserve-service-db-service"
+    
+    mysql -h reserve-service-db-service -uroot -proot -D reserve <<EOF
+    
+    -- Configuración para optimización
+    SET autocommit = 0;
+    SET unique_checks = 0;
+    SET foreign_key_checks = 0;
+    SET sql_log_bin = 0;
+    SET SESSION sql_mode = 'NO_AUTO_VALUE_ON_ZERO';
+    
+    -- Limpiar solo datos de prueba (mantener estructura)
+    DELETE FROM reserves_users WHERE reserve_id > 100;
+    DELETE FROM reserves WHERE id > 100;
+    DELETE FROM users WHERE id > 20;
+    
+    -- Resetear AUTO_INCREMENT solo para nuevos datos
+    ALTER TABLE reserves AUTO_INCREMENT = 101;
+    ALTER TABLE users AUTO_INCREMENT = 21;
+    
+    -- Procedimiento para generar usuarios masivos
+    DELIMITER $$
+    
+    DROP PROCEDURE IF EXISTS GenerateVolumeUsers$$
+    CREATE PROCEDURE GenerateVolumeUsers(IN user_count INT)
+    BEGIN
+        DECLARE i INT DEFAULT 21;
+        DECLARE max_users INT DEFAULT 20 + user_count;
+        
+        WHILE i <= max_users DO
+            INSERT INTO users (id, rut, name, lastname, email, birthdate) VALUES
+            (i, CONCAT(10000000 + i, '-', (i % 10)), 
+             CONCAT('Usuario', i), 
+             CONCAT('Apellido', i), 
+             'duvanvch12@gmail.com',
+             DATE_SUB(CURDATE(), INTERVAL (18 + (i % 50)) YEAR));
+            
+            IF i % 100 = 0 THEN
+                COMMIT;
+                SELECT CONCAT('👥 Usuarios generados: ', i - 20, ' de ', user_count) AS progreso;
+            END IF;
+            
+            SET i = i + 1;
+        END WHILE;
+        
+        COMMIT;
+        SELECT CONCAT('✅ Total usuarios generados: ', user_count) AS resultado;
+    END$$
+    
+    -- Procedimiento para generar reservas masivas
+    DROP PROCEDURE IF EXISTS GenerateVolumeReserves$$
+    CREATE PROCEDURE GenerateVolumeReserves(IN reserve_count INT, IN max_user_id INT)
+    BEGIN
+        DECLARE i INT DEFAULT 101;
+        DECLARE max_reserves INT DEFAULT 100 + reserve_count;
+        DECLARE random_date DATE;
+        DECLARE random_begin TIME;
+        DECLARE random_finish TIME;
+        DECLARE random_tariff INT;
+        DECLARE random_price DOUBLE;
+        DECLARE random_user_id INT;
+        
+        WHILE i <= max_reserves DO
+            -- Generar fecha aleatoria en los próximos 2 años
+            SET random_date = DATE_ADD(CURDATE(), INTERVAL FLOOR(RAND() * 730) DAY);
+            
+            -- Generar horario aleatorio (8:00 - 20:00)
+            SET random_begin = TIME(CONCAT(8 + FLOOR(RAND() * 12), ':', LPAD(FLOOR(RAND() * 60), 2, '0'), ':00'));
+            SET random_finish = ADDTIME(random_begin, '01:00:00');
+            
+            -- Generar tarifa aleatoria (1-3)
+            SET random_tariff = 1 + FLOOR(RAND() * 3);
+            
+            -- Precio según tarifa
+            SET random_price = CASE random_tariff
+                WHEN 1 THEN 25000.0
+                WHEN 2 THEN 30000.0
+                ELSE 35000.0
+            END;
+            
+            -- Insertar reserva
+            INSERT INTO reserves (id, reserveday, begin, finish, tariff_id, final_price) VALUES
+            (i, random_date, random_begin, random_finish, random_tariff, random_price);
+            
+            -- Asignar 1-3 usuarios aleatorios por reserva
+            SET random_user_id = 1 + FLOOR(RAND() * max_user_id);
+            INSERT IGNORE INTO reserves_users (reserve_id, user_id) VALUES (i, random_user_id);
+            
+            -- Posibilidad de segundo usuario (30% de probabilidad)
+            IF RAND() < 0.3 AND max_user_id > 1 THEN
+                SET random_user_id = 1 + FLOOR(RAND() * max_user_id);
+                INSERT IGNORE INTO reserves_users (reserve_id, user_id) VALUES (i, random_user_id);
+            END IF;
+            
+            -- Posibilidad de tercer usuario (10% de probabilidad)
+            IF RAND() < 0.1 AND max_user_id > 2 THEN
+                SET random_user_id = 1 + FLOOR(RAND() * max_user_id);
+                INSERT IGNORE INTO reserves_users (reserve_id, user_id) VALUES (i, random_user_id);
+            END IF;
+            
+            -- Progreso cada 1000 reservas
+            IF i % 1000 = 0 THEN
+                COMMIT;
+                SELECT CONCAT('📋 Reservas generadas: ', i - 100, ' de ', reserve_count, ' (', ROUND(((i - 100) / reserve_count) * 100, 1), '%)') AS progreso;
+            END IF;
+            
+            SET i = i + 1;
+        END WHILE;
+        
+        COMMIT;
+        SELECT CONCAT('✅ Total reservas generadas: ', reserve_count) AS resultado;
+    END$$
+    
+    DELIMITER ;
+    
+    -- Ejecutar procedimientos
+    SELECT '🚀 Generando usuarios para pruebas de volumen...' AS info;
+    CALL GenerateVolumeUsers($USER_COUNT);
+    
+    SELECT '🚀 Generando reservas para pruebas de volumen...' AS info;
+    CALL GenerateVolumeReserves($RESERVE_COUNT, $USER_COUNT + 20);
+    
+    -- Crear índices optimizados para pruebas de rendimiento
+    CREATE INDEX IF NOT EXISTS idx_reserves_volume_date ON reserves(reserveday);
+    CREATE INDEX IF NOT EXISTS idx_reserves_volume_datetime ON reserves(reserveday, begin);
+    CREATE INDEX IF NOT EXISTS idx_reserves_volume_tariff ON reserves(tariff_id, final_price);
+    CREATE INDEX IF NOT EXISTS idx_reserves_users_volume ON reserves_users(reserve_id, user_id);
+    CREATE INDEX IF NOT EXISTS idx_users_volume_rut ON users(rut);
+    CREATE INDEX IF NOT EXISTS idx_users_volume_email ON users(email);
+    
+    -- Restaurar configuración
+    SET sql_log_bin = 1;
+    SET foreign_key_checks = 1;
+    SET unique_checks = 1;
+    SET autocommit = 1;
+    
+    -- Estadísticas finales
+    SELECT '📊 ESTADÍSTICAS FINALES DE POBLADO MASIVO:' AS info;
+    SELECT COUNT(*) as total_usuarios FROM users;
+    SELECT COUNT(*) as total_reservas FROM reserves;
+    SELECT COUNT(*) as total_asignaciones FROM reserves_users;
+    SELECT MIN(reserveday) as fecha_min, MAX(reserveday) as fecha_max FROM reserves;
+    SELECT '🎉 DATOS LISTOS PARA PRUEBAS DE VOLUMEN, CARGA Y STRESS' AS resultado_final;
+    
+EOF
+    
+    echo "✅ reserve-service-db poblado con $RESERVE_COUNT reservas"
+    
+    # 2. POBLAR OTROS MICROSERVICIOS (datos adicionales para pruebas)
+    echo "2. 📊 Poblando tariff-service-db con tarifas adicionales..."
+    wait_for_db "tariff-service-db-service"
+    
+    mysql -h tariff-service-db-service -uroot -proot -D tartifasbd <<EOF
+    INSERT IGNORE INTO tariffs (laps, max_minutes, regular_price, total_duration) VALUES
+    (25, 25, 40000.0, 50),
+    (30, 30, 45000.0, 60),
+    (35, 35, 50000.0, 70),
+    (40, 40, 55000.0, 80),
+    (45, 45, 60000.0, 90),
+    (50, 50, 65000.0, 100);
+    
+    SELECT CONCAT('✅ TARIFAS TOTALES: ', COUNT(*)) as resultado FROM tariffs;
+EOF
+    
+    echo "✅ Todos los microservicios poblados exitosamente"
+    echo "🎯 Sistema listo para pruebas de:"
+    echo "   - RF5: Registro de Reservas (Load/Stress/Volume)"
+    echo "   - RF7: Rack Semanal (Load)"
+    echo "   - RF8: Reporte de Ingresos (Volume)"
+    echo "📈 $RESERVE_COUNT reservas generadas para testing"
+
+---
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: volume-test-microservices-job
+spec:
+  template:
+    spec:
+      containers:
+      - name: volume-populate
+        image: mysql:8.0
+        command: ["/bin/bash"]
+        args: ["/scripts/populate-volume-microservices.sh", "10000"]
+        env:
+        - name: MYSQL_ROOT_PASSWORD
+          value: "root"
+        volumeMounts:
+        - name: populate-scripts
+          mountPath: /scripts
+      volumes:
+      - name: populate-scripts
+        configMap:
+          name: volume-test-microservices-config
+          defaultMode: 0755
+      restartPolicy: Never
+  backoffLimit: 3

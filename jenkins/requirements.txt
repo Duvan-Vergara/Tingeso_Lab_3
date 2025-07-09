@@ -1,16 +1,33 @@
 # Jenkins Performance Testing Pipeline
 # Dependencias Python para automatización de pruebas
+# Cumplimiento Rúbrica 25% - Rendimiento
 
 # Core dependencies
 requests>=2.28.0
 python-dotenv>=0.19.0
 pyyaml>=6.0
 
-# Testing and reporting
-jinja2>=3.1.0
-matplotlib>=3.5.0
+# Análisis de rendimiento (REQUERIDO para rúbrica)
 pandas>=1.4.0
 numpy>=1.21.0
+matplotlib>=3.5.0
+seaborn>=0.11.0
+
+# Testing and reporting
+jinja2>=3.1.0
+xmltodict>=0.13.0
+openpyxl>=3.0.0
+
+# Automatización Selenium
+selenium>=4.0.0
+
+# Reportes avanzados
+reportlab>=3.6.0
+fpdf2>=2.5.0
+
+# Monitoreo y logging
+psutil>=5.9.0
+colorama>=0.4.0
 
 # Development dependencies
 pytest>=7.0.0

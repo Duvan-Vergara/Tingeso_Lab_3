@@ -21,6 +21,8 @@ Para verificar el estados de los recursos :
 
 kubectl get pods
 kubectl get pods -o wide
+kubectl logs
+kubectl logs "nombre pod" --tail=NUMERO
 kubectl get deployments
 kubectl get services
 kubectl get configmap
@@ -55,3 +57,62 @@ minikube stop
 
 y para limpieza completa(eliminación total de vm y todo, EN PC):
 minikube delete
+
+--------------------------------------------------------------------
+--------------------------------------------------------------------
+--------------------------------------------------------------------
+para SonarQube:
+PASOS PARA CONFIGURAR SONARQUBE CON GITHUB ACTIONS
+
+=======================
+1. EJECUTAR SONARQUBE
+=======================
+
+Abrir una terminal (CMD o PowerShell) y ejecutar:
+
+docker run -d --name sonarqube -p 9000:9000 sonarqube:lts
+
+Esto levantará SonarQube en la URL:
+http://localhost:9000
+
+
+========================================
+2. EXPONER SONARQUBE USANDO NGROK
+========================================
+
+En otra terminal, ejecutar:
+
+ngrok http 9000
+
+Esto generará una URL pública como:
+https://xxxxxx.ngrok-free.app
+
+(Guardar esta URL para usarla en GitHub)
+
+
+=================================================
+3. CREAR SECRET EN GITHUB: SONAR_HOST_URL
+=================================================
+
+1. Ir al repositorio en GitHub
+2. Ir a: Settings → Secrets and variables → Actions → Secrets
+3. Crear un nuevo secret:
+   - Nombre: SONAR_HOST_URL
+   - Valor: la URL pública generada por ngrok (por ejemplo https://xxxxxx.ngrok-free.app)
+
+
+=================================================
+4. GENERAR TOKEN DE ACCESO EN SONARQUBE
+=================================================
+
+1. Ir al navegador y abrir la URL pública de ngrok
+2. Iniciar sesión en SonarQube:
+   - Usuario: admin
+   - Contraseña: admin
+   - (Cambiar la contraseña si es necesario)
+	- La nueva es la que ya se
+3. Ir a la parte superior derecha → "My Account" → "Security"
+4. En la sección "Generate Tokens":
+   - Escribir un nombre como: github-token
+   - Hacer clic en "Generate"
+5. Copiar el token generado (empieza con sqp_...)

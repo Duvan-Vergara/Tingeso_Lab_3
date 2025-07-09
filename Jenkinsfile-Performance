@@ -1,0 +1,354 @@
+// =====================================================
+// JENKINS PIPELINE - PRUEBAS DE RENDIMIENTO ESCALABLES
+// =====================================================
+// Pipeline completo para ejecutar pruebas de carga, 
+// estrés y volumen de forma automatizada
+// =====================================================
+
+pipeline {
+    agent any
+    
+    parameters {
+        choice(
+            name: 'TEST_TYPE',
+            choices: ['DEMO', 'LOAD', 'STRESS', 'VOLUME', 'COMPLETE'],
+            description: 'Tipo de pruebas a ejecutar'
+        )
+        choice(
+            name: 'DB_VOLUME',
+            choices: ['BASE', '10K', '100K', '1M'],
+            description: 'Volumen de datos en BD para pruebas'
+        )
+        string(
+            name: 'MAX_USERS',
+            defaultValue: '1000',
+            description: 'Número máximo de usuarios concurrentes'
+        )
+        booleanParam(
+            name: 'POPULATE_DB',
+            defaultValue: false,
+            description: 'Poblar BD antes de las pruebas'
+        )
+        booleanParam(
+            name: 'GENERATE_REPORTS',
+            defaultValue: true,
+            description: 'Generar reportes HTML automáticos'
+        )
+    }
+    
+    environment {
+        // Configuración de JMeter
+        JMETER_HOME = 'C:\\apache-jmeter-5.6.3'
+        JMETER_BIN = "${JMETER_HOME}\\bin\\jmeter.bat"
+        
+        // Configuración del proyecto
+        PROJECT_DIR = "${WORKSPACE}"
+        RESULTS_DIR = "${WORKSPACE}\\performance-results"
+        
+        // Configuración del sistema
+        SYSTEM_URL = 'http://localhost:30088'
+        
+        // Timestamp para archivos únicos
+        BUILD_TIMESTAMP = "${BUILD_ID}_${BUILD_NUMBER}"
+    }
+    
+    stages {
+        stage('Verificar Prerequisitos') {
+            steps {
+                echo '=================================='
+                echo '   VERIFICANDO PREREQUISITOS'
+                echo '=================================='
+                
+                script {
+                    // Verificar JMeter
+                    if (!fileExists("${JMETER_BIN}")) {
+                        error "JMeter no encontrado en ${JMETER_BIN}"
+                    }
+                    echo "✓ JMeter encontrado: ${JMETER_BIN}"
+                    
+                    // Verificar sistema disponible
+                    def response = bat(
+                        script: "curl -s -o nul -w \"%%{http_code}\" ${SYSTEM_URL}/api/reserves/",
+                        returnStdout: true
+                    ).trim()
+                    
+                    if (response != "200") {
+                        error "Sistema no disponible en ${SYSTEM_URL} - Código: ${response}"
+                    }
+                    echo "✓ Sistema disponible: ${SYSTEM_URL}"
+                    
+                    // Crear directorio de resultados
+                    bat "if not exist \"${RESULTS_DIR}\" mkdir \"${RESULTS_DIR}\""
+                    echo "✓ Directorio de resultados: ${RESULTS_DIR}"
+                }
+            }
+        }
+        
+        stage('Poblar Base de Datos') {
+            when {
+                expression { params.POPULATE_DB == true }
+            }
+            steps {
+                echo '=================================='
+                echo '   POBLANDO BASE DE DATOS'
+                echo '=================================='
+                
+                script {
+                    def dbLevel = params.DB_VOLUME
+                    echo "Poblando BD con volumen: ${dbLevel}"
+                    
+                    if (dbLevel != 'BASE') {
+                        // Ejecutar script de poblamiento
+                        powershell """
+                            \$ErrorActionPreference = "Stop"
+                            cd "${PROJECT_DIR}\\jenkins"
+                            .\\poblar_bd_masivo.ps1 -Nivel ${dbLevel}
+                        """
+                        echo "✓ BD poblada con nivel ${dbLevel}"
+                    } else {
+                        echo "✓ Usando BD base (sin poblamiento masivo)"
+                    }
+                }
+            }
+        }
+        
+        stage('Pruebas Demo Rápidas') {
+            when {
+                expression { params.TEST_TYPE == 'DEMO' || params.TEST_TYPE == 'COMPLETE' }
+            }
+            parallel {
+                stage('RF5 Demo Load') {
+                    steps {
+                        script {
+                            executeJMeterTest(
+                                'RF5-REGISTRO-RESERVAS-LOAD-ESCALABLE.jmx',
+                                'RF5-DEMO-LOAD',
+                                100, 60, 3, 300
+                            )
+                        }
+                    }
+                }
+                stage('RF7 Demo Load') {
+                    steps {
+                        script {
+                            executeJMeterTest(
+                                'RF7-RACK-SEMANAL-LOAD-ESCALABLE.jmx',
+                                'RF7-DEMO-LOAD',
+                                50, 60, 5, 300
+                            )
+                        }
+                    }
+                }
+                stage('RF8 Demo Volume') {
+                    steps {
+                        script {
+                            executeJMeterTest(
+                                'RF8-REPORTE-INGRESOS-VOLUME-ESCALABLE.jmx',
+                                'RF8-DEMO-VOLUME',
+                                30, 60, 10, 300
+                            )
+                        }
+                    }
+                }
+            }
+        }
+        
+        stage('Pruebas de Carga Escalables') {
+            when {
+                expression { params.TEST_TYPE == 'LOAD' || params.TEST_TYPE == 'COMPLETE' }
+            }
+            steps {
+                echo '=================================='
+                echo '   PRUEBAS DE CARGA ESCALABLES'
+                echo '=================================='
+                
+                script {
+                    def maxUsers = params.MAX_USERS as Integer
+                    def userLevels = [100, 500, 1000]
+                    
+                    // Añadir nivel máximo si es mayor
+                    if (maxUsers > 1000) {
+                        userLevels.add(maxUsers)
+                    }
+                    
+                    for (users in userLevels) {
+                        if (users <= maxUsers) {
+                            echo "=== Ejecutando carga con ${users} usuarios ==="
+                            
+                            // RF5 - Registro de reservas
+                            executeJMeterTest(
+                                'RF5-REGISTRO-RESERVAS-LOAD-ESCALABLE.jmx',
+                                "RF5-LOAD-${users}U",
+                                users, users * 0.3, 5, users * 1.5
+                            )
+                            
+                            // RF7 - Consultas de rack (más usuarios)
+                            executeJMeterTest(
+                                'RF7-RACK-SEMANAL-LOAD-ESCALABLE.jmx',
+                                "RF7-LOAD-${users * 2}U",
+                                users * 2, users * 0.3, 10, users * 1.5
+                            )
+                        }
+                    }
+                }
+            }
+        }
+        
+        stage('Pruebas de Estrés Máximas') {
+            when {
+                expression { params.TEST_TYPE == 'STRESS' || params.TEST_TYPE == 'COMPLETE' }
+            }
+            steps {
+                echo '=================================='
+                echo '   PRUEBAS DE ESTRÉS MÁXIMAS'
+                echo '=================================='
+                
+                script {
+                    def maxUsers = params.MAX_USERS as Integer
+                    def stressLevels = [2000, 5000]
+                    
+                    // Añadir nivel máximo si es mayor
+                    if (maxUsers > 5000) {
+                        stressLevels.add(maxUsers)
+                    }
+                    
+                    for (users in stressLevels) {
+                        if (users <= maxUsers) {
+                            echo "=== Ejecutando estrés con ${users} usuarios ==="
+                            
+                            executeJMeterTest(
+                                'RF5-REGISTRO-RESERVAS-STRESS-ESCALABLE.jmx',
+                                "RF5-STRESS-${users}U",
+                                users, 300, 10, 3600
+                            )
+                        }
+                    }
+                }
+            }
+        }
+        
+        stage('Pruebas de Volumen') {
+            when {
+                expression { params.TEST_TYPE == 'VOLUME' || params.TEST_TYPE == 'COMPLETE' }
+            }
+            steps {
+                echo '=================================='
+                echo '   PRUEBAS DE VOLUMEN'
+                echo '=================================='
+                
+                script {
+                    // RF8 con diferentes niveles de usuarios para volumen
+                    def volumeUsers = [100, 500, 1000]
+                    
+                    for (users in volumeUsers) {
+                        echo "=== Ejecutando volumen con ${users} usuarios ==="
+                        
+                        executeJMeterTest(
+                            'RF8-REPORTE-INGRESOS-VOLUME-ESCALABLE.jmx',
+                            "RF8-VOLUME-${users}U-DB${params.DB_VOLUME}",
+                            users, 300, 50, 3600
+                        )
+                    }
+                }
+            }
+        }
+        
+        stage('Análisis de Resultados') {
+            steps {
+                echo '=================================='
+                echo '   ANALIZANDO RESULTADOS'
+                echo '=================================='
+                
+                script {
+                    // Ejecutar análisis automático si existe
+                    if (fileExists("${PROJECT_DIR}\\jenkins\\analyze_results.py")) {
+                        powershell """
+                            cd "${PROJECT_DIR}\\jenkins"
+                            python analyze_results.py "${RESULTS_DIR}"
+                        """
+                        echo "✓ Análisis automático completado"
+                    }
+                }
+            }
+        }
+    }
+    
+    post {
+        always {
+            echo '=================================='
+            echo '   ARCHIVANDO RESULTADOS'
+            echo '=================================='
+            
+            // Archivar todos los resultados
+            archiveArtifacts(
+                artifacts: 'performance-results/**/*',
+                allowEmptyArchive: true,
+                fingerprint: true
+            )
+            
+            // Publicar reportes HTML si existen
+            publishHTML([
+                allowMissing: false,
+                alwaysLinkToLastBuild: true,
+                keepAll: true,
+                reportDir: 'performance-results',
+                reportFiles: '**/index.html',
+                reportName: 'Performance Test Results',
+                reportTitles: 'Resultados de Pruebas de Rendimiento'
+            ])
+            
+            // Publicar métricas de performance si el plugin está disponible
+            script {
+                try {
+                    perfReport(
+                        sourceDataFiles: 'performance-results/**/*.jtl',
+                        compareBuildPrevious: true,
+                        modePerformancePerTestCase: true
+                    )
+                } catch (Exception e) {
+                    echo "Plugin de Performance no disponible: ${e.message}"
+                }
+            }
+        }
+        
+        success {
+            echo '✓ Pipeline de pruebas de rendimiento completado exitosamente'
+        }
+        
+        failure {
+            echo '✗ Pipeline de pruebas falló - revisar logs'
+        }
+        
+        cleanup {
+            // Limpiar archivos temporales si es necesario
+            echo 'Limpiando archivos temporales...'
+        }
+    }
+}
+
+// =====================================================
+// FUNCIÓN: EJECUTAR PRUEBA JMETER
+// =====================================================
+def executeJMeterTest(jmxFile, testName, users, rampTime, loops, duration) {
+    def jtlFile = "${RESULTS_DIR}\\${testName}_${BUILD_TIMESTAMP}.jtl"
+    def htmlDir = "${RESULTS_DIR}\\html-${testName}_${BUILD_TIMESTAMP}"
+    def logFile = "${RESULTS_DIR}\\${testName}_${BUILD_TIMESTAMP}.log"
+    
+    echo "Ejecutando: ${testName}"
+    echo "  Usuarios: ${users} | Rampa: ${rampTime}s | Loops: ${loops} | Duración: ${duration}s"
+    
+    bat """
+        "${JMETER_BIN}" -n -t "${PROJECT_DIR}\\${jmxFile}" ^
+            -JUSERS=${users} ^
+            -JRAMP_TIME=${rampTime} ^
+            -JLOOPS=${loops} ^
+            -JDURATION=${duration} ^
+            -l "${jtlFile}" ^
+            -e -o "${htmlDir}" ^
+            -j "${logFile}"
+    """
+    
+    echo "✓ ${testName} completado"
+    echo "  Resultados HTML: ${htmlDir}\\index.html"
+    echo "  Datos JTL: ${jtlFile}"
+}

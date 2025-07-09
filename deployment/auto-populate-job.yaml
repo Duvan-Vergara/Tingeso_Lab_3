@@ -51,19 +51,22 @@ data:
     echo "2. Iniciando población de reserve-service-db..."
     wait_for_db "reserve-service-db-service"
     
-    mysql -h reserve-service-db-service -uroot -proot -D reserve <<'EOF'
+    # Crear base de datos primero si no existe
+    mysql -h reserve-service-db-service -uroot -proot <<'EOF'
+    CREATE DATABASE IF NOT EXISTS reserve CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+    USE reserve;
     -- Solo insertar datos adicionales si no existen
     INSERT IGNORE INTO users (rut, name, lastname, email, birthdate) VALUES
-    ('12345678-9', 'Juan', 'Pérez', 'juan.perez@test.com', '1990-01-15'),
-    ('98765432-1', 'María', 'González', 'maria.gonzalez@test.com', '1985-06-20'),
-    ('11111111-1', 'Pedro', 'López', 'pedro.lopez@test.com', '1992-03-10'),
-    ('22222222-2', 'Ana', 'Martínez', 'ana.martinez@test.com', '1988-11-05'),
-    ('33333333-3', 'Carlos', 'Rodríguez', 'carlos.rodriguez@test.com', '1995-08-25'),
-    ('44444444-4', 'Luis', 'Fernández', 'luis.fernandez@test.com', '1987-02-14'),
-    ('55555555-5', 'Carmen', 'Jiménez', 'carmen.jimenez@test.com', '1993-09-30'),
-    ('66666666-6', 'Miguel', 'Ruiz', 'miguel.ruiz@test.com', '1986-12-08'),
-    ('77777777-7', 'Laura', 'Díaz', 'laura.diaz@test.com', '1991-05-22'),
-    ('88888888-8', 'Roberto', 'Morales', 'roberto.morales@test.com', '1989-07-18');
+    ('12345678-9', 'Juan', 'Pérez', 'duvanvch12@gmail.com', '1990-01-15'),
+    ('98765432-1', 'María', 'González', 'duvanvch12@gmail.com', '1985-06-20'),
+    ('11111111-1', 'Pedro', 'López', 'duvanvch12@gmail.com', '1992-03-10'),
+    ('22222222-2', 'Ana', 'Martínez', 'duvanvch12@gmail.com', '1988-11-05'),
+    ('33333333-3', 'Carlos', 'Rodríguez', 'duvanvch12@gmail.com', '1995-08-25'),
+    ('44444444-4', 'Luis', 'Fernández', 'duvanvch12@gmail.com', '1987-02-14'),
+    ('55555555-5', 'Carmen', 'Jiménez', 'duvanvch12@gmail.com', '1993-09-30'),
+    ('66666666-6', 'Miguel', 'Ruiz', 'duvanvch12@gmail.com', '1986-12-08'),
+    ('77777777-7', 'Laura', 'Díaz', 'duvanvch12@gmail.com', '1991-05-22'),
+    ('88888888-8', 'Roberto', 'Morales', 'duvanvch12@gmail.com', '1989-07-18');
     
     INSERT IGNORE INTO reserves (reserveday, begin, finish, tariff_id, final_price) VALUES
     ('2024-01-15', '10:00:00', '11:00:00', 1, 15000.0),

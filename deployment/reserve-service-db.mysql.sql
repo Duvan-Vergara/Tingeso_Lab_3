@@ -48,26 +48,26 @@ CREATE TABLE reserves_users (
 -- DATOS BASE PARA FUNCIONAMIENTO INMEDIATO - 20 USUARIOS
 -- ===============================================================================
 INSERT INTO users (rut, name, lastname, email, birthdate) VALUES
-('12345678-9', 'Juan', 'Pérez', 'juan.perez@email.com', '1990-01-15'),
-('98765432-1', 'María', 'González', 'maria.gonzalez@email.com', '1985-03-22'),
-('11111111-1', 'Carlos', 'López', 'carlos.lopez@email.com', '1988-07-10'),
-('22222222-2', 'Ana', 'Martín', 'ana.martin@email.com', '1992-11-03'),
-('33333333-3', 'Luis', 'García', 'luis.garcia@email.com', '1987-05-18'),
-('44444444-4', 'Carmen', 'Ruiz', 'carmen.ruiz@email.com', '1991-08-25'),
-('55555555-5', 'Pedro', 'Sánchez', 'pedro.sanchez@email.com', '1989-12-02'),
-('66666666-6', 'Laura', 'Jiménez', 'laura.jimenez@email.com', '1993-04-14'),
-('77777777-7', 'Miguel', 'Torres', 'miguel.torres@email.com', '1986-09-30'),
-('88888888-8', 'Isabel', 'Moreno', 'isabel.moreno@email.com', '1994-02-17'),
-('99999999-9', 'David', 'Herrera', 'david.herrera@email.com', '1987-06-08'),
-('10101010-1', 'Sofía', 'Vázquez', 'sofia.vazquez@email.com', '1992-11-21'),
-('20202020-2', 'Alejandro', 'Castro', 'alejandro.castro@email.com', '1988-03-15'),
-('30303030-3', 'Elena', 'Ortega', 'elena.ortega@email.com', '1990-07-28'),
-('40404040-4', 'Raúl', 'Mendoza', 'raul.mendoza@email.com', '1989-10-12'),
-('50505050-5', 'Patricia', 'Silva', 'patricia.silva@email.com', '1991-01-04'),
-('60606060-6', 'Fernando', 'Campos', 'fernando.campos@email.com', '1987-05-19'),
-('70707070-7', 'Cristina', 'Vargas', 'cristina.vargas@email.com', '1993-08-06'),
-('80808080-8', 'Roberto', 'Cruz', 'roberto.cruz@email.com', '1986-12-23'),
-('90909090-9', 'Mónica', 'Reyes', 'monica.reyes@email.com', '1994-04-11');
+('12345678-9', 'Juan', 'Pérez', 'duvanvch12@gmail.com', '1990-01-15'),
+('98765432-1', 'María', 'González', 'duvanvch12@gmail.com', '1985-03-22'),
+('11111111-1', 'Carlos', 'López', 'duvanvch12@gmail.com', '1988-07-10'),
+('22222222-2', 'Ana', 'Martín', 'duvanvch12@gmail.com', '1992-11-03'),
+('33333333-3', 'Luis', 'García', 'duvanvch12@gmail.com', '1987-05-18'),
+('44444444-4', 'Carmen', 'Ruiz', 'duvanvch12@gmail.com', '1991-08-25'),
+('55555555-5', 'Pedro', 'Sánchez', 'duvanvch12@gmail.com', '1989-12-02'),
+('66666666-6', 'Laura', 'Jiménez', 'duvanvch12@gmail.com', '1993-04-14'),
+('77777777-7', 'Miguel', 'Torres', 'duvanvch12@gmail.com', '1986-09-30'),
+('88888888-8', 'Isabel', 'Moreno', 'duvanvch12@gmail.com', '1994-02-17'),
+('99999999-9', 'David', 'Herrera', 'duvanvch12@gmail.com', '1987-06-08'),
+('10101010-1', 'Sofía', 'Vázquez', 'duvanvch12@gmail.com', '1992-11-21'),
+('20202020-2', 'Alejandro', 'Castro', 'duvanvch12@gmail.com', '1988-03-15'),
+('30303030-3', 'Elena', 'Ortega', 'duvanvch12@gmail.com', '1990-07-28'),
+('40404040-4', 'Raúl', 'Mendoza', 'duvanvch12@gmail.com', '1989-10-12'),
+('50505050-5', 'Patricia', 'Silva', 'duvanvch12@gmail.com', '1991-01-04'),
+('60606060-6', 'Fernando', 'Campos', 'duvanvch12@gmail.com', '1987-05-19'),
+('70707070-7', 'Cristina', 'Vargas', 'duvanvch12@gmail.com', '1993-08-06'),
+('80808080-8', 'Roberto', 'Cruz', 'duvanvch12@gmail.com', '1986-12-23'),
+('90909090-9', 'Mónica', 'Reyes', 'duvanvch12@gmail.com', '1994-04-11');
 
 -- ===============================================================================
 -- 100 RESERVAS PARA PRUEBAS DISTRIBUIDAS EN 6 MESES
