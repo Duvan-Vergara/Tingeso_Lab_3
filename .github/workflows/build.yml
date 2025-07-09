@@ -106,8 +106,6 @@ jobs:
 
       - name: Run SonarQube Scanner for Frontend
         working-directory: frontend
-      - name: Run SonarQube Scanner for Frontend
-        working-directory: frontend
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
           SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
