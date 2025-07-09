@@ -104,14 +104,19 @@ jobs:
         working-directory: frontend
         run: npm run test:coverage
 
-      - name: SonarQube Scan - Frontend
-        uses: sonarqube-quality-gate-action@master
-        with:
-          projectBaseDir: frontend
+      - name: Run SonarQube Scanner for Frontend
+        working-directory: frontend
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
           SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          npm run lint:report
+          npm run test:coverage
+          npx sonar-scanner \
+            -Dsonar.projectKey=karting-frontend \
+            -Dsonar.projectName="Frontend Karting" \
+            -Dsonar.host.url=${{ env.SONAR_HOST_URL }} \
+            -Dsonar.token=${{ env.SONAR_TOKEN }}
 
   analyze-project:
     name: Analizar Proyecto Completo
